@@ -65,7 +65,7 @@ const run = async () => {
 const runConcurrently = async (num) => {
   const processes = []
   for (var i in _.range(0, num))
-    processes.push('node ./src/index.js')
+    processes.push('node ./index.js')
   concurrently(processes)
 }
 
