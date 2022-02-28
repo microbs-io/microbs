@@ -1,0 +1,21 @@
+{
+  "name": "service",
+  "scripts": {
+    "build": "parcel build ./src/public/index.html",
+    "dev": "NODE_ENV=development parcel ./src/public/index.html"
+  },
+  "dependencies": {
+    "axios": "^0.26.0",
+    "js-cookie": "^3.0.1",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "react-router-dom": "^5.2.0",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^2.1.2"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "2.3.2",
+    "parcel": "^2.3.2",
+    "process": "^0.11.10"
+  }
+}

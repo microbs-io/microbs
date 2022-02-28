@@ -1,0 +1,11 @@
+{
+  "name": "@microbs.io/ecommerce-synthetics",
+  "main": "./src/index.js",
+  "dependencies": {
+    "concurrently": "^7.0.0",
+    "creditcard-generator": "^0.0.7",
+    "lodash": "^4.17.21",
+    "minimist": "^1.2.5",
+    "playwright": "^1.19.2"
+  }
+}

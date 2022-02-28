@@ -1,0 +1,15 @@
+apiVersion: skaffold/v2beta27
+kind: Config
+build:
+  tagPolicy:
+    customTemplate:
+      template: "{{.GIT_COMMIT}}"
+      components:
+      - name: GIT_COMMIT
+        gitCommit: {}
+profiles:
+- name: main
+  deploy:
+    kubectl:
+      manifests:
+      - ./cli/src/plugins/obs/grafana_cloud/services/grafana-agent/k8s/*.yaml

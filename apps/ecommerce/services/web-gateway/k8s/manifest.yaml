@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-gateway
+  labels:
+    app: web-gateway
+spec:
+  replicas: 2
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: web-gateway
+  template:
+    metadata:
+      labels:
+        app: web-gateway
+    spec:
+      containers:
+      - name: web-gateway
+        image: microbs-ecommerce-web-gateway
+        imagePullPolicy: IfNotPresent
+        readinessProbe:
+          httpGet:
+            port: 80
+            path: /healthz
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+        env:
+        - name: SERVICE_NAME
+          value: web-gateway
+        - name: SERVICE_HOST_API_GATEWAY
+          value: api-gateway
+        - name: SERVICE_PORT_API_GATEWAY
+          value: "80"
+        - name: SERVICE_HOST_SESSION_DATA
+          value: session-data
+        - name: SERVICE_PORT_SESSION_DATA
+          value: "6379"
+        envFrom:
+        - secretRef:
+           name: microbs-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-gateway
+  labels:
+    app: web-gateway
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: web-gateway
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-gateway-external
+spec:
+  type: LoadBalancer
+  selector:
+    app: web-gateway
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80

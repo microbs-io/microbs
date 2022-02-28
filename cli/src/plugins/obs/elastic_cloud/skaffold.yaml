@@ -1,0 +1,18 @@
+apiVersion: skaffold/v2beta27
+kind: Config
+build:
+  tagPolicy:
+    customTemplate:
+      template: "{{.GIT_COMMIT}}"
+      components:
+      - name: GIT_COMMIT
+        gitCommit: {}
+profiles:
+- name: main
+  deploy:
+    kubectl:
+      manifests:
+      - ./cli/src/plugins/obs/elastic_cloud/services/filebeat/k8s/*.yaml
+      - ./cli/src/plugins/obs/elastic_cloud/services/heartbeat/k8s/*.yaml
+      - ./cli/src/plugins/obs/elastic_cloud/services/metricbeat/k8s/*.yaml
+      - ./cli/src/plugins/obs/elastic_cloud/services/otel-collector/k8s/*.yaml

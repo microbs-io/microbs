@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-data
+  labels:
+    app: product-data
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: product-data
+  template:
+    metadata:
+      labels:
+        app: product-data
+    spec:
+      containers:
+      - name: product-data
+        image: microbs-ecommerce-product-data
+        imagePullPolicy: IfNotPresent
+        readinessProbe:
+          exec:
+            command:
+            - bash
+            - "-c"
+            - |
+              psql --username "$POSTGRES_USER" --dbname "products" -c "SELECT 1"
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+        resources:
+          limits:
+           cpu: 500m
+           memory: 128Mi
+          requests:
+           cpu: 100m
+           memory: 128Mi
+        env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: password
+        envFrom:
+        - secretRef:
+           name: microbs-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-data
+  labels:
+    app: product-data
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: product-data

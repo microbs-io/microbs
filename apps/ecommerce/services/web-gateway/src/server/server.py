@@ -1,0 +1,102 @@
+# Standard packages
+import datetime
+import os
+
+# Third-party packages
+import redis
+import requests
+from flask import Flask, jsonify, make_response, request, send_from_directory
+from flask_cors import CORS, cross_origin
+from flask_session import Session
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
+# Service packages
+from common import config, logger, tracer
+
+# Instantiate application
+app = Flask(
+    config.get('SERVICE_NAME'),
+    static_folder=(os.environ.get('STATIC_PATH') or '/service/dist')
+)
+FlaskInstrumentor().instrument_app(app)
+
+# Configure session management
+app.secret_key = '3c194bbeaf650bcc0389667386d3bdd1'
+app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(minutes=5)
+app.config['SESSION_COOKIE_HTTPONLY'] = False
+app.config['SESSION_COOKIE_NAME'] = 'session_id'
+app.config['SESSION_KEY_PREFIX'] = 's:'
+app.config['SESSION_PERMANENT'] = True
+app.config['SESSION_REDIS'] = redis.from_url("redis://{}:{}".format(
+    os.environ.get('SERVICE_HOST_SESSION_DATA') or 'localhost',
+    os.environ.get('SERVICE_PORT_SESSION_DATA') or 6379
+))
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_USE_SIGNER'] = True
+Session(app)
+
+# Enable CORS
+cors = CORS(app, resources={r'*': {'origins': '*'}})
+
+
+####  HTTP Handlers  ###########################################################
+
+@app.route('/<path:path>.<extension>')
+@cross_origin()
+def send_static(path, extension):
+    """
+    Serve static assets.
+    """
+    logger.debug("{} /{}.{}".format(request.method, path, extension))
+    return send_from_directory(app.static_folder, request.path.lstrip('/'))
+
+@app.route('/api/v1/<path:path>', methods=['GET','POST','PUT','DELETE',])
+@cross_origin()
+def proxy(path):
+    """
+    Forward API requests to api-gateway.
+    """
+    logger.debug("{} /api/v1/{}".format(request.method, path))
+    url = "http://{}:{}/api/v1/{}".format(
+        config.get('SERVICE_HOST_API_GATEWAY'),
+        config.get('SERVICE_PORT_API_GATEWAY'),
+        path
+    )
+    headers = dict(request.headers)
+    headers.pop('Connection', None)
+    headers.pop('Content-Encoding', None)
+    headers.pop('Content-Length', None)
+    headers.pop('Transfer-Encoding', None)
+    headers.pop('Host', None)
+    r = requests.request(request.method, url,
+        headers=dict(headers),
+        params=request.args,
+        data=request.get_data(),
+        timeout=60
+    )
+    response = make_response(r.content), r.status_code
+    return response
+
+@app.route('/healthz')
+@cross_origin()
+def healthz():
+    """
+    Handle liveness and readiness probes.
+    """
+    logger.debug('GET /healthz')
+    return jsonify({ 'healthy': True })
+
+@app.route('/<path:path>')
+@app.route('/')
+@cross_origin()
+def home(path=None):
+    """
+    Serve index.html for all other requests.
+    """
+    return send_from_directory(app.static_folder, 'index.html')
+
+
+####  Main  ####################################################################
+
+if __name__ == '__main__':
+    app.run(config.get('SERVICE_BIND_HOST'), config.get('SERVICE_BIND_PORT'))

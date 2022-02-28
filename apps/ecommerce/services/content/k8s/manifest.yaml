@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: content
+  labels:
+    app: content
+spec:
+  replicas: 2
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: content
+  template:
+    metadata:
+      labels:
+        app: content
+    spec:
+      containers:
+      - name: content
+        image: microbs-ecommerce-content
+        imagePullPolicy: IfNotPresent
+        readinessProbe:
+          httpGet:
+            port: 80
+            path: /healthz
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+        env:
+        - name: SERVICE_NAME
+          value: content
+        envFrom:
+        - secretRef:
+           name: microbs-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: content
+  labels:
+    app: content
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: content

@@ -1,0 +1,20 @@
+FROM iquirino91/nginx-opentelemetry@sha256:008914fd4d4aa8e060e14d7a2af56e48418d95832251473a8cffb5c348681703
+RUN apk add bash gettext
+
+COPY ./src/nginx.conf ./nginx.conf.template
+COPY ./src/otel-nginx.toml ./otel-nginx.toml.template
+
+ARG ENVIRONMENT
+ARG SERVICE_NAME
+ARG SERVICE_BIND_HOST
+ARG SERVICE_BIND_PORT
+ARG OTLP_RECEIVER_HOST
+ARG OTLP_RECEIVER_PORT
+ENV ENVIRONMENT=${ENVIRONMENT}
+ENV SERVICE_NAME=${SERVICE_NAME}
+ENV SERVICE_BIND_HOST=${SERVICE_BIND_HOST}
+ENV SERVICE_BIND_PORT=${SERVICE_BIND_PORT}
+ENV OTLP_RECEIVER_HOST=${OTLP_RECEIVER_HOST}
+ENV OTLP_RECEIVER_PORT=${OTLP_RECEIVER_PORT}
+
+CMD sh -c "envsubst < ./nginx.conf.template > /etc/nginx/nginx.conf && envsubst < ./otel-nginx.toml.template > /etc/nginx/otel-nginx.toml && /etc/nginx/nginx -g 'daemon off;'"

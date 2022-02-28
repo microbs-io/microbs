@@ -1,0 +1,78 @@
+# config.reference.yaml
+#
+# Copy this file and name it config.yaml.
+# Don't use config.reference.yaml directly. It's tracked in version control.
+#
+# All values in your copy of this file become available as environment variables
+# to all services deployed on Kubernetes. The values are stored in a Kubernetes
+# Secret object named "microbs-secrets". The fields are transformed into
+# environment variable syntax: field names are flattened and uppercased, and
+# dots are replaced with underscores.
+#
+#   Example before...
+#     foo:
+#       bar_baz.abc: xyz
+#
+#   Example after...
+#     FOO_BAR_BAZ_XYZ=xyz
+
+
+####  Deployment config  #######################################################
+#
+# deployment.name         A name for the deployment. Automatically prefixed with "microbs-".
+# deployment.app          The name of a directory under ./apps to deploy.
+# deployment.plugins.k8s  The name of a directory under ./cli/src/plugins/k8s to use.
+# deployment.plugins.obs  The name of a directory under ./cli/src/plugins/obs to use.
+# deployment.environment  A description of the environment (e.g. dev, test, prod).
+
+deployment:
+  name: changeme
+  app: ecommerce
+  plugins:
+    k8s: minikube
+    obs:
+  environment: development
+
+
+####  OpenTelemetry config  ####################################################
+#
+# The OTLP gRPC destination for the deployed application services.
+
+otlp:
+  receiver:
+    host: otel-collector
+    port: 4317
+
+
+####  Plugin configs  ##########################################################
+#
+# A plugin's config only takes effect when the plugin is named in the
+# deployment.plugins.* fields.
+
+####  gke plugin config
+
+plugins.k8s.gke:
+  project_name:
+  region_name: us-central1
+  network_name:
+  subnetwork_name:
+  service_account_name:
+  service_account_key_path:
+
+####  minikube plugin config
+
+plugins.k8s.minikube:
+
+####  elastic_cloud plugin config
+
+plugins.obs.elastic_cloud:
+  api_key:
+  region: gcp-us-central1
+  version: 8.0.0
+
+####  grafana_cloud plugin config
+
+plugins.obs.grafana_cloud:
+  api_key:
+  org_slug:
+  region: us

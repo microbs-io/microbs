@@ -1,0 +1,136 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: session-data
+  labels:
+    app: session-data
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: session-data
+  template:
+    metadata:
+      labels:
+        app: session-data
+    spec:
+      subdomain: session-data
+      containers:
+      - name: session-data
+        image: microbs-ecommerce-session-data
+        imagePullPolicy: IfNotPresent
+        command:
+          - "redis-server"
+        args:
+          - "--dir"
+          - "/data"
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+        resources:
+          limits:
+           cpu: 500m
+           memory: 128Mi
+          requests:
+           cpu: 100m
+           memory: 64Mi
+        envFrom:
+        - secretRef:
+           name: microbs-secrets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: session-data-replica
+  labels:
+    app: session-data-replica
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: session-data-replica
+  template:
+    metadata:
+      labels:
+        app: session-data-replica
+    spec:
+      subdomain: session-data-replica
+      containers:
+      - name: session-data-replica
+        image: microbs-ecommerce-session-data
+        imagePullPolicy: IfNotPresent
+        command:
+          - "redis-server"
+        args:
+          - "--dir"
+          - "/data"
+          - "--slaveof"
+          - "session-data.default.svc.cluster.local"
+          - "6379"
+          - "--protected-mode"
+          - "no"
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+        resources:
+          limits:
+           cpu: 500m
+           memory: 128Mi
+          requests:
+           cpu: 100m
+           memory: 64Mi
+        envFrom:
+        - secretRef:
+           name: microbs-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: session-data
+  labels:
+    app: session-data
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: session-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: session-data-replica
+  labels:
+    app: session-data-replica
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: session-data-replica
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: session-data-external
+spec:
+  type: LoadBalancer
+  selector:
+    app: session-data
+  ports:
+  - name: http
+    port: 6379
+    targetPort: 6379

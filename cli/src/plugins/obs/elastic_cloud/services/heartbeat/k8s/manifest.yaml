@@ -1,0 +1,194 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: heartbeat-config
+  namespace: default
+  labels:
+    app: heartbeat
+data:
+  heartbeat.yml: |-
+    setup:
+      dashboards:
+        enabled: false
+      ilm:
+        enabled: true
+        overwrite: true
+        policy_file: /etc/ilm_policy.json
+      template:
+        enabled: true
+        overwrite: true
+        settings:
+          index:
+            number_of_shards: 1
+            number_of_replicas: 2
+    heartbeat.autodiscover:
+      cleanup_timeout: 10s
+      providers:
+      - type: kubernetes
+        hints.enabled: true
+    processors:
+      - add_cloud_metadata:
+      - add_host_metadata:
+      - add_docker_metadata:
+      - drop_fields:
+          fields: ["host.name"]
+          ignore_missing: true
+      - copy_fields:
+          fields:
+            - from: kubernetes.labels.app
+              to: event.dataset
+          fail_on_error: false
+          ignore_missing: true
+      - copy_fields:
+          fields:
+            - from: kubernetes.node.name
+              to: host.name
+          fail_on_error: false
+          ignore_missing: true
+    output.elasticsearch:
+      hosts: ['${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_URL}']
+      username: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
+      password: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
+      worker: 2
+    setup.kibana:
+      host: "${PLUGINS_OBS_ELASTIC_CLOUD_KIBANA_URL}"
+      username: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
+      password: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
+  ilm_policy.json: |-
+    {
+      "policy": {
+        "phases": {
+          "hot": {
+            "min_age": "0ms",
+            "actions": {
+              "rollover": {
+                "max_age": "2h",
+                "max_size": "20gb"
+              }
+            }
+          },
+          "delete": {
+            "min_age": "8h",
+            "actions": {
+              "delete": {}
+            }
+          }
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: heartbeat
+  namespace: default
+  labels:
+    app: heartbeat
+spec:
+  selector:
+    matchLabels:
+      app: heartbeat
+  template:
+    metadata:
+      labels:
+        app: heartbeat
+    spec:
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      securityContext:
+        runAsUser: 0
+      serviceAccountName: heartbeat
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: heartbeat
+        image: docker.elastic.co/beats/heartbeat:8.0.0
+        imagePullPolicy: IfNotPresent
+        args: [ "-c", "/etc/heartbeat.yml", "-e" ]
+        envFrom:
+        - secretRef:
+            name: microbs-secrets
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        volumeMounts:
+        - name: config
+          mountPath: /etc/heartbeat.yml
+          readOnly: true
+          subPath: heartbeat.yml
+        - name: config
+          mountPath: /etc/ilm_policy.json
+          readOnly: true
+          subPath: ilm_policy.json
+        - name: dockersock
+          mountPath: /var/run
+      volumes:
+      - name: config
+        configMap:
+          defaultMode: 0600
+          name: heartbeat-config
+      - name: dockersock
+        hostPath:
+          path: /var/run
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: heartbeat
+  namespace: default
+  labels:
+    app: heartbeat
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: heartbeat
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: heartbeat
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: heartbeat
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: heartbeat
+  namespace: default
+  labels:
+    app: heartbeat
+rules:
+- apiGroups: [""]
+  resources:
+  - nodes
+  - namespaces
+  - events
+  - pods
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions"]
+  resources:
+  - replicasets
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources:
+  - statefulsets
+  - deployments
+  - replicasets
+  verbs: ["get", "list", "watch"]
+- apiGroups:
+  - ""
+  resources:
+  - nodes/stats
+  verbs:
+  - get

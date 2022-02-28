@@ -1,0 +1,31 @@
+{
+  "name": "@microbs.io/microbs",
+  "version": "0.1.0-alpha",
+  "description": "microservices observability",
+  "license" : "Apache-2.0",
+  "url" : "https://microbs.io",
+  "main": "./cli/src/index.js",
+  "bin": {
+    "microbs": "./microbs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microbs-io/microbs.git"
+  },
+  "keywords": [
+    "apm", "cli", "demo", "devops", "k8s", "kubernetes", "microservices",
+    "monitoring", "observability", "sre", "synthetics", "testing"
+  ],
+  "engines": {
+    "npm": ">=14.16.1"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "chalk": "^4.1.1",
+    "glob": "^7.2.0",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "minimist": "^1.2.5",
+    "shell-quote": "^1.7.3"
+  }
+}

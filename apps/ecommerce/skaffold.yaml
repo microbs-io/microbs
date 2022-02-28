@@ -1,0 +1,69 @@
+apiVersion: skaffold/v2beta27
+kind: Config
+build:
+  tagPolicy:
+    customTemplate:
+      template: "{{.GIT_COMMIT}}-{{.VARIANT}}"
+      components:
+      - name: GIT_COMMIT
+        gitCommit: {}
+      - name: VARIANT
+        envTemplate:
+          template: "{{.VARIANT}}"
+
+
+####  Main  ####################################################################
+
+profiles:
+- name: main
+  build:
+    artifacts:
+    - image: microbs-ecommerce-api-gateway
+      context: ./apps/ecommerce/services/api-gateway
+    - image: microbs-ecommerce-cart
+      context: ./apps/ecommerce/services/cart
+    - image: microbs-ecommerce-checkout
+      context: ./apps/ecommerce/services/checkout
+    - image: microbs-ecommerce-cart-data
+      context: ./apps/ecommerce/services/cart-data
+    - image: microbs-ecommerce-content
+      context: ./apps/ecommerce/services/content
+    - image: microbs-ecommerce-payment
+      context: ./apps/ecommerce/services/payment
+    - image: microbs-ecommerce-product
+      context: ./apps/ecommerce/services/product
+    - image: microbs-ecommerce-product-data
+      context: ./apps/ecommerce/services/product-data
+    - image: microbs-ecommerce-session-data
+      context: ./apps/ecommerce/services/session-data
+    - image: microbs-ecommerce-synthetics
+      context: ./apps/ecommerce/services/synthetics
+    - image: microbs-ecommerce-web-gateway
+      context: ./apps/ecommerce/services/web-gateway
+  deploy:
+    kubectl:
+      manifests:
+      - ./apps/ecommerce/services/api-gateway/k8s/*.yaml
+      - ./apps/ecommerce/services/cart/k8s/*.yaml
+      - ./apps/ecommerce/services/cart-data/k8s/*.yaml
+      - ./apps/ecommerce/services/checkout/k8s/*.yaml
+      - ./apps/ecommerce/services/content/k8s/*.yaml
+      - ./apps/ecommerce/services/payment/k8s/*.yaml
+      - ./apps/ecommerce/services/product/k8s/*.yaml
+      - ./apps/ecommerce/services/product-data/k8s/*.yaml
+      - ./apps/ecommerce/services/session-data/k8s/*.yaml
+      - ./apps/ecommerce/services/synthetics/k8s/*.yaml
+      - ./apps/ecommerce/services/web-gateway/k8s/*.yaml
+
+
+####  Variants  ################################################################
+
+- name: basic-bug
+  build:
+    artifacts:
+    - image: microbs-ecommerce-product
+      context: ./apps/ecommerce/variants/basic-bug/product
+  deploy:
+    kubectl:
+      manifests:
+      - ./apps/ecommerce/variants/basic-bug/product/k8s/*.yaml

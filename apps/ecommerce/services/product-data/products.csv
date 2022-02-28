@@ -1,0 +1,33 @@
+id,name,filename,description,price,rating,reviews,alcoholic,temperature,type
+ee0a957a,Hot Chocolate,hot-chocolate.jpeg,Hot Chocolate,4,4.8,34,non-alcoholic,hot,cocoa
+c5cf47bf,Cocoa Latte,cocoa-latte.jpeg,Cocoa Latte,4,4.7,12,non-alcoholic,hot,coffee
+2ec1c3d6,Mocha Latte,mocha-latte.jpeg,Mocha Latte,4,4.8,90,non-alcoholic,hot,coffee
+ef628c62,Caramel Latte,latte.jpeg,Caramel Latte,4,4.8,98,non-alcoholic,hot,coffee
+36b885b0,Cascadian Coffee,cascadian-coffee.jpeg,Cascadian Coffee,5,4.7,14,non-alcoholic,hot,coffee
+bb8a1441,Mocha,mocha.jpeg,Mocha,4,4.6,77,non-alcoholic,hot,coffee
+a10ab122,Mimosa,mimosa.jpeg,Mimosa,7.5,4.8,89,alcoholic,cold,wine
+ba876b3b,Citrus Wine,citrus-wine.jpeg,Citrus Wine,8,4.4,58,alcoholic,cold,wine
+cae9894e,The Unsmoothie,unsmoothie.jpeg,The Unsmoothie,6,3.9,67,non-alcoholic,cold,smoothie
+526666d5,Watermelon Juice,watermelon-juice.jpeg,Watermelon Juice,3,4.8,27,non-alcoholic,cold,juice
+f1241fff,Kenyan Coffee Beans,coffee-beans-2.jpeg,Kenyan Coffee Beans,15,4.8,99,non-alcoholic,,coffee
+93088621,Honduran Coffee Beans,coffee-beans.jpeg,Honduran Coffee Beans,14,4.8,101,non-alcoholic,,coffee
+77ce5522,Spiced Coffee,spiced-coffee.jpeg,Spiced Coffee,4.5,4.6,76,non-alcoholic,hot,coffee
+ed47ae8a,The Coffee Cloud,coffee-cloud.jpeg,The Coffee Cloud,5,4.6,38,non-alcoholic,hot,coffee
+568c579b,Guatemalen Coffee Grounds,coffee-grounds.jpeg,Guatemalen Coffee Grounds,12,4.8,15,non-alcoholic,,coffee
+cb8217e2,Spiced Tea,spiced-tea.jpeg,Spiced Tea,4.5,4.5,83,non-alcoholic,hot,tea
+be22ac12,Wildflower Honey Tea,honey-daisy-tea.jpeg,Wildflower Honey Tea,5,4.7,5,non-alcoholic,hot,tea
+ccd26245,Five Tea Blend,tea-blend.jpeg,"Green, white, jasmine, oolong, and earl grey.",5.5,4.5,20,non-alcoholic,,tea
+7c4858c8,Spring Tea,spring-tea.jpeg,Spring Tea,4,4.3,53,non-alcoholic,hot,tea
+ed8d5eb3,Citrus Spice Chai,citrus-spice-chai.jpeg,Citrus Spice Chai,4.5,4.4,68,non-alcoholic,hot,tea
+b99f11f0,Orchid Tea,orchid-tea.jpeg,,5,4.7,3,non-alcoholic,hot,tea
+f95e2475,Sweet Tea,sweet-tea.jpeg,Sweet Tea,3.5,5,2,non-alcoholic,cold,tea
+d0a9442c,Cinnamon Tea,cinnamon-tea.jpeg,Cinnamon Tea,3.5,5,1,non-alcoholic,hot,tea
+9a7d729b,English Breakfast Tea,tea.jpeg,English Breakfast Tea,3,0,0,non-alcoholic,hot,tea
+5ee55eed,Champagne,champagne.jpeg,"Smooth, bright, and full-bodied flavor with notes of lavender and lemon zest.",28,4.7,45,alcoholic,cold,spirits
+4dc14351,Mystery Cocktail,cocktail.jpeg,A unique blend of 18 flavors.,8,4.6,34,alcoholic,cold,spirits
+d1030594,Ethiopian Coffee,coffee.jpeg,Freshly ground fair trade organic coffee topped with irish cream.,4,4.9,125,non-alcoholic,hot,coffee
+26593bbb,Green Tea Zen,green-tea.jpeg,Calm your mind and rejuvenate your soul.,3.5,4.8,73,non-alcoholic,hot,tea
+f1dba457,Juice,juice.jpeg,A blast of fruit flavors.,3.5,4.7,92,non-alcoholic,cold,juice
+b7718c49,Orange Juice,oj.jpeg,A classic drink with citrus infusion.,3,4.6,102,non-alcoholic,cold,juice
+e7bb201c,Summer Special,summer.jpeg,Our special blend of sweet and citrusy flavors.,4,4.8,64,alcoholic,cold,spirits
+16a1ca37,Spring Water,water.jpeg,Ice cold spring water from the fjords of Norway.,2.5,4.7,81,non-alcoholic,cold,water

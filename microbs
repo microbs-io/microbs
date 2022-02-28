@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+const microbs = require('./cli/src/index')
+microbs.run()
