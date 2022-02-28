@@ -16,6 +16,9 @@ const randomTime = () => {
   return _.random(200, 2000)
 }
 
+/**
+ * Synthetic journey for shopping and submitting an order.
+ */
 const journey = async () => {
 
   // Setup
@@ -57,11 +60,22 @@ const journey = async () => {
   await browser.close()
 }
 
+/**
+ * Run journey in a loop.
+ */
 const run = async () => {
-  while (true)
-    await journey()
+  while (true) {
+    try {
+      await journey()
+    } catch (e) {
+      console.error(e)
+    }
+  }
 }
 
+/**
+ * Run multiple journeys in a loop.
+ */
 const runConcurrently = async (num) => {
   const processes = []
   for (var i in _.range(0, num))
