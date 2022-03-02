@@ -1,0 +1,29 @@
+# Build
+FROM python:3.8-slim as build
+
+# Requirements for service
+COPY ./requirements.txt .
+RUN pip install -r ./requirements.txt
+
+# Run
+FROM build
+WORKDIR /service
+COPY --from=build /usr/local/lib/python3.8/ /usr/local/lib/python3.8/
+COPY ./src .
+
+# Configuration inputs
+ARG ENVIRONMENT
+ARG SERVICE_NAME
+ARG SERVICE_BIND_HOST
+ARG SERVICE_BIND_PORT
+ARG OTLP_RECEIVER_HOST
+ARG OTLP_RECEIVER_PORT
+ENV ENVIRONMENT=${ENVIRONMENT}
+ENV SERVICE_NAME=${SERVICE_NAME}
+ENV SERVICE_BIND_HOST=${SERVICE_BIND_HOST}
+ENV SERVICE_BIND_PORT=${SERVICE_BIND_PORT}
+ENV OTLP_RECEIVER_HOST=${OTLP_RECEIVER_HOST}
+ENV OTLP_RECEIVER_PORT=${OTLP_RECEIVER_PORT}
+
+ENTRYPOINT [ "python", "server.py" ]
+EXPOSE ${SERVICE_BIND_PORT}
