@@ -57,6 +57,12 @@ for (var key in args) {
         _context.args.k8s = true
         break
 
+      // -l | --alerts  Alerts plugin under ./cli/src/plugins/alerts
+      case 'l':
+      case 'alerts':
+        _context.args.alerts = true
+        break
+
       // -o | --obs  Observability plugin under ./cli/src/plugins/obs
       case 'o':
       case 'obs':

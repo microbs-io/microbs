@@ -27,6 +27,7 @@ Usage: ${chalk.cyan('microbs COMMAND [options]')}
 
   ${chalk.cyan('microbs setup')}      Setup all or some of the configured deployment.
     [-c|--config]      Path to configuration file (config.yaml).
+    [-l|--alerts]      Setup the alerts channel.
     [-k|--k8s]         Setup the Kubernetes cluster.
     [-o|--obs]         Setup the observability solution.
     [-a|--app]         Deploy the application services.
@@ -36,6 +37,7 @@ Usage: ${chalk.cyan('microbs COMMAND [options]')}
     [-a|--app]         Remove the application services.
     [-o|--obs]         Destroy the observability solution.
     [-k|--k8s]         Destroy the Kubernetes cluster.
+    [-l|--alerts]      Destroy the alerts channel.
 
   ${chalk.cyan('microbs rollout')}    Rollout a variant of a deployed application.
     [VARIANT_NAME]     Name of the variant to rollout.
@@ -79,6 +81,7 @@ const runRollout = async (opts) => {
   const command = config.get('_context.command')
   const args = config.get('_context.args')
 
+  // Validate the command.
   var opts = opts || {}
   if (command === 'rollout' && args._.length > 1)
     throw new Error('`microbs rollout` requires zero or one variant names.')
@@ -92,18 +95,27 @@ const runRollout = async (opts) => {
   state.set('deployment.version', crypto.randomBytes(4).toString('hex'))
   state.save()
 
-  // Determine which command(s) to run.
-  const all = (!args.app && !args.k8s && !args.obs)
+  // Determine which plugins(s) to invoke for this command.
+  const all = (!args.alerts && !args.app && !args.k8s && !args.obs)
+  const pluginTypes = [ 'k8s', 'obs', 'alerts' ]
 
-  // Run the rollout command of the k8s plugin, if given and applicable.
-  if (all || args.k8s)
-    if (plugins.k8s[config.get('deployment.plugins.k8s')].rollout)
-      await plugins.k8s[config.get('deployment.plugins.k8s')].rollout(opts)
-
-  // Run the rollout command of the observability plugin, if given and applicable.
-  if (all || args.obs)
-    if (plugins.obs[config.get('deployment.plugins.obs')].rollout)
-      await plugins.obs[config.get('deployment.plugins.obs')].rollout(opts)
+  // Invoke the 'rollout' command for each given plugin that implements it.
+  for (var i in pluginTypes) {
+    let pluginType = pluginTypes[i]
+    if (all || args[pluginType]) {
+      var pluginName = config.get(`deployment.plugins.${pluginType}`)
+      var plugin = plugins[pluginType][pluginName]
+      if (plugin) {
+        if (plugin.rollout) {
+          await plugin.rollout(opts)
+        } else {
+          console.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'rollout' command.`)
+        }
+      } else {
+        console.debug(`No ${pluginType} plugin was defined in the config file.`)
+      }
+    }
+  }
 
   // Rollout the application services, if given.
   if (all || args.app) {
@@ -120,22 +132,33 @@ const runRollout = async (opts) => {
  * then the Kubernetes cluster.
  */
 const runDestroy = async () => {
-
-  // Determine which command(s) to run.
   const args = config.get('_context.args')
-  const all = (!args.app && !args.k8s && !args.obs)
+
+  // Determine which plugins(s) to invoke for this command.
+  const all = (!args.alerts && !args.app && !args.k8s && !args.obs)
 
   // Remove the application services, if given.
   if (all || args.app)
     await runRollout({ action: 'delete' })
 
-  // Run the destroy command of the observability plugin, if given.
-  if (all || args.obs)
-    await plugins.obs[config.get('deployment.plugins.obs')].destroy()
-
-  // Run the destroy command of the k8s plugin, if given.
-  if (all || args.k8s)
-    await plugins.k8s[config.get('deployment.plugins.k8s')].destroy()
+  // Invoke the 'destroy' command for each plugin that implements it.
+  const pluginTypes = [ 'alerts', 'obs', 'k8s' ]
+  for (var i in pluginTypes) {
+    let pluginType = pluginTypes[i]
+    if (all || args[pluginType]) {
+      var pluginName = config.get(`deployment.plugins.${pluginType}`)
+      var plugin = plugins[pluginType][pluginName]
+      if (plugin) {
+        if (plugin.destroy) {
+          await plugin.destroy()
+        } else {
+          console.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'destroy' command.`)
+        }
+      } else {
+        console.debug(`No ${pluginType} plugin was defined in the config file.`)
+      }
+    }
+  }
 }
 
 /**
@@ -144,18 +167,33 @@ const runDestroy = async () => {
  * then the application services.
  */
 const runSetup = async () => {
-
-  // Determine which command(s) to run.
   const args = config.get('_context.args')
-  const all = (!args.app && !args.k8s && !args.obs)
 
-  // Run the setup command of the k8s plugin, if given.
-  if (all || args.k8s)
-    await plugins.k8s[config.get('deployment.plugins.k8s')].setup()
+  // Determine which plugins(s) to invoke for this command.
+  const all = (!args.alerts && !args.app && !args.k8s && !args.obs)
 
-  // Run the setup command of the observability plugin, if given.
-  if (all || args.obs)
-    await plugins.obs[config.get('deployment.plugins.obs')].setup()
+  // Remove the application services, if given.
+  if (all || args.app)
+    await runRollout({ action: 'delete' })
+
+  // Invoke the 'setup' command for each plugin that implements it.
+  const pluginTypes = [ 'alerts', 'k8s', 'obs' ]
+  for (var i in pluginTypes) {
+    let pluginType = pluginTypes[i]
+    if (all || args[pluginType]) {
+      var pluginName = config.get(`deployment.plugins.${pluginType}`)
+      var plugin = plugins[pluginType][pluginName]
+      if (plugin) {
+        if (plugin.setup) {
+          await plugin.setup()
+        } else {
+          console.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'setup' command.`)
+        }
+      } else {
+        console.debug(`No ${pluginType} plugin was defined in the config file.`)
+      }
+    }
+  }
 
   // Rollout the main profile.
   await runRollout({ profile: 'main' })
@@ -177,6 +215,10 @@ const runApps = () => {
  * List all available plugins.
  */
 const runPlugins = () => {
+  console.log('')
+  console.log('alerts:')
+  for (var plugin in plugins.alerts)
+    console.log(`  - ${plugin}`)
   console.log('')
   console.log('k8s:')
   for (var plugin in plugins.k8s)
