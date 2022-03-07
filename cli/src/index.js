@@ -172,10 +172,6 @@ const runSetup = async () => {
   // Determine which plugins(s) to invoke for this command.
   const all = (!args.alerts && !args.app && !args.k8s && !args.obs)
 
-  // Remove the application services, if given.
-  if (all || args.app)
-    await runRollout({ action: 'delete' })
-
   // Invoke the 'setup' command for each plugin that implements it.
   const pluginTypes = [ 'alerts', 'k8s', 'obs' ]
   for (var i in pluginTypes) {
@@ -195,8 +191,9 @@ const runSetup = async () => {
     }
   }
 
-  // Rollout the main profile.
-  await runRollout({ profile: 'main' })
+  // Rollout the application services for the 'main' profile, if applicable.
+  if (all || args.app)
+    await runRollout({ profile: 'main' })
 }
 
 /**
