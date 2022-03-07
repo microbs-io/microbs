@@ -19,16 +19,18 @@
 
 ####  Deployment config  #######################################################
 #
-# deployment.name         A name for the deployment. Automatically prefixed with "microbs-".
-# deployment.app          The name of a directory under ./apps to deploy.
-# deployment.plugins.k8s  The name of a directory under ./cli/src/plugins/k8s to use.
-# deployment.plugins.obs  The name of a directory under ./cli/src/plugins/obs to use.
-# deployment.environment  A description of the environment (e.g. dev, test, prod).
+# deployment.name            A name for the deployment. Automatically prefixed with "microbs-".
+# deployment.app             The name of a directory under ./apps to deploy.
+# deployment.plugins.alerts  The name of a directory under ./cli/src/plugins/alerts to use.
+# deployment.plugins.k8s     The name of a directory under ./cli/src/plugins/k8s to use.
+# deployment.plugins.obs     The name of a directory under ./cli/src/plugins/obs to use.
+# deployment.environment     A description of the environment (e.g. dev, test, prod).
 
 deployment:
   name: changeme
   app: ecommerce
   plugins:
+    alerts:
     k8s: minikube
     obs:
   environment: development
@@ -48,6 +50,11 @@ otlp:
 #
 # A plugin's config only takes effect when the plugin is named in the
 # deployment.plugins.* fields.
+
+####  slack plugin config
+
+plugins.alerts.slack:
+  bot_user_oauth_access_token:
 
 ####  gke plugin config
 
