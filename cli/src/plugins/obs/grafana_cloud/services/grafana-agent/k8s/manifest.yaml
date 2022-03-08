@@ -94,6 +94,8 @@ data:
           basic_auth:
             username: ${PLUGINS_OBS_GRAFANA_CLOUD_TEMPO_USERNAME}
             password: ${PLUGINS_OBS_GRAFANA_CLOUD_API_KEY}
+        spanmetrics:
+          metrics_instance: integrations
         service_graphs:
           enabled: true
         automatic_logging:
