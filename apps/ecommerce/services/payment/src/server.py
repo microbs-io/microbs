@@ -5,21 +5,13 @@ import re
 import time
 
 # Third-party packages
-from flask import Flask, jsonify, request
-from flask_cors import CORS, cross_origin
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from flask import jsonify, request
+from flask_cors import cross_origin
 
 # Service packages
-from common import config, logger, tracer
+from common import app, cors, config, logger, tracer
 
 RE_NON_DIGITS = re.compile(r'[^0-9]')
-
-# Instantiate application
-app = Flask(config.get('SERVICE_NAME'))
-FlaskInstrumentor().instrument_app(app)
-
-# Enable CORS
-cors = CORS(app, resources={r'*': {'origins': '*'}})
 
 def process_payment(card_number, amount):
     """

@@ -17,4 +17,4 @@ ENV SERVICE_BIND_PORT=${SERVICE_BIND_PORT}
 ENV OTLP_RECEIVER_HOST=${OTLP_RECEIVER_HOST}
 ENV OTLP_RECEIVER_PORT=${OTLP_RECEIVER_PORT}
 
-CMD sh -c "envsubst < ./nginx.conf.template > /etc/nginx/nginx.conf && envsubst < ./otel-nginx.toml.template > /etc/nginx/otel-nginx.toml && /etc/nginx/nginx -g 'daemon off;'"
+CMD sh -c "cp ./nginx.conf.template /etc/nginx/nginx.conf && envsubst < ./otel-nginx.toml.template > /etc/nginx/otel-nginx.toml && /etc/nginx/nginx -g 'daemon off;'"

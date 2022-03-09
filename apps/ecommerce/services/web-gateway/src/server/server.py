@@ -5,20 +5,15 @@ import os
 # Third-party packages
 import redis
 import requests
-from flask import Flask, jsonify, make_response, request, send_from_directory
-from flask_cors import CORS, cross_origin
+from flask import jsonify, make_response, request, send_from_directory
+from flask_cors import cross_origin
 from flask_session import Session
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
 
 # Service packages
-from common import config, logger, tracer
+from common import app, cors, config, logger, tracer
 
-# Instantiate application
-app = Flask(
-    config.get('SERVICE_NAME'),
-    static_folder=(os.environ.get('STATIC_PATH') or '/service/dist')
-)
-FlaskInstrumentor().instrument_app(app)
+# Configure application
+app.static_folder=(os.environ.get('STATIC_PATH') or '/service/dist')
 
 # Configure session management
 app.secret_key = '3c194bbeaf650bcc0389667386d3bdd1'
@@ -34,9 +29,6 @@ app.config['SESSION_REDIS'] = redis.from_url("redis://{}:{}".format(
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_USE_SIGNER'] = True
 Session(app)
-
-# Enable CORS
-cors = CORS(app, resources={r'*': {'origins': '*'}})
 
 
 ####  HTTP Handlers  ###########################################################

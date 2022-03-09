@@ -3,8 +3,10 @@ Configuration, tracing, and logging.
 """
 
 # Standard packages
+import datetime
 import logging
 import os
+import re
 import sys
 
 
@@ -51,9 +53,99 @@ tracer = trace.get_tracer(config.get('SERVICE_NAME'))
 
 ####  Logging  #################################################################
 
-import ecs_logging
+RE_ESCAPABLE = re.compile(r'([\=\ \\\\"])')
+
+def logfmt_value(value):
+    """
+    Format a value in logfmt format.
+        - Null values must be empty strings.
+        - Boolean values must be 'true' or 'false'.
+        - Values with spaces must be quoted.
+        - Escape reserved characters only if the value is unquoted to minimize escaping.
+    """
+    if value is None:
+        return ''
+    if isinstance(value, bool):
+        return 'true' if value else 'false'
+    value = str(value)
+    if ' ' in value:
+        if '"' in value:
+            value = value.replace('"', '\\"')
+        return '"{}"'.format(value)
+    return re.sub(RE_ESCAPABLE, r'\\\1', value)
+
+def logfmt_key_value(key, value):
+    """
+    Format a key-value pair in logfmt format.
+    """
+    return '='.join([ key, logfmt_value(value) ])
+
+def logfmt(key_value_pairs):
+    """
+    Format a log line in logfmt format.
+    """
+    log_formatted = []
+    for key, value in key_value_pairs:
+        log_formatted.append(logfmt_key_value(key, value))
+    return ' '.join(log_formatted)
+
+class LogfmtFormatter(logging.Formatter):
+
+    def format(self, log):
+        """
+        Format a log line in logfmt format.
+        Allow arbitrary tags as key-value tuples.
+        Add OpenTelemetry data if applicable.
+        """
+        log_formatted = [
+            ( 'ts', datetime.datetime.utcfromtimestamp(log.created).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'),
+            ( 'level', log.levelname.lower() ),
+            ( 'msg', log.getMessage() ),
+        ]
+        for key, value in getattr(log, 'tags', []):
+            log_formatted.append(( key, value ))
+        if trace.get_current_span().is_recording():
+            log_formatted.append(( 'endpoint', trace.get_current_span().name ))
+            log_formatted.append(( 'traceID', trace.format_trace_id(trace.get_current_span().get_span_context().trace_id) ))
+            log_formatted.append(( 'spanID', trace.format_span_id(trace.get_current_span().get_span_context().span_id) ))
+        if log.exc_info:
+            log_formatted.append(('exception', self.formatException(log.exc_info)))
+        if log.stack_info:
+            log_formatted.append(('stack', self.formatStack(log.stack_info)))
+        return logfmt(log_formatted)
+
+# Use logfmt with tags OpenTelemetry data
 logger = logging.getLogger(config.get('SERVICE_NAME'))
 logHandler = logging.StreamHandler(stream=sys.stdout)
-logHandler.setFormatter(ecs_logging.StdlibFormatter())
+logHandler.setFormatter(LogfmtFormatter())
 logger.addHandler(logHandler)
 logger.setLevel(config.get('LOG_LEVEL'))
+
+# Suppress default Flask logger except in the case of errors
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
+
+####  App  #####################################################################
+
+from flask import Flask, request
+from flask_cors import CORS
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
+# Log requests and responses using logfmt, tags, and OpenTelemetry data
+def response_hook(span, status, response_headers):
+    logger.info('{} {}'.format(request.method, request.path), extra={
+        'tags': [
+            ( 'ip', request.environ.get('REMOTE_ADDR') ),
+            ( 'method', request.method ),
+            ( 'path', request.path ),
+            ( 'status', status.split(' ')[0] ),
+        ]
+    })
+
+# Instantiate application
+app = Flask(config.get('SERVICE_NAME'))
+FlaskInstrumentor().instrument_app(app, response_hook=response_hook)
+
+# Enable CORS
+cors = CORS(app, resources={r'*': {'origins': '*'}})

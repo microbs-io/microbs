@@ -5,19 +5,11 @@ import re
 
 # Third-party packages
 import redis
-from flask import Flask, jsonify, make_response, request
-from flask_cors import CORS, cross_origin
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from flask import jsonify, make_response, request
+from flask_cors import cross_origin
 
 # Service packages
-from common import config, logger, tracer
-
-# Instantiate application
-app = Flask(config.get('SERVICE_NAME'))
-FlaskInstrumentor().instrument_app(app)
-
-# Enable CORS
-cors = CORS(app, resources={r'*': {'origins': '*'}})
+from common import app, cors, config, logger, tracer
 
 # Configure Redis client
 r = redis.Redis(

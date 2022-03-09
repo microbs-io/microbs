@@ -34,7 +34,7 @@ Environment variables common to all services:
 
 - Service is instrumented with OpenTelemetry (OTLP/gRPC)
 - Service accepts and responds with `application/json` content
-- Service logs using a standard format
+- Service logs using logfmt syntax
 - Service correlates logs with traces
 
 

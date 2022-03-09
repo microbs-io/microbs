@@ -14,6 +14,7 @@ const _ = require('lodash')
 const yaml = require('js-yaml')
 
 // Main packages
+const config = require('./config')
 const utils = require('./utils')
 
 // Get .state file
@@ -31,23 +32,34 @@ try {
   }
 }
 
+const get = (path) => {
+  return path ? _.get(state, path) : state
+}
+
+const set = (path, value) => {
+  _.set(state, path, value)
+  delete state._context // Exclude the command-line context
+}
+
+const merge = (obj) => {
+  _.merge(state, obj)
+  delete state._context // Exclude the command-line context
+}
+
+const save = (path) => {
+  fs.writeFileSync(stateFilepath, yaml.dump(utils.flatten(state), { sortKeys: true }), 'utf8', (err) => console.error(err))
+}
+
 // Parse state file
 const state = yaml.load(stateFile) || {}
 
-// Export the config
+// Merge config with state, overriding state with config
+merge(config.get())
+
+// Export state
 module.exports = {
-  get: (path) => {
-    return path ? _.get(state, path) : state
-  },
-  set: (path, value) => {
-    _.set(state, path, value)
-    delete state._context // Exclude the command-line context
-  },
-  merge: (obj) => {
-    _.merge(state, obj)
-    delete state._context // Exclude the command-line context
-  },
-  save: (path) => {
-    fs.writeFileSync(stateFilepath, yaml.dump(utils.flatten(state), { sortKeys: true }), 'utf8', (err) => console.error(err))
-  }
+  get: get,
+  set: set,
+  merge: merge,
+  save: save
 }

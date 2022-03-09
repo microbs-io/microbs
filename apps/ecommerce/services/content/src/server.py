@@ -4,19 +4,11 @@ import os
 
 # Third-party packages
 import requests
-from flask import Flask, jsonify, request, Response
-from flask_cors import CORS, cross_origin
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from flask import jsonify, request, Response
+from flask_cors import cross_origin
 
 # Service packages
-from common import config, logger, tracer
-
-# Instantiate application
-app = Flask(config.get('SERVICE_NAME'))
-FlaskInstrumentor().instrument_app(app)
-
-# Enable CORS
-cors = CORS(app, resources={r'*': {'origins': '*'}})
+from common import app, cors, config, logger, tracer
 
 # Configure content source
 CONTENT_BASE_PATH = "https://storage.googleapis.com/cdn.microbs.io/apps/ecommerce/main/content/images"

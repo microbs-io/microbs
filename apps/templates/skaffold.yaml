@@ -13,13 +13,10 @@ profiles:
     artifacts:
     - image: microbs-templates-nginx
       context: ./apps/templates/services/nginx
-    - image: microbs-templates-nodejs-express
-      context: ./apps/templates/services/nodejs-express
     - image: microbs-templates-python-flask
       context: ./apps/templates/services/python-flask
   deploy:
     kubectl:
       manifests:
       - ./apps/templates/services/nginx/k8s/*.yaml
-      - ./apps/templates/services/nodejs-express/k8s/*.yaml
       - ./apps/templates/services/python-flask/k8s/*.yaml
