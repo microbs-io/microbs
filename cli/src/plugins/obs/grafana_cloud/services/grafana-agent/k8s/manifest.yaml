@@ -17,7 +17,7 @@ data:
       global:
         scrape_interval: 10s
         external_labels:
-          cluster: minikube
+          cluster: microbs
       configs:
       - name: integrations
         remote_write:
