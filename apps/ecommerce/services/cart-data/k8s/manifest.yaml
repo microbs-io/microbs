@@ -4,17 +4,19 @@ kind: Deployment
 metadata:
   name: cart-data
   labels:
-    app: cart-data
+    app: ecommerce
+    service: cart-data
 spec:
   replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: cart-data
+      service: cart-data
   template:
     metadata:
       labels:
-        app: cart-data
+        app: ecommerce
+        service: cart-data
     spec:
       subdomain: cart-data
       containers:
@@ -50,17 +52,19 @@ kind: Deployment
 metadata:
   name: cart-data-replica
   labels:
-    app: cart-data-replica
+    app: ecommerce
+    service: cart-data-replica
 spec:
   replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: cart-data-replica
+      service: cart-data-replica
   template:
     metadata:
       labels:
-        app: cart-data-replica
+        app: ecommerce
+        service: cart-data-replica
     spec:
       subdomain: cart-data-replica
       containers:
@@ -101,23 +105,25 @@ kind: Service
 metadata:
   name: cart-data
   labels:
-    app: cart-data
+    app: ecommerce
+    service: cart-data
 spec:
   ports:
   - port: 6379
     targetPort: 6379
   selector:
-    app: cart-data
+    service: cart-data
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: cart-data-replica
   labels:
-    app: cart-data-replica
+    app: ecommerce
+    service: cart-data-replica
 spec:
   ports:
   - port: 6379
     targetPort: 6379
   selector:
-    app: cart-data-replica
+    service: cart-data-replica

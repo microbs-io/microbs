@@ -4,17 +4,19 @@ kind: Deployment
 metadata:
   name: product-data
   labels:
-    app: product-data
+    app: ecommerce
+    service: product-data
 spec:
   replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: product-data
+      service: product-data
   template:
     metadata:
       labels:
-        app: product-data
+        app: ecommerce
+        service: product-data
     spec:
       containers:
       - name: product-data
@@ -51,10 +53,11 @@ kind: Service
 metadata:
   name: product-data
   labels:
-    app: product-data
+    app: ecommerce
+    service: product-data
 spec:
   ports:
   - port: 5432
     targetPort: 5432
   selector:
-    app: product-data
+    service: product-data

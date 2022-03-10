@@ -56,14 +56,14 @@ module.exports = async () => {
       --disk-size "32" \
       --disk-type "pd-ssd" \
       --enable-autorepair \
+      --enable-autoupgrade \
       --enable-ip-alias \
       --image-type "COS_CONTAINERD" \
-      --machine-type "e2-highcpu-2" \
+      --machine-type "e2-highcpu-4" \
       --max-pods-per-node "110" \
       --max-surge-upgrade 1 \
       --max-unavailable-upgrade 0 \
       --metadata disable-legacy-endpoints=true \
-      --no-enable-autoupgrade \
       --no-enable-basic-auth \
       --no-enable-intra-node-visibility \
       --no-enable-master-authorized-networks \
@@ -74,7 +74,7 @@ module.exports = async () => {
   console.debug('...sending command:')
   console.debug(command)
   const result = utils.exec(command, true)
-  const exists = result.stderr ? false : result.stderr.includes('Already exists:')
+  const exists = result.stderr ? result.stderr.includes('Already exists:') : false
   if (result.stderr)
     console.warn(result.stderr)
 
@@ -99,9 +99,9 @@ module.exports = async () => {
         process.stdout.write('.')
       }
     }
+    if (!ready)
+      process.exit(1)
   }
-  if (!ready)
-    process.exit(1)
 
   console.log('')
   console.log('Finished setting up GKE.')

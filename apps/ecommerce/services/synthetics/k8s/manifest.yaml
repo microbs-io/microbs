@@ -4,22 +4,30 @@ kind: Deployment
 metadata:
   name: synthetics
   labels:
-    app: synthetics
+    app: ecommerce
+    service: synthetics
 spec:
   replicas: 2
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: synthetics
+      service: synthetics
   template:
     metadata:
       labels:
-        app: synthetics
+        app: ecommerce
+        service: synthetics
     spec:
       containers:
       - name: synthetics
         image: microbs-ecommerce-synthetics
         imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
         env:
         - name: SERVICE_NAME
           value: synthetics

@@ -4,17 +4,19 @@ kind: Deployment
 metadata:
   name: payment
   labels:
-    app: payment
+    app: ecommerce
+    service: payment
 spec:
   replicas: 2
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: payment
+      service: payment
   template:
     metadata:
       labels:
-        app: payment
+        app: ecommerce
+        service: payment
     spec:
       containers:
       - name: payment
@@ -39,10 +41,11 @@ kind: Service
 metadata:
   name: payment
   labels:
-    app: payment
+    app: ecommerce
+    service: payment
 spec:
   ports:
   - port: 80
     targetPort: 80
   selector:
-    app: payment
+    service: payment

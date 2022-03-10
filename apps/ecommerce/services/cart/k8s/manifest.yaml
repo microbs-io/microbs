@@ -4,17 +4,19 @@ kind: Deployment
 metadata:
   name: cart
   labels:
-    app: cart
+    app: ecommerce
+    service: cart
 spec:
   replicas: 2
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: cart
+      service: cart
   template:
     metadata:
       labels:
-        app: cart
+        app: ecommerce
+        service: cart
     spec:
       containers:
       - name: cart
@@ -39,10 +41,11 @@ kind: Service
 metadata:
   name: cart
   labels:
-    app: cart
+    app: ecommerce
+    service: cart
 spec:
   ports:
   - port: 80
     targetPort: 80
   selector:
-    app: cart
+    service: cart

@@ -4,17 +4,19 @@ kind: Deployment
 metadata:
   name: python-flask
   labels:
-    app: python-flask
+    app: templates
+    service: python-flask
 spec:
   replicas: 2
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: python-flask
+      service: python-flask
   template:
     metadata:
       labels:
-        app: python-flask
+        app: templates
+        service: python-flask
     spec:
       containers:
       - name: python-flask
@@ -39,10 +41,11 @@ kind: Service
 metadata:
   name: python-flask
   labels:
-    app: python-flask
+    app: templates
+    service: python-flask
 spec:
   ports:
   - port: 80
     targetPort: 80
   selector:
-    app: python-flask
+    service: python-flask

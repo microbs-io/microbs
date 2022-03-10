@@ -4,17 +4,19 @@ kind: Deployment
 metadata:
   name: session-data
   labels:
-    app: session-data
+    app: ecommerce
+    service: session-data
 spec:
   replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: session-data
+      service: session-data
   template:
     metadata:
       labels:
-        app: session-data
+        app: ecommerce
+        service: session-data
     spec:
       subdomain: session-data
       containers:
@@ -50,17 +52,19 @@ kind: Deployment
 metadata:
   name: session-data-replica
   labels:
-    app: session-data-replica
+    app: ecommerce
+    service: session-data-replica
 spec:
   replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: session-data-replica
+      service: session-data-replica
   template:
     metadata:
       labels:
-        app: session-data-replica
+        app: ecommerce
+        service: session-data-replica
     spec:
       subdomain: session-data-replica
       containers:
@@ -101,36 +105,25 @@ kind: Service
 metadata:
   name: session-data
   labels:
-    app: session-data
+    app: ecommerce
+    service: session-data
 spec:
   ports:
   - port: 6379
     targetPort: 6379
   selector:
-    app: session-data
+    service: session-data
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: session-data-replica
   labels:
-    app: session-data-replica
+    app: ecommerce
+    service: session-data-replica
 spec:
   ports:
   - port: 6379
     targetPort: 6379
   selector:
-    app: session-data-replica
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: session-data-external
-spec:
-  type: LoadBalancer
-  selector:
-    app: session-data
-  ports:
-  - name: http
-    port: 6379
-    targetPort: 6379
+    service: session-data-replica

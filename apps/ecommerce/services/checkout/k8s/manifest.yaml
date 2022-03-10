@@ -4,17 +4,19 @@ kind: Deployment
 metadata:
   name: checkout
   labels:
-    app: checkout
+    app: ecommerce
+    service: checkout
 spec:
   replicas: 2
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: checkout
+      service: checkout
   template:
     metadata:
       labels:
-        app: checkout
+        app: ecommerce
+        service: checkout
     spec:
       containers:
       - name: checkout
@@ -43,10 +45,11 @@ kind: Service
 metadata:
   name: checkout
   labels:
-    app: checkout
+    app: ecommerce
+    service: checkout
 spec:
   ports:
   - port: 80
     targetPort: 80
   selector:
-    app: checkout
+    service: checkout

@@ -4,17 +4,19 @@ kind: Deployment
 metadata:
   name: web-gateway
   labels:
-    app: web-gateway
+    app: ecommerce
+    service: web-gateway
 spec:
   replicas: 2
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      app: web-gateway
+      service: web-gateway
   template:
     metadata:
       labels:
-        app: web-gateway
+        app: ecommerce
+        service: web-gateway
     spec:
       containers:
       - name: web-gateway
@@ -47,22 +49,25 @@ kind: Service
 metadata:
   name: web-gateway
   labels:
-    app: web-gateway
+    app: ecommerce
+    service: web-gateway
 spec:
   ports:
   - port: 80
     targetPort: 80
   selector:
-    app: web-gateway
+    service: web-gateway
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: web-gateway-external
+  labels:
+    app: ecommerce
 spec:
   type: LoadBalancer
   selector:
-    app: web-gateway
+    service: web-gateway
   ports:
   - name: http
     port: 80
