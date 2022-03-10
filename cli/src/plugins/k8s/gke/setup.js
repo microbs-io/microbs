@@ -17,11 +17,11 @@ const probe = require('./probe.js')
 const validate = () => {
   const requiredFields = [
     'deployment.name',
-    'gcp.project_name',
-    'gcp.region_name',
-    'gcp.network_name',
-    'gcp.subnetwork_name',
-    'gcp.service_account_name',
+    'plugins.k8s.gke.project_name',
+    'plugins.k8s.gke.region_name',
+    'plugins.k8s.gke.network_name',
+    'plugins.k8s.gke.subnetwork_name',
+    'plugins.k8s.gke.service_account_name',
   ]
   if (!utils.configHas(requiredFields)) {
     console.error()
@@ -49,43 +49,55 @@ module.exports = async () => {
       --region "${quote([ regionName ])}" \
       --network "projects/${quote([ projectName ])}/global/networks/${quote([ networkName ])}" \
       --subnetwork "projects/${quote([ projectName ])}/regions/${quote([ regionName ])}/subnetworks/${quote([ subnetworkName ])}" \
-      --service-account "${quote([ serviceAccountName ])}" \
-      --addons HorizontalPodAutoscaling,HttpLoadBalancing \
+      --service-account "${quote([ serviceAccountName ]).replace('\\@', '@')}" \
+      --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver \
+      --cluster-version "1.21.6-gke.1503" \
       --default-max-pods-per-node "110" \
       --disk-size "32" \
       --disk-type "pd-ssd" \
       --enable-autorepair \
-      --enable-autoscaling \
       --enable-ip-alias \
-      --image-type "COS" \
-      --machine-type "e2-highcpu-16" \
-      --max-nodes "1" \
+      --image-type "COS_CONTAINERD" \
+      --machine-type "e2-highcpu-2" \
+      --max-pods-per-node "110" \
+      --max-surge-upgrade 1 \
+      --max-unavailable-upgrade 0 \
       --metadata disable-legacy-endpoints=true \
-      --min-nodes "1" \
       --no-enable-autoupgrade \
       --no-enable-basic-auth \
+      --no-enable-intra-node-visibility \
       --no-enable-master-authorized-networks \
-      --no-enable-stackdriver-kubernetes \
-      --num-nodes "1"
+      --no-shielded-integrity-monitoring \
+      --num-nodes "1" \
+      --release-channel "regular"
   `
   console.debug('...sending command:')
   console.debug(command)
-  const result = utils.exec(command)
+  const result = utils.exec(command, true)
+  const exists = result.stderr ? false : result.stderr.includes('Already exists:')
+  if (result.stderr)
+    console.warn(result.stderr)
+
+  // Exit if there was an issue creating the cluster
+  if (result.stderr && result.stderr.includes('ERROR:') && !exists)
+    process.exit(1)
 
   // Verify that the GKE cluster was created
-  console.log('')
-  console.log('Waiting for GKE cluster to be available...')
-  process.stdout.write('...')
-  var verified = false
-  var ready = false
-  while (!verified) {
-    if (await probe.status()) {
-      process.stdout.write('ready.\n')
-      ready = true
-      verified = true
-    } else {
-      await utils.sleep(4)
-      process.stdout.write('.')
+  if (!exists) {
+    console.log('')
+    console.log('Waiting for GKE cluster to be available...')
+    process.stdout.write('...')
+    var verified = false
+    var ready = false
+    while (!verified) {
+      if (await probe.status()) {
+        process.stdout.write('ready.\n')
+        ready = true
+        verified = true
+      } else {
+        await utils.sleep(4000)
+        process.stdout.write('.')
+      }
     }
   }
   if (!ready)

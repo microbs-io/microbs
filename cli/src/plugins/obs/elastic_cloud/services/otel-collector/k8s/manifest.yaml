@@ -43,7 +43,7 @@ spec:
       - name: otel-collector
         args:
         - --config=/conf/otel-collector.yaml
-        image: otel/opentelemetry-collector:0.45.0
+        image: microbs-otel-collector
         envFrom:
         - secretRef:
             name: microbs-secrets

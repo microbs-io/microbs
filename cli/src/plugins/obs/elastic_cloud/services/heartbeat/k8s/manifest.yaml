@@ -102,7 +102,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: heartbeat
-        image: docker.elastic.co/beats/heartbeat:8.0.0
+        image: microbs-heartbeat
         imagePullPolicy: IfNotPresent
         args: [ "-c", "/etc/heartbeat.yml", "-e" ]
         envFrom:

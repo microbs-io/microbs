@@ -7,8 +7,16 @@ build:
       components:
       - name: GIT_COMMIT
         gitCommit: {}
+
+
+####  Main  ####################################################################
+
 profiles:
 - name: main
+  build:
+    artifacts:
+    - image: microbs-grafana-agent
+      context: ./cli/src/plugins/obs/grafana_cloud/services/grafana-agent
   deploy:
     kubectl:
       manifests:

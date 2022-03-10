@@ -32,7 +32,7 @@ module.exports = async (opts) => {
   // Recreate microbs-secrets
   console.log('')
   console.log('Recreating microbs-secrets on Kubernetes...')
-  //console.debug('Removing old microbs-secrets from Kubernetes...')
+  console.debug('...removing old microbs-secrets from Kubernetes...')
   utils.exec(`kubectl delete secret microbs-secrets --namespace=${quote([ opts.namespace ])}`, true)
 
   // Merge config.yaml into .state
@@ -40,26 +40,23 @@ module.exports = async (opts) => {
   state.save()
 
   // Turn .state into .env for microbs-secrets
-  //console.debug('')
-  //console.debug(`Staging new microbs-secrets at ${process.cwd()}/.env`)
+  console.debug(`...staging new microbs-secrets at ${process.cwd()}/.env`)
   const envFilepath = `${process.cwd()}/.env`
   utils.createEnvFile(state.get(), envFilepath)
 
   //console.debug('')
-  //console.debug('Deploying new microbs-secrets to Kubernetes...')
+  console.debug('...deploying new microbs-secrets to Kubernetes...')
   utils.exec(`kubectl create secret generic microbs-secrets --from-env-file='${quote([ envFilepath ])}' --namespace=${quote([ opts.namespace ])}`, true)
   console.log('...done.')
 
   console.log('')
   console.log(`Rolling out the '${opts.profile}' profile with skaffold...`)
   console.log('')
-  // TODO: Use this for GKE:
-  //utils.command(`skaffold run --default-repo=gcr.io/${config.get('plugins.k8s.gke.project_name')} -l skaffold.dev/run-id=microbs-${config.get('deployment.name')} -p main`)
-  var command = `skaffold ${quote([ opts.action ])} -p ${quote([ opts.profile ])} -f "${quote([ opts.skaffoldFilepath ])}"`
+  var command = `skaffold ${quote([ opts.action ])} -p "${quote([ opts.profile ])}" -f "${quote([ opts.skaffoldFilepath ])}"`
   if (opts.action == 'run')
-    command = `${command} -l skaffold.dev/run-id=microbs-${quote([ config.get('deployment.name') ])}`
-  if (opts.defaultRepo)
-    command = `${command} --default-repo=${quote([ opts.defaultRepo ])}`
+    command = `${command} -l "skaffold.dev/run-id=microbs-${quote([ config.get('deployment.name') ])}"`
+  if (config.get('docker.registry'))
+    command = `${command} --default-repo="${quote([ config.get('docker.registry') ])}"`
   utils.exec(command)
 
   console.log('')

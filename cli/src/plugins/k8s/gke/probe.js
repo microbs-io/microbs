@@ -5,12 +5,13 @@ const process = require('process')
 const quote = require('shell-quote').quote
 
 // Main packages
-const probe = require('../../../utils.js')
+const config = require('../../../config.js')
+const utils = require('../../../utils.js')
 
 // Regular expressions
 const RE_STATUS = new RegExp(/^status: (.*)/g, 'm')
 
-module.exports.status = async (config) => {
+module.exports.status = async () => {
   if (!config.get('deployment.name') || !config.get('plugins.k8s.gke.project_name') || !config.get('plugins.k8s.gke.region_name'))
     return null
   const projectName = config.get('plugins.k8s.gke.project_name')

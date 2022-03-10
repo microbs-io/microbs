@@ -132,7 +132,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: filebeat
-        image: docker.elastic.co/beats/filebeat:8.0.0
+        image: microbs-filebeat
         imagePullPolicy: IfNotPresent
         args: [ "-c", "/etc/filebeat.yml", "-e" ]
         envFrom:

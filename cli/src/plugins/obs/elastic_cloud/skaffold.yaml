@@ -7,8 +7,22 @@ build:
       components:
       - name: GIT_COMMIT
         gitCommit: {}
+
+
+####  Main  ####################################################################
+
 profiles:
 - name: main
+  build:
+    artifacts:
+    - image: microbs-filebeat
+      context: ./cli/src/plugins/obs/elastic_cloud/services/filebeat
+    - image: microbs-heartbeat
+      context: ./cli/src/plugins/obs/elastic_cloud/services/heartbeat
+    - image: microbs-metricbeat
+      context: ./cli/src/plugins/obs/elastic_cloud/services/metricbeat
+    - image: microbs-otel-collector
+      context: ./cli/src/plugins/obs/elastic_cloud/services/otel-collector
   deploy:
     kubectl:
       manifests:

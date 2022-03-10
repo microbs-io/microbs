@@ -259,7 +259,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: grafana-agent
-        image: grafana/agent:v0.22.0
+        image: microbs-grafana-agent
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
