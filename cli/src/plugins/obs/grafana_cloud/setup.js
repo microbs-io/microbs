@@ -21,8 +21,8 @@ const rollout = require('./rollout.js')
 const validate = () => {
   const requiredFields = [
     'deployment.name',
-    'plugins.obs.grafana_cloud.api_key',
-    'plugins.obs.grafana_cloud.org_slug',
+    'plugins.grafana_cloud.api_key',
+    'plugins.grafana_cloud.org_slug',
   ]
   if (!utils.configHas(requiredFields)) {
     console.error()
@@ -38,14 +38,14 @@ module.exports = async () => {
 
   // Check if 'deployment.name' exists on Grafana Cloud
   var stackExists = false
-  if (state.get('plugins.obs.grafana_cloud.stack_id')) {
+  if (state.get('plugins.grafana_cloud.stack_id')) {
     console.log('')
-    console.log(`Stack ID exists in .state file: ${state.get('plugins.obs.grafana_cloud.stack_id')}`)
+    console.log(`Stack ID exists in .state file: ${state.get('plugins.grafana_cloud.stack_id')}`)
     console.log('')
     console.log('Checking if the stack exists on Grafana Cloud...')
     stackExists = await probe.statusGrafanaCloud()
     if (stackExists)
-      console.log(`...stack exists on Grafana Cloud: 'microbs-${config.get('deployment.name')}' [stack_id=${state.get('plugins.obs.grafana_cloud.stack_id')}, stack_slug=${state.get('plugins.obs.grafana_cloud.stack_slug')}]`)
+      console.log(`...stack exists on Grafana Cloud: 'microbs-${config.get('deployment.name')}' [stack_id=${state.get('plugins.grafana_cloud.stack_id')}, stack_slug=${state.get('plugins.grafana_cloud.stack_slug')}]`)
     else
       console.log('...stack does not exist on Grafana Cloud. A new one will be created, and the .state file will be updated.')
   }
@@ -57,8 +57,8 @@ module.exports = async () => {
     const data = {}
     data.name = `microbs-${config.get('deployment.name')}`
     data.slug = data.name.replace(/[^A-Za-z0-9]/g, '').toLowerCase()
-    if (config.get('plugins.obs.grafana_cloud.region'))
-      data.region = config.get('plugins.obs.grafana_cloud.region')
+    if (config.get('plugins.grafana_cloud.region'))
+      data.region = config.get('plugins.grafana_cloud.region')
     var response
     try {
       response = await axios.request({
@@ -85,30 +85,30 @@ module.exports = async () => {
     }
 
     // Get deployment info and update .state file
-    state.set('plugins.obs.grafana_cloud.stack_id', response.data.id)
-    state.set('plugins.obs.grafana_cloud.stack_slug', response.data.slug)
-    state.set('plugins.obs.grafana_cloud.grafana.url', response.data.url)
-    state.set('plugins.obs.grafana_cloud.loki.endpoint', `${response.data.hlInstanceUrl}/api/prom/push`)
-    state.set('plugins.obs.grafana_cloud.loki.url', response.data.hlInstanceUrl)
-    state.set('plugins.obs.grafana_cloud.loki.username', response.data.hlInstanceId)
-    state.set('plugins.obs.grafana_cloud.prometheus.endpoint', `${response.data.hmInstancePromUrl}/api/prom/push`)
-    state.set('plugins.obs.grafana_cloud.prometheus.url', response.data.hmInstancePromUrl)
-    state.set('plugins.obs.grafana_cloud.prometheus.username', response.data.hmInstancePromId)
-    state.set('plugins.obs.grafana_cloud.tempo.endpoint', `${(new URL(response.data.htInstanceUrl)).hostname}:443`)
-    state.set('plugins.obs.grafana_cloud.tempo.url', response.data.htInstanceUrl)
-    state.set('plugins.obs.grafana_cloud.tempo.username', response.data.htInstanceId)
+    state.set('plugins.grafana_cloud.stack_id', response.data.id)
+    state.set('plugins.grafana_cloud.stack_slug', response.data.slug)
+    state.set('plugins.grafana_cloud.grafana.url', response.data.url)
+    state.set('plugins.grafana_cloud.loki.endpoint', `${response.data.hlInstanceUrl}/api/prom/push`)
+    state.set('plugins.grafana_cloud.loki.url', response.data.hlInstanceUrl)
+    state.set('plugins.grafana_cloud.loki.username', response.data.hlInstanceId)
+    state.set('plugins.grafana_cloud.prometheus.endpoint', `${response.data.hmInstancePromUrl}/api/prom/push`)
+    state.set('plugins.grafana_cloud.prometheus.url', response.data.hmInstancePromUrl)
+    state.set('plugins.grafana_cloud.prometheus.username', response.data.hmInstancePromId)
+    state.set('plugins.grafana_cloud.tempo.endpoint', `${(new URL(response.data.htInstanceUrl)).hostname}:443`)
+    state.set('plugins.grafana_cloud.tempo.url', response.data.htInstanceUrl)
+    state.set('plugins.grafana_cloud.tempo.username', response.data.htInstanceId)
     state.save()
 
     console.log('')
     console.log('The Grafana Cloud deployment is ready.')
     console.log('')
-    console.log(`Grafana URL:       ${state.get('plugins.obs.grafana_cloud.grafana.url')}`)
-    console.log(`Loki URL:          ${state.get('plugins.obs.grafana_cloud.loki.url')}`)
-    console.log(`  - Username:      ${state.get('plugins.obs.grafana_cloud.loki.username')}`)
-    console.log(`Prometheus URL:    ${state.get('plugins.obs.grafana_cloud.prometheus.url')}`)
-    console.log(`  - Username:      ${state.get('plugins.obs.grafana_cloud.prometheus.username')}`)
-    console.log(`Tempo URL:         ${state.get('plugins.obs.grafana_cloud.tempo.url')}`)
-    console.log(`  - Username:      ${state.get('plugins.obs.grafana_cloud.tempo.username')}`)
+    console.log(`Grafana URL:       ${state.get('plugins.grafana_cloud.grafana.url')}`)
+    console.log(`Loki URL:          ${state.get('plugins.grafana_cloud.loki.url')}`)
+    console.log(`  - Username:      ${state.get('plugins.grafana_cloud.loki.username')}`)
+    console.log(`Prometheus URL:    ${state.get('plugins.grafana_cloud.prometheus.url')}`)
+    console.log(`  - Username:      ${state.get('plugins.grafana_cloud.prometheus.username')}`)
+    console.log(`Tempo URL:         ${state.get('plugins.grafana_cloud.tempo.url')}`)
+    console.log(`  - Username:      ${state.get('plugins.grafana_cloud.tempo.username')}`)
   }
 
   // Deploy the grafana-agent service to Kubernetes

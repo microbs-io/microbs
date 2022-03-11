@@ -12,10 +12,10 @@ const utils = require('../../../utils.js')
 const RE_STATUS = new RegExp(/^status: (.*)/g, 'm')
 
 module.exports.status = async () => {
-  if (!config.get('deployment.name') || !config.get('plugins.k8s.gke.project_name') || !config.get('plugins.k8s.gke.region_name'))
+  if (!config.get('deployment.name') || !config.get('plugins.gke.project_name') || !config.get('plugins.gke.region_name'))
     return null
-  const projectName = config.get('plugins.k8s.gke.project_name')
-  const regionName = config.get('plugins.k8s.gke.region_name')
+  const projectName = config.get('plugins.gke.project_name')
+  const regionName = config.get('plugins.gke.region_name')
   const deploymentName = config.get('deployment.name')
   const command = `gcloud beta container clusters describe "projects/${quote([ projectName ])}/zones/${quote([ regionName ])}/clusters/microbs-${quote([ deploymentName ])}"`
   const result = utils.exec(command, true)

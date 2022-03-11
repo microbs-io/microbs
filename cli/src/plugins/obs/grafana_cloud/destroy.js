@@ -18,7 +18,7 @@ const rollout = require('./rollout.js')
  */
 const validate = () => {
   const requiredFields = [
-    'plugins.obs.grafana_cloud.api_key',
+    'plugins.grafana_cloud.api_key',
   ]
   if (!utils.configHas(requiredFields)) {
     console.error()
@@ -36,15 +36,15 @@ module.exports = async () => {
   await rollout({ action: 'delete' })
 
   // Destroy the Grafana Cloud stack
-  if (!state.get('plugins.obs.grafana_cloud.stack_slug'))
-    return console.warn('There is no plugins.obs.grafana_cloud.stack_slug to remove.')
+  if (!state.get('plugins.grafana_cloud.stack_slug'))
+    return console.warn('There is no plugins.grafana_cloud.stack_slug to remove.')
   console.log('')
-  console.log(`Removing Grafana Cloud deployment: 'microbs-${config.get('deployment.name')}' [stack_id=${state.get('plugins.obs.grafana_cloud.stack_id')}, stack_slug=${state.get('plugins.obs.grafana_cloud.stack_slug')}]`)
+  console.log(`Removing Grafana Cloud deployment: 'microbs-${config.get('deployment.name')}' [stack_id=${state.get('plugins.grafana_cloud.stack_id')}, stack_slug=${state.get('plugins.grafana_cloud.stack_slug')}]`)
   var response
   try {
     response = await axios.request({
       method: 'delete',
-      url: `https://grafana.com/api/instances/${state.get('plugins.obs.grafana_cloud.stack_slug')}`,
+      url: `https://grafana.com/api/instances/${state.get('plugins.grafana_cloud.stack_slug')}`,
       headers: constants.grafanaCloudApiHeaders(),
       timeout: 60000,
       validateStatus: () => true
@@ -53,8 +53,8 @@ module.exports = async () => {
     console.error(err.message)
   }
   if (response.status == 200) {
-    state.set('plugins.obs.grafana_cloud.stack_id', `${state.get('plugins.obs.grafana_cloud.stack_id')}-destroyed`)
-    state.set('plugins.obs.grafana_cloud.stack_slug', `${state.get('plugins.obs.grafana_cloud.stack_slug')}-destroyed`)
+    state.set('plugins.grafana_cloud.stack_id', `${state.get('plugins.grafana_cloud.stack_id')}-destroyed`)
+    state.set('plugins.grafana_cloud.stack_slug', `${state.get('plugins.grafana_cloud.stack_slug')}-destroyed`)
     state.save()
     console.log('...acknowledged. Grafana Cloud stack is destroyed.')
   } else if (response.status == 404) {

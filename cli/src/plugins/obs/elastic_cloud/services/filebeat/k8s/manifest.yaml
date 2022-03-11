@@ -77,14 +77,14 @@ data:
           add_error_key: true
           max_depth: 10
     output.elasticsearch:
-      hosts: ['${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_URL}']
-      username: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
-      password: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
+      hosts: ['${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_URL}']
+      username: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
+      password: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
       worker: 2
     setup.kibana:
-      host: "${PLUGINS_OBS_ELASTIC_CLOUD_KIBANA_URL}"
-      username: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
-      password: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
+      host: "${PLUGINS_ELASTIC_CLOUD_KIBANA_URL}"
+      username: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
+      password: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
   ilm_policy.json: |-
     {
       "policy": {

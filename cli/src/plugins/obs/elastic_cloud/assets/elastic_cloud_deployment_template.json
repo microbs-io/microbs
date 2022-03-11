@@ -6,7 +6,7 @@
   "resources": {
     "elasticsearch": [
       {
-        "region": "${plugins.obs.elastic_cloud.region}",
+        "region": "${plugins.elastic_cloud.region}",
         "settings": {
           "dedicated_masters_threshold": 6
         },
@@ -142,7 +142,7 @@
             }
           ],
           "elasticsearch": {
-            "version": "${plugins.obs.elastic_cloud.version}"
+            "version": "${plugins.elastic_cloud.version}"
           },
           "deployment_template": {
             "id": "gcp-storage-optimized"
@@ -154,7 +154,7 @@
     "kibana": [
       {
         "elasticsearch_cluster_ref_id": "main-elasticsearch",
-        "region": "${plugins.obs.elastic_cloud.region}",
+        "region": "${plugins.elastic_cloud.region}",
         "plan": {
           "cluster_topology": [
             {
@@ -167,7 +167,7 @@
             }
           ],
           "kibana": {
-            "version": "${plugins.obs.elastic_cloud.version}",
+            "version": "${plugins.elastic_cloud.version}",
             "user_settings_yaml": "server.defaultRoute: /app/observability"
           }
         },
@@ -177,7 +177,7 @@
     "integrations_server": [
       {
         "elasticsearch_cluster_ref_id": "main-elasticsearch",
-        "region": "${plugins.obs.elastic_cloud.region}",
+        "region": "${plugins.elastic_cloud.region}",
         "plan": {
           "cluster_topology": [
             {
@@ -190,7 +190,7 @@
             }
           ],
           "integrations_server": {
-            "version": "${plugins.obs.elastic_cloud.version}"
+            "version": "${plugins.elastic_cloud.version}"
           }
         },
         "ref_id": "main-integrations_server"

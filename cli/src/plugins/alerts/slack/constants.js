@@ -22,6 +22,6 @@ module.exports.pluginHome = () => {
  */
 module.exports.slackApiHeaders = (slackApiKey) => {
   return {
-    "Authorization": `Bearer ${slackApiKey || config.get('plugins.alerts.slack.bot_user_oauth_access_token')}`
+    "Authorization": `Bearer ${slackApiKey || config.get('plugins.slack.bot_user_oauth_access_token')}`
   }
 }

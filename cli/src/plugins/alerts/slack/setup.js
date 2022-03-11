@@ -25,7 +25,7 @@ const probe = require('./probe.js')
 const validate = () => {
   const requiredFields = [
     'deployment.name',
-    'plugins.alerts.slack.bot_user_oauth_access_token',
+    'plugins.slack.bot_user_oauth_access_token',
   ]
   if (!utils.configHas(requiredFields)) {
     console.error()
@@ -41,14 +41,14 @@ module.exports = async () => {
 
   // Check if 'deployment.name' channel exists on Slack
   var channelExists = false
-  if (state.get('plugins.alerts.slack.channel_id')) {
+  if (state.get('plugins.slack.channel_id')) {
     console.log('')
-    console.log(`Channel ID exists in .state file: ${state.get('plugins.alerts.slack.channel_id')}`)
+    console.log(`Channel ID exists in .state file: ${state.get('plugins.slack.channel_id')}`)
     console.log('')
     console.log('Checking if the channel exists on Slack...')
-    channelExists = await probe.statusSlackChannel(state.get('plugins.alerts.slack.channel'))
+    channelExists = await probe.statusSlackChannel(state.get('plugins.slack.channel'))
     if (channelExists)
-      console.log(`...channel exists on Slack: 'microbs-${state.get('plugins.alerts.slack.channel')}' [id=${state.get('plugins.alerts.slack.channel_id')}]`)
+      console.log(`...channel exists on Slack: 'microbs-${state.get('plugins.slack.channel')}' [id=${state.get('plugins.slack.channel_id')}]`)
     else
       console.log('...channel does not exist on Slack. A new one will be created, and the .state file will be updated.')
   }
@@ -86,13 +86,13 @@ module.exports = async () => {
     }
 
     // Get channel info and update .state file
-    state.set('plugins.alerts.slack.channel', response.data.channel.name)
-    state.set('plugins.alerts.slack.channel_id', response.data.channel.id)
+    state.set('plugins.slack.channel', response.data.channel.name)
+    state.set('plugins.slack.channel_id', response.data.channel.id)
     state.save()
   }
 
   console.log('')
   console.log('Slack is ready.')
   console.log('')
-  console.log(`Channel:       ${state.get('plugins.alerts.slack.channel')}`)
+  console.log(`Channel:       ${state.get('plugins.slack.channel')}`)
 }

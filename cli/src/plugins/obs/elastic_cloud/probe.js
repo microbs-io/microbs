@@ -23,7 +23,7 @@ module.exports.statusElasticCloud = async () => {
   try {
     let response = await axios.request({
       method: 'get',
-      url: `https://api.elastic-cloud.com/api/v1/deployments/${state.get('plugins.obs.elastic_cloud.deployment_id')}`,
+      url: `https://api.elastic-cloud.com/api/v1/deployments/${state.get('plugins.elastic_cloud.deployment_id')}`,
       headers: constants.elasticCloudApiHeaders(),
       timeout: 60000,
       validateStatus: () => true

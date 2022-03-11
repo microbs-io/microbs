@@ -18,7 +18,7 @@ const rollout = require('./rollout.js')
  */
 const validate = () => {
   const requiredFields = [
-    'plugins.obs.elastic_cloud.api_key',
+    'plugins.elastic_cloud.api_key',
   ]
   if (!utils.configHas(requiredFields)) {
     console.error()
@@ -36,15 +36,15 @@ module.exports = async () => {
   await rollout({ action: 'delete' })
 
   // Destroy the Elastic Cloud deployment
-  if (!state.get('plugins.obs.elastic_cloud.deployment_id'))
-    return console.warn('There is no plugins.obs.elastic_cloud.deployment_id to remove.')
+  if (!state.get('plugins.elastic_cloud.deployment_id'))
+    return console.warn('There is no plugins.elastic_cloud.deployment_id to remove.')
   console.log('')
-  console.log(`Removing Elastic Cloud deployment: 'microbs-${config.get('deployment.name')}' [deployment_id=${state.get('plugins.obs.elastic_cloud.deployment_id')}]`)
+  console.log(`Removing Elastic Cloud deployment: 'microbs-${config.get('deployment.name')}' [deployment_id=${state.get('plugins.elastic_cloud.deployment_id')}]`)
   var response
   try {
     response = await axios.request({
       method: 'post',
-      url: `https://api.elastic-cloud.com/api/v1/deployments/${state.get('plugins.obs.elastic_cloud.deployment_id')}/_shutdown`,
+      url: `https://api.elastic-cloud.com/api/v1/deployments/${state.get('plugins.elastic_cloud.deployment_id')}/_shutdown`,
       headers: constants.elasticCloudApiHeaders(),
       timeout: 60000,
       validateStatus: () => true
@@ -53,7 +53,7 @@ module.exports = async () => {
     console.error(err.message)
   }
   if (response.data.orphaned) {
-    state.set('plugins.obs.elastic_cloud.deployment_id', `${state.get('plugins.obs.elastic_cloud.deployment_id')}-destroyed`)
+    state.set('plugins.elastic_cloud.deployment_id', `${state.get('plugins.elastic_cloud.deployment_id')}-destroyed`)
     state.save()
     console.log('...acknowledged. Elastic Cloud deployment will be destroyed in ~5 minutes.')
   } else if (response.status == 404) {

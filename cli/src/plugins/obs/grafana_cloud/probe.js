@@ -23,7 +23,7 @@ module.exports.statusGrafanaCloud = async () => {
   try {
     let response = await axios.request({
       method: 'get',
-      url: `https://grafana.com/api/instances/${state.get('plugins.obs.grafana_cloud.stack_slug')}`,
+      url: `https://grafana.com/api/instances/${state.get('plugins.grafana_cloud.stack_slug')}`,
       headers: constants.grafanaCloudApiHeaders(),
       timeout: 60000,
       validateStatus: () => true

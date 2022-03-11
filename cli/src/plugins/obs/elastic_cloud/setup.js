@@ -23,9 +23,9 @@ const rollout = require('./rollout.js')
 const validate = () => {
   const requiredFields = [
     'deployment.name',
-    'plugins.obs.elastic_cloud.api_key',
-    'plugins.obs.elastic_cloud.region',
-    'plugins.obs.elastic_cloud.version',
+    'plugins.elastic_cloud.api_key',
+    'plugins.elastic_cloud.region',
+    'plugins.elastic_cloud.version',
   ]
   if (!utils.configHas(requiredFields)) {
     console.error()
@@ -41,14 +41,14 @@ module.exports = async () => {
 
   // Check if 'deployment.name' exists on Elastic Cloud
   var deploymentExists = false
-  if (state.get('plugins.obs.elastic_cloud.deployment_id')) {
+  if (state.get('plugins.elastic_cloud.deployment_id')) {
     console.log('')
-    console.log(`Deployment ID exists in .state file: ${state.get('plugins.obs.elastic_cloud.deployment_id')}`)
+    console.log(`Deployment ID exists in .state file: ${state.get('plugins.elastic_cloud.deployment_id')}`)
     console.log('')
     console.log('Checking if the deployment exists on Elastic Cloud...')
     deploymentExists = await probe.statusElasticCloud()
     if (deploymentExists)
-      console.log(`...deployment exists on Elastic Cloud: 'microbs-${config.get('deployment.name')}' [deployment_id=${state.get('plugins.obs.elastic_cloud.deployment_id')}]`)
+      console.log(`...deployment exists on Elastic Cloud: 'microbs-${config.get('deployment.name')}' [deployment_id=${state.get('plugins.elastic_cloud.deployment_id')}]`)
     else
       console.log('...deployment does not exist on Elastic Cloud. A new one will be created, and the .state file will be updated.')
   }
@@ -87,19 +87,19 @@ module.exports = async () => {
     // Get deployment_id and update .state file before anything else,
     // to ensure that the deployment isn't duplicated in the event of multiple
     // failed or abandoned attempts.
-    state.set('plugins.obs.elastic_cloud.deployment_id', response.data.id)
+    state.set('plugins.elastic_cloud.deployment_id', response.data.id)
     state.save()
 
     // Get deployment info and update .state file
     for (var i in response.data.resources) {
       let resource = response.data.resources[i]
       if (resource.kind == 'elasticsearch') {
-        state.set('plugins.obs.elastic_cloud.cloud_id',  _.get(resource, 'cloud_id'))
-        state.set('plugins.obs.elastic_cloud.elasticsearch.username', _.get(resource, 'credentials.username'))
-        state.set('plugins.obs.elastic_cloud.elasticsearch.password', _.get(resource, 'credentials.password'))
+        state.set('plugins.elastic_cloud.cloud_id',  _.get(resource, 'cloud_id'))
+        state.set('plugins.elastic_cloud.elasticsearch.username', _.get(resource, 'credentials.username'))
+        state.set('plugins.elastic_cloud.elasticsearch.password', _.get(resource, 'credentials.password'))
       }
       if (resource.kind == 'integrations_server') {
-        state.set('plugins.obs.elastic_cloud.integrations_server.secret_token', _.get(resource, 'secret_token'))
+        state.set('plugins.elastic_cloud.integrations_server.secret_token', _.get(resource, 'secret_token'))
       }
     }
     state.save()
@@ -115,7 +115,7 @@ module.exports = async () => {
         try {
           var response = await axios.request({
             method: 'get',
-            url: `https://api.elastic-cloud.com/api/v1/deployments/${state.get('plugins.obs.elastic_cloud.deployment_id')}/${component}/main-${component}`,
+            url: `https://api.elastic-cloud.com/api/v1/deployments/${state.get('plugins.elastic_cloud.deployment_id')}/${component}/main-${component}`,
             headers: constants.elasticCloudApiHeaders(),
             timeout: 60000,
             validateStatus: () => true
@@ -123,12 +123,12 @@ module.exports = async () => {
           var url = _.get(response.data, 'info.metadata.service_url')
           if (url) {
             if (component == 'elasticsearch') {
-              state.set('plugins.obs.elastic_cloud.elasticsearch.url', url)
+              state.set('plugins.elastic_cloud.elasticsearch.url', url)
             } else if (component == 'kibana') {
-              state.set('plugins.obs.elastic_cloud.kibana.url', url)
+              state.set('plugins.elastic_cloud.kibana.url', url)
             } else if (component == 'integrations_server') {
-              state.set('plugins.obs.elastic_cloud.integrations_server.url', url)
-              state.set('plugins.obs.elastic_cloud.integrations_server.exporter_endpoint', `${(new URL(url)).hostname}:443`)
+              state.set('plugins.elastic_cloud.integrations_server.url', url)
+              state.set('plugins.elastic_cloud.integrations_server.exporter_endpoint', `${(new URL(url)).hostname}:443`)
             }
             process.stdout.write('\n')
             console.log(`...found: ${url}`)
@@ -147,11 +147,11 @@ module.exports = async () => {
     console.log('')
     console.log('The Elastic Cloud deployment will be ready in ~5 minutes.')
     console.log('')
-    console.log(`Kibana URL:              ${state.get('plugins.obs.elastic_cloud.kibana.url')}`)
-    console.log(`Elasticsearch URL:       ${state.get('plugins.obs.elastic_cloud.elasticsearch.url')}`)
-    console.log(`  - Username:            ${state.get('plugins.obs.elastic_cloud.elasticsearch.username')}`)
-    console.log(`  - Password:            ${state.get('plugins.obs.elastic_cloud.elasticsearch.password')}`)
-    console.log(`Integration Server URL:  ${state.get('plugins.obs.elastic_cloud.integrations_server.url')}`)
+    console.log(`Kibana URL:              ${state.get('plugins.elastic_cloud.kibana.url')}`)
+    console.log(`Elasticsearch URL:       ${state.get('plugins.elastic_cloud.elasticsearch.url')}`)
+    console.log(`  - Username:            ${state.get('plugins.elastic_cloud.elasticsearch.username')}`)
+    console.log(`  - Password:            ${state.get('plugins.elastic_cloud.elasticsearch.password')}`)
+    console.log(`Integration Server URL:  ${state.get('plugins.elastic_cloud.integrations_server.url')}`)
   }
 
   // Deploy the Beats services to Kubernetes

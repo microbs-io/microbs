@@ -17,11 +17,11 @@ const probe = require('./probe.js')
 const validate = () => {
   const requiredFields = [
     'deployment.name',
-    'plugins.k8s.gke.project_name',
-    'plugins.k8s.gke.region_name',
-    'plugins.k8s.gke.network_name',
-    'plugins.k8s.gke.subnetwork_name',
-    'plugins.k8s.gke.service_account_name',
+    'plugins.gke.project_name',
+    'plugins.gke.region_name',
+    'plugins.gke.network_name',
+    'plugins.gke.subnetwork_name',
+    'plugins.gke.service_account_name',
   ]
   if (!utils.configHas(requiredFields)) {
     console.error()
@@ -38,11 +38,11 @@ module.exports = async () => {
   console.log('')
   console.log('Creating GKE cluster...')
   const deploymentName = config.get('deployment.name')
-  const projectName = config.get('plugins.k8s.gke.project_name')
-  const regionName = config.get('plugins.k8s.gke.region_name')
-  const networkName = config.get('plugins.k8s.gke.network_name')
-  const subnetworkName = config.get('plugins.k8s.gke.subnetwork_name')
-  const serviceAccountName = config.get('plugins.k8s.gke.service_account_name')
+  const projectName = config.get('plugins.gke.project_name')
+  const regionName = config.get('plugins.gke.region_name')
+  const networkName = config.get('plugins.gke.network_name')
+  const subnetworkName = config.get('plugins.gke.subnetwork_name')
+  const serviceAccountName = config.get('plugins.gke.service_account_name')
   const command = `
   gcloud beta container clusters create 'microbs-${quote([ deploymentName ])}' \
       --project "${quote([ projectName ])}" \

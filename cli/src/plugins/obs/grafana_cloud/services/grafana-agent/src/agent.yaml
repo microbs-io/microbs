@@ -11,10 +11,10 @@ metrics:
   configs:
   - name: integrations
     remote_write:
-    - url: ${PLUGINS_OBS_GRAFANA_CLOUD_PROMETHEUS_ENDPOINT}
+    - url: ${PLUGINS_GRAFANA_CLOUD_PROMETHEUS_ENDPOINT}
       basic_auth:
-        username: ${PLUGINS_OBS_GRAFANA_CLOUD_PROMETHEUS_USERNAME}
-        password: ${PLUGINS_OBS_GRAFANA_CLOUD_API_KEY}
+        username: ${PLUGINS_GRAFANA_CLOUD_PROMETHEUS_USERNAME}
+        password: ${PLUGINS_GRAFANA_CLOUD_API_KEY}
     scrape_configs:
     - bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
       job_name: integrations/kubernetes/cadvisor
@@ -80,10 +80,10 @@ traces:
           grpc:
           http:
     remote_write:
-    - endpoint: ${PLUGINS_OBS_GRAFANA_CLOUD_TEMPO_ENDPOINT}
+    - endpoint: ${PLUGINS_GRAFANA_CLOUD_TEMPO_ENDPOINT}
       basic_auth:
-        username: ${PLUGINS_OBS_GRAFANA_CLOUD_TEMPO_USERNAME}
-        password: ${PLUGINS_OBS_GRAFANA_CLOUD_API_KEY}
+        username: ${PLUGINS_GRAFANA_CLOUD_TEMPO_USERNAME}
+        password: ${PLUGINS_GRAFANA_CLOUD_API_KEY}
     spanmetrics:
       metrics_instance: integrations
     service_graphs:
@@ -96,10 +96,10 @@ logs:
   configs:
   - name: integrations
     clients:
-    - url: ${PLUGINS_OBS_GRAFANA_CLOUD_LOKI_ENDPOINT}
+    - url: ${PLUGINS_GRAFANA_CLOUD_LOKI_ENDPOINT}
       basic_auth:
-        username: ${PLUGINS_OBS_GRAFANA_CLOUD_LOKI_USERNAME}
-        password: ${PLUGINS_OBS_GRAFANA_CLOUD_API_KEY}
+        username: ${PLUGINS_GRAFANA_CLOUD_LOKI_USERNAME}
+        password: ${PLUGINS_GRAFANA_CLOUD_API_KEY}
       external_labels:
         cluster: microbs
     positions:
@@ -224,7 +224,7 @@ logs:
 
 integrations:
   prometheus_remote_write:
-  - url: ${PLUGINS_OBS_GRAFANA_CLOUD_PROMETHEUS_ENDPOINT}
+  - url: ${PLUGINS_GRAFANA_CLOUD_PROMETHEUS_ENDPOINT}
     basic_auth:
-      username: ${PLUGINS_OBS_GRAFANA_CLOUD_PROMETHEUS_USERNAME}
-      password: ${PLUGINS_OBS_GRAFANA_CLOUD_API_KEY}
+      username: ${PLUGINS_GRAFANA_CLOUD_PROMETHEUS_USERNAME}
+      password: ${PLUGINS_GRAFANA_CLOUD_API_KEY}

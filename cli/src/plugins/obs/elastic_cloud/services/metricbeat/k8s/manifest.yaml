@@ -44,13 +44,13 @@ data:
             - 'kubernetes.pod._module.labels.app'
             - 'kubernetes.container._module.labels.app'
     output.elasticsearch:
-      hosts: ['${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_URL}']
-      username: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
-      password: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
+      hosts: ['${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_URL}']
+      username: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
+      password: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
     setup.kibana:
-      host: "${PLUGINS_OBS_ELASTIC_CLOUD_KIBANA_URL}"
-      username: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
-      password: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
+      host: "${PLUGINS_ELASTIC_CLOUD_KIBANA_URL}"
+      username: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
+      password: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
   ilm_policy.json: |-
     {
       "policy": {
@@ -180,13 +180,13 @@ data:
             - 'kubernetes.pod._module.labels.app'
             - 'kubernetes.container._module.labels.app'
     output.elasticsearch:
-      hosts: ['${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_URL}']
-      username: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
-      password: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
+      hosts: ['${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_URL}']
+      username: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
+      password: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
     setup.kibana:
-      host: "${KIBANA_PLUGINS_OBS_ELASTIC_CLOUD_KIBANA_URL}"
-      username: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
-      password: ${PLUGINS_OBS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
+      host: "${KIBANA_PLUGINS_ELASTIC_CLOUD_KIBANA_URL}"
+      username: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_USERNAME}
+      password: ${PLUGINS_ELASTIC_CLOUD_ELASTICSEARCH_PASSWORD}
   ilm_policy.json: |-
     {
       "policy": {

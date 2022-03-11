@@ -63,12 +63,12 @@ otlp:
 
 ####  slack plugin config
 
-plugins.alerts.slack:
+plugins.slack:
   bot_user_oauth_access_token:
 
 ####  gke plugin config
 
-plugins.k8s.gke:
+plugins.gke:
   project_name:
   region_name: us-central1
   network_name:
@@ -78,18 +78,18 @@ plugins.k8s.gke:
 
 ####  minikube plugin config
 
-plugins.k8s.minikube:
+plugins.minikube:
 
 ####  elastic_cloud plugin config
 
-plugins.obs.elastic_cloud:
+plugins.elastic_cloud:
   api_key:
   region: gcp-us-central1
   version: 8.0.0
 
 ####  grafana_cloud plugin config
 
-plugins.obs.grafana_cloud:
+plugins.grafana_cloud:
   api_key:
   org_slug:
   region: us

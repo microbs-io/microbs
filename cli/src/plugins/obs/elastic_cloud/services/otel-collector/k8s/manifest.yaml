@@ -15,9 +15,9 @@ data:
       logging:
         loglevel: info
       otlp/elastic:
-        endpoint: "${PLUGINS_OBS_ELASTIC_CLOUD_INTEGRATIONS_SERVER_EXPORTER_ENDPOINT}"
+        endpoint: "${PLUGINS_ELASTIC_CLOUD_INTEGRATIONS_SERVER_EXPORTER_ENDPOINT}"
         headers:
-          Authorization: "Bearer ${PLUGINS_OBS_ELASTIC_CLOUD_INTEGRATIONS_SERVER_SECRET_TOKEN}"
+          Authorization: "Bearer ${PLUGINS_ELASTIC_CLOUD_INTEGRATIONS_SERVER_SECRET_TOKEN}"
     service:
       pipelines:
         traces:

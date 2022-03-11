@@ -22,6 +22,6 @@ module.exports.pluginHome = () => {
  */
 module.exports.grafanaCloudApiHeaders = (grafanaCloudApiKey) => {
   return {
-    "Authorization": `Bearer ${grafanaCloudApiKey || config.get('plugins.obs.grafana_cloud.api_key')}`
+    "Authorization": `Bearer ${grafanaCloudApiKey || config.get('plugins.grafana_cloud.api_key')}`
   }
 }
