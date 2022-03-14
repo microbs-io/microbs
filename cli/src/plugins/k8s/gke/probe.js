@@ -11,22 +11,40 @@ const utils = require('../../../utils.js')
 // Regular expressions
 const RE_STATUS = new RegExp(/^status: (.*)/g, 'm')
 
-module.exports.status = async () => {
+const describe = async () => {
   if (!config.get('deployment.name') || !config.get('plugins.gke.project_name') || !config.get('plugins.gke.region_name'))
     return null
   const projectName = config.get('plugins.gke.project_name')
   const regionName = config.get('plugins.gke.region_name')
   const deploymentName = config.get('deployment.name')
-  const command = `gcloud beta container clusters describe "projects/${quote([ projectName ])}/zones/${quote([ regionName ])}/clusters/microbs-${quote([ deploymentName ])}"`
-  const result = utils.exec(command, true)
+  const command = `
+  gcloud container clusters describe "microbs-${quote([ deploymentName ])}" \
+      --project "${quote([ projectName ])}" \
+      --region "${quote([ regionName ])}"
+  `
+  return utils.exec(command, true)
+}
+
+module.exports.describe = describe
+
+module.exports.status = async () => {
+  const result = await describe()
   if (result.code > 0) {
     console.error('Error from GKE:')
     console.error('')
     console.error(result.stderr || result.stdout)
     process.exit(1)
   }
-  const status = result.stdout.match(RE_STATUS)
-  if (status)
-    return status[1] == 'RUNNING'
-  return false
+  if (result.stderr) {
+    // Return NOT_FOUND
+    if (result.stderr.includes('Not found:'))
+      return 'NOT_FOUND'
+  } else {
+    // Return RUNNING
+    const status = result.stdout.match(RE_STATUS)
+    if (status && status[1] == 'RUNNING')
+      return 'RUNNING'
+  }
+  // Return unexpected result
+  return result;
 }

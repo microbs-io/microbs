@@ -36,7 +36,13 @@ const validate = () => {
 module.exports = async () => {
   validate()
   console.log('')
-  console.log('Creating GKE cluster...')
+  console.log(`Creating GKE cluster 'microbs-${config.get('deployment.name')}'...`)
+
+  // Check if the GKE cluster exists
+  if (await probe.status() === 'RUNNING')
+    return console.log(`...skipping. GKE cluster already exists.`)
+
+  // Create GKE cluster
   const deploymentName = config.get('deployment.name')
   const projectName = config.get('plugins.gke.project_name')
   const regionName = config.get('plugins.gke.region_name')
@@ -44,7 +50,7 @@ module.exports = async () => {
   const subnetworkName = config.get('plugins.gke.subnetwork_name')
   const serviceAccountName = config.get('plugins.gke.service_account_name')
   const command = `
-  gcloud beta container clusters create 'microbs-${quote([ deploymentName ])}' \
+  gcloud container clusters create 'microbs-${quote([ deploymentName ])}' \
       --project "${quote([ projectName ])}" \
       --region "${quote([ regionName ])}" \
       --network "projects/${quote([ projectName ])}/global/networks/${quote([ networkName ])}" \
@@ -83,26 +89,9 @@ module.exports = async () => {
     process.exit(1)
 
   // Verify that the GKE cluster was created
-  if (!exists) {
+  if (await probe.status() === 'RUNNING') {
+    console.log('...acknowledged. GKE cluster created.')
     console.log('')
-    console.log('Waiting for GKE cluster to be available...')
-    process.stdout.write('...')
-    var verified = false
-    var ready = false
-    while (!verified) {
-      if (await probe.status()) {
-        process.stdout.write('ready.\n')
-        ready = true
-        verified = true
-      } else {
-        await utils.sleep(4000)
-        process.stdout.write('.')
-      }
-    }
-    if (!ready)
-      process.exit(1)
+    console.log('Finished setting up GKE.')
   }
-
-  console.log('')
-  console.log('Finished setting up GKE.')
 }
