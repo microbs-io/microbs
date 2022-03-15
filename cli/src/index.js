@@ -242,21 +242,27 @@ const runValidate = () => {
 module.exports.run = async () => {
   switch (config.get('_context.command')) {
     case 'setup':
+      config.load()
       return await runSetup()
     case 'rollout':
+      config.load()
       return await runRollout()
     case 'stabilize':
+      config.load()
       return await runStabilize()
     case 'destroy':
+      config.load()
       return await runDestroy()
     case 'apps':
+      config.load()
       return runApps()
     case 'plugins':
+      config.load()
       return runPlugins()
     case 'validate':
-      return runValidate()
+      return runValidate() // Don't load config until needed by validate.run()
     default:
-      return runHelp()
+      return runHelp()     // Don't load config
   }
 }
 

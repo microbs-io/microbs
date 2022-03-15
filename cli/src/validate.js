@@ -7,6 +7,7 @@ const hasbin = require('hasbin')
 const semver = require('semver')
 
 // Main packages
+const config = require('./config')
 const utils = require('./utils')
 
 /**
@@ -87,6 +88,99 @@ const validateSkaffoldVersion = () => {
 }
 
 /**
+ * Validate the existence of the given config file.
+ */
+const validateConfigExists = () => {
+  try {
+    config.read()
+    console.info(`... config file exists: ${config.get('_context.filepath')}`)
+  } catch (e) {
+    console.warn(e)
+  }
+}
+
+/**
+ * Validate the syntax of the config file.
+ */
+const validateConfigSyntax = () => {
+  try {
+    config.parse(config.read())
+    console.info('... config file can be parsed.')
+  } catch (e) {
+    if (e.name == 'YAMLException') {
+      console.error('... config file cannot be parsed:')
+      console.error('')
+      console.error(e.reason)
+      console.error('')
+      console.error(e.mark.snippet)
+      console.error('')
+    } else {
+      console.error(e)
+    }
+  }
+}
+
+/**
+ * Validate the fields and values of the given config file.
+ */
+const validateConfigValues = () => {
+  try {
+    config.load()
+  } catch (e) {
+    console.warn(e)
+  }
+  var hasErrors = false
+
+  // Validate required fields
+  const requiredAlways = [
+    'deployment.name',
+    'deployment.plugins.k8s',
+  ]
+  for (var i in requiredAlways) {
+    if (!config.get(requiredAlways[i])) {
+      hasErrors = true
+      console.error(`... '${requiredAlways[i]}' is required but missing from config.`)
+    }
+  }
+
+  // Validate normally required fields
+  const requiredNormally = [
+    'deployment.app',
+    'deployment.plugins.obs',
+    'otlp.receiver.host',
+    'otlp.receiver.port',
+  ]
+  for (var i in requiredNormally) {
+    if (!config.get(requiredNormally[i])) {
+      hasErrors = true
+      console.error(`... '${requiredNormally[i]}' is required but missing from config.`)
+    }
+  }
+
+  // Validate specific values
+  const pluginTypes = [ 'alerts', 'k8s', 'obs' ]
+  for (var i in pluginTypes) {
+    const pluginName = config.get(`deployment.plugins.${pluginTypes[i]}`)
+    if (pluginName) {
+      const pluginsInstalled = Object.keys(require('./plugins')[pluginTypes[i]])
+      if (!pluginsInstalled.includes(pluginName)) {
+        hasErrors = true
+        console.error(`... 'deployment.plugins.${pluginTypes[i]}' does not name an installed plugin: ${pluginName}`)
+      }
+    }
+  }
+  if (config.get('otlp.receiver.port')) {
+    if (!config.get('otlp.receiver.port').toString().match(/^[0-9]+$/)) {
+      hasErrors = true
+      console.error(`... 'otlp.receiver.port' expected an integer but found: ${config.get('otlp.receiver.port')}`)
+    }
+  }
+
+  if (!hasErrors)
+    console.info('... no problems detected in config file.')
+}
+
+/**
  * Validate software dependencies of microbs.
  */
 const validateDependencies = () => {
@@ -99,13 +193,19 @@ const validateDependencies = () => {
   validateSkaffoldVersion()
 }
 
+const validateConfig = () => {
+  console.log('')
+  console.log('Validating config...')
+  validateConfigExists()
+  validateConfigSyntax()
+  validateConfigValues()
+}
+
 /**
- *
+ * Validate microbs installation and configuration.
  */
 module.exports.run = () => {
   validateDependencies()
-  // TODO: Validate existence of config.yaml
-  // TODO: Validate syntax of config.yaml
-  // TODO: Validate fields and values of config.yaml
+  validateConfig()
   // TODO: Validate plugin configurations
 }

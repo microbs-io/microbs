@@ -17,9 +17,12 @@ const yaml = require('js-yaml')
 // Main packages
 const utils = require('./utils')
 
+// Global configuration object
+const config = {}
+
 // Default command context.
 // _context is made available to the CLI but is not saved to .state.
-const _context = {
+config._context = {
   homepath: path.join(process.cwd()),
   filepath: path.join(process.cwd(), 'config.yaml'),
   command: 'help',
@@ -28,7 +31,7 @@ const _context = {
 
 // Parse command-line arguments.
 const args = parseArgs(process.argv.slice(2))
-_context.command = args._.shift()
+config._context.command = args._.shift()
 for (var key in args) {
   if (!Array.isArray(args[key]))
     args[key] = [ args[key] ]
@@ -36,60 +39,87 @@ for (var key in args) {
     switch (key) {
 
       case '_':
-        _context.args._.push(args[key][i])
+        config._context.args._.push(args[key][i])
         break
 
       // -c | --config  Path to configuration file
       case 'c':
       case 'config':
-        _context.filepath = args[key][i]
+        config._context.filepath = args[key][i]
         break
 
       // -a | --app  Application under ./apps
       case 'a':
       case 'app':
-        _context.args.app = true
+        config._context.args.app = true
         break
 
       // -k | --k8s  Kubernetes plugin under ./cli/src/plugins/k8s
       case 'k':
       case 'k8s':
-        _context.args.k8s = true
+        config._context.args.k8s = true
         break
 
       // -l | --alerts  Alerts plugin under ./cli/src/plugins/alerts
       case 'l':
       case 'alerts':
-        _context.args.alerts = true
+        config._context.args.alerts = true
         break
 
       // -o | --obs  Observability plugin under ./cli/src/plugins/obs
       case 'o':
       case 'obs':
-        _context.args.obs = true
+        config._context.args.obs = true
         break
     }
   }
 }
 
-// Get config file
-var configFile
-try {
-  configFile = fs.readFileSync(_context.filepath, 'utf8')
-} catch (err) {
-  if (err.code === 'ENOENT') {
-    console.error('No configuration file at specified path: ' + _context.filepath)
-    process.exit(1)
-  } else {
-    throw err
+/**
+ * Read config file.
+ */
+const read = () => {
+  try {
+    return fs.readFileSync(config._context.filepath, 'utf8')
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      console.error(`No configuration file at specified path: ${config._context.filepath}`)
+      process.exit(1)
+    } else {
+      throw err
+    }
   }
 }
 
-// Parse config file and merge command-line context
-const config = utils.flatten(yaml.load(configFile || {}))
-config._context = _context
+/**
+ * Parse the contents of a config file to a YAML object, and then flatten the
+ * structure of the object.
+ */
+const parse = (contents) => utils.flatten(yaml.load(contents || {}))
+
+/**
+ * Load the config file and persist it as the global config object.
+ * Clear any existing config except for the command context.
+ */
+const load = () => {
+  for (var key in Object.keys(config))
+    if (key != '_context')
+      delete config[key]
+  for (var [ key, value ] of Object.entries(parse(read())))
+    if (key != '_context')
+      config[key] = value
+}
+
+/**
+ * Get a value from the config object at a given path (i.e. dotted key),
+ * or get the entire config object if no path is given.
+ */
+const get = (path) => path ? _.get(config, path) : config
 
 // Export final config
 module.exports = {
-  get: (path) => path ? _.get(config, path) : config
+  read: read,
+  parse: parse,
+  load: load,
+  get: get
 }
