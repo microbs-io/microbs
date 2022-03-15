@@ -17,6 +17,7 @@ const config = require('./config')
 const plugins = require('./plugins')
 const rollout = require('./rollout')
 const state = require('./state')
+const validate = require('./validate')
 
 // Help doc
 const __doc = `
@@ -48,6 +49,7 @@ Usage: ${chalk.cyan('microbs COMMAND [options]')}
 
   ${chalk.cyan('microbs apps')}       List all deployable applications
   ${chalk.cyan('microbs plugins')}    List all available plugins
+  ${chalk.cyan('microbs validate')}   Validate microbs installation and config
   ${chalk.cyan('microbs help')}       Display this help screen
 
 ${chalk.dim(`
@@ -228,6 +230,13 @@ const runPlugins = () => {
 }
 
 /**
+ * Validate the installation and configuration of microbs.
+ */
+const runValidate = () => {
+  return validate.run()
+}
+
+/**
  * Run a command.
  */
 module.exports.run = async () => {
@@ -244,6 +253,8 @@ module.exports.run = async () => {
       return runApps()
     case 'plugins':
       return runPlugins()
+    case 'validate':
+      return runValidate()
     default:
       return runHelp()
   }
