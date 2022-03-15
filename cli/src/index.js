@@ -47,9 +47,11 @@ Usage: ${chalk.cyan('microbs COMMAND [options]')}
   ${chalk.cyan('microbs stabilize')}  Revert a deployed application to its stable scenario
     [-c|--config]    Path to config file (default: ./config.yaml)
 
+  ${chalk.cyan('microbs validate')}   Validate microbs installation and config
+    [-c|--config]    Path to config file (default: ./config.yaml)
+
   ${chalk.cyan('microbs apps')}       List all deployable applications
   ${chalk.cyan('microbs plugins')}    List all available plugins
-  ${chalk.cyan('microbs validate')}   Validate microbs installation and config
   ${chalk.cyan('microbs help')}       Display this help screen
 
 ${chalk.dim(`
