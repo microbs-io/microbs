@@ -21,7 +21,7 @@ const validateNodeVersion = () => {
     if (semver.gte(versionActual, versionRequired))
       console.info(`... node is correct version [using=${versionActual}, required>=${versionRequired}]`)
     else
-      console.warn('... node is incorrect version.')
+      console.warn(`... node is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
   } else {
     console.warn('... could not find .nvmrc to determine the required version of node.')
   }
@@ -49,7 +49,7 @@ const validateKubectlVersion = () => {
       if (semver.gte(versionActual, versionRequired))
         console.info(`... kubectl is correct version [using=${versionActual}, required>=${versionRequired}]`)
       else
-        console.warn('... kubectl is incorrect version.')
+        console.warn(`... kubectl is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
     } catch (e) {
       console.error(e)
     }
@@ -80,7 +80,7 @@ const validateSkaffoldVersion = () => {
       if (semver.gte(versionActual, versionRequired))
         console.info(`... skaffold is correct version [using=${versionActual}, required>=${versionRequired}]`)
       else
-        console.warn('... skaffold is incorrect version.')
+        console.warn(`... skaffold is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
     } catch (e) {
       console.error(e)
     }
@@ -201,11 +201,30 @@ const validateConfig = () => {
   validateConfigValues()
 }
 
+const validatePlugins = async () => {
+  console.log('')
+  console.log('Validating plugins...')
+  const pluginTypes = [ 'alerts', 'k8s', 'obs' ]
+  for (var i in pluginTypes) {
+    const pluginName = config.get(`deployment.plugins.${pluginTypes[i]}`)
+    var plugin = require('./plugins')[pluginTypes[i]][pluginName]
+    if (plugin) {
+      if (plugin.validate) {
+        await plugin.validate()
+      } else {
+        console.debug(`... the '${pluginName}' ${pluginTypes[i]} plugin does not implement the 'validate' command.`)
+      }
+    } else {
+      console.debug(`... no ${pluginTypes[i]} plugin was defined in the config file.`)
+    }
+  }
+}
+
 /**
  * Validate microbs installation and configuration.
  */
-module.exports.run = () => {
+module.exports.run = async () => {
   validateDependencies()
   validateConfig()
-  // TODO: Validate plugin configurations
+  await validatePlugins()
 }
