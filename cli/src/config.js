@@ -78,12 +78,13 @@ for (var key in args) {
 /**
  * Read config file.
  */
-const read = () => {
+const read = (filepath) => {
+  filepath = filepath || config._context.filepath
   try {
-    return fs.readFileSync(config._context.filepath, 'utf8')
+    return fs.readFileSync(filepath, 'utf8')
   } catch (err) {
     if (err.code === 'ENOENT') {
-      console.error(`No configuration file at specified path: ${config._context.filepath}`)
+      console.error(`No configuration file at specified path: ${filepath}`)
       process.exit(1)
     } else {
       throw err
@@ -101,11 +102,12 @@ const parse = (contents) => utils.flatten(yaml.load(contents || {}))
  * Load the config file and persist it as the global config object.
  * Clear any existing config except for the command context.
  */
-const load = () => {
+const load = (filepath) => {
+  filepath = filepath || config._context.filepath
   for (var key in Object.keys(config))
     if (key != '_context')
       delete config[key]
-  for (var [ key, value ] of Object.entries(parse(read())))
+  for (var [ key, value ] of Object.entries(parse(read(filepath))))
     if (key != '_context')
       config[key] = value
 }

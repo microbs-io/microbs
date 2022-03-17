@@ -1,0 +1,9 @@
+deployment.name: test
+deployment.app: templates
+deployment.plugins.alerts: template
+deployment.plugins.k8s: template
+deployment.plugins.obs: template
+deployment.environment: test
+docker.registry:
+otlp.receiver.host: otel-collector
+otlp.receiver.port: 4317
