@@ -1,3 +1,5 @@
+[![Build Status](https://github.com/microbs-io/microbs/workflows/Commit/badge.svg?branch=main)](https://github.com/microbs-io/microbs/actions)
+
 # microbs - microservices observability
 
 microbs is an open source, vendor-inclusive framework to demo, test, or learn about microservices observability. With little configuration and one command, you can automatically deploy a tech stack with your choice of any combination of the following...
