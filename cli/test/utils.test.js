@@ -1,5 +1,5 @@
 /*
- * config.test.js
+ * utils.test.js
  *
  * Unit tests for ./cli/src/utils.js
  */

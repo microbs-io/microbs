@@ -13,23 +13,15 @@ const probe = require('./probe')
 module.exports = async () => {
   console.log('')
   console.log('Creating minikube cluster...')
-  utils.exec('minikube start')
+  utils.exec('minikube start', true)
 
   // Verify that the minikube cluster was created.
   console.log('')
-  console.log('Waiting for minikube cluster to be available...')
-  var verified = false
-  var ready = false
-  while (!verified) {
-    if (await probe.status()) {
-      process.stdout.write('...ready.\n')
-      ready = true
-      verified = true
-    } else {
-      await utils.sleep(1000)
-      process.stdout.write('.')
-    }
-  }
-  if (!ready)
+  console.log('Verifying that minikube is available...')
+  if (await probe.status()) {
+    process.stdout.write('...acknowledged. minikube is ready.\n')
+  } else {
+    process.stdout.write('...failure. minikube did not start successfully.\n')
     process.exit(1)
+  }
 }

@@ -76,6 +76,10 @@ plugins.gke:
   service_account_name:
   service_account_key_path:
 
+####  kind plugin config
+
+plugins.kind:
+
 ####  minikube plugin config
 
 plugins.minikube:

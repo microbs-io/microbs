@@ -65,13 +65,13 @@ def redis_client():
 
 ####  HTTP Handlers  ###########################################################
 
-@app.route('/_test/elasticsearch/<id>')
+@app.route('/test/elasticsearch/<id>')
 @cross_origin()
-def _test_elasticsearch(id):
+def test_elasticsearch(id):
     """
     Test communication with elasticsearch.
     """
-    logger.info('GET /_test/elasticsearch/<id>')
+    logger.info('GET /test/elasticsearch/<id>')
     try:
         res = elasticsearch_client().search(index="test", body={"query": {"term": { "key": id }}})
         return jsonify({ 'message': res['hits']['hits'][0]['_source']['value'] })
@@ -79,13 +79,13 @@ def _test_elasticsearch(id):
         logger.exception(e)
         return jsonify({ 'message': 'failure' }), 500
 
-@app.route('/_test/mongodb/<id>')
+@app.route('/test/mongodb/<id>')
 @cross_origin()
-def _test_mongodb(id):
+def test_mongodb(id):
     """
     Test communication with mongodb.
     """
-    logger.info('GET /_test/mongodb/<id>')
+    logger.info('GET /test/mongodb/<id>')
     try:
         docs = list(mongodb_client().test.test.find({ "key": id }))
         return jsonify({ 'message': docs[0]["value"] })
@@ -93,13 +93,13 @@ def _test_mongodb(id):
         logger.exception(e)
         return jsonify({ 'message': 'failure' }), 500
 
-@app.route('/_test/postgres/<id>')
+@app.route('/test/postgres/<id>')
 @cross_origin()
-def _test_postgres(id):
+def test_postgres(id):
     """
     Test communication with postgres.
     """
-    logger.info('GET /_test/postgres/<id>')
+    logger.info('GET /test/postgres/<id>')
     try:
         rows = []
         with postgres_client() as connection:
@@ -111,13 +111,13 @@ def _test_postgres(id):
         logger.exception(e)
         return jsonify({ 'message': 'failure' }), 500
 
-@app.route('/_test/redis/<id>')
+@app.route('/test/redis/<id>')
 @cross_origin()
-def _test_redis(id):
+def test_redis(id):
     """
     Test communication with redis.
     """
-    logger.info('GET /_test/redis/<id>')
+    logger.info('GET /test/redis/<id>')
     try:
         reply = redis_client().hget(id)
         return jsonify({ 'message': reply })
@@ -125,13 +125,13 @@ def _test_redis(id):
         logger.exception(e)
         return jsonify({ 'message': 'failure' }), 500
 
-@app.route('/_test/failure')
+@app.route('/test/failure')
 @cross_origin()
-def _test_failure():
+def test_failure():
     """
     Test a failure response.
     """
-    logger.info('GET /_test/failure')
+    logger.info('GET /test/failure')
     try:
         raise "failure"
         return jsonify({ 'message': 'success' })
@@ -139,13 +139,13 @@ def _test_failure():
         logger.exception(e)
         return jsonify({ 'message': 'failure' }), 500
 
-@app.route('/_test/success')
+@app.route('/test/success')
 @cross_origin()
-def _test_success():
+def test_success():
     """
     Test a successful response.
     """
-    logger.info('GET /_test/success')
+    logger.info('GET /test/success')
     try:
         return jsonify({ 'message': 'success' })
     except Exception as e:

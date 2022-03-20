@@ -17,10 +17,14 @@
     "monitoring", "observability", "sre", "synthetics", "testing"
   ],
   "scripts": {
-    "test": "jest --verbose"
+    "test": "jest"
+  },
+  "jest": {
+    "silent": false,
+    "verbose": true
   },
   "engines": {
-    "npm": ">=14.16.1"
+    "node": ">=14.16.1"
   },
   "dependencies": {
     "axios": "^0.21.1",

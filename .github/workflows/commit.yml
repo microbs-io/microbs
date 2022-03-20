@@ -1,0 +1,42 @@
+# Build and test microbs whenever pushing a commit or submitting a pull request.
+name: Commit
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - "microbs-*.*.*"
+      - "microbs-*.*.*-*"
+  pull_request:
+    branches:
+      - '**'
+    tags-ignore:
+      - "microbs-*.*.*"
+      - "microbs-*.*.*-*"
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    # Attempt to run all tests
+    strategy:
+      fail-fast: false
+
+    steps:
+
+      # Install node
+      - name: Setup node
+        uses: actions/setup-node@v2
+
+      # Checkout the repository
+      # Uses: https://github.com/actions/checkout
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Install microbs
+      - name: Install node_modules
+        run: npm install
+
+      # Test microbs
+      - name: Test microbs
+        run: npm run test

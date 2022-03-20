@@ -1,0 +1,21 @@
+exporter = "otlp"
+processor = "batch"
+
+[exporters.otlp]
+host = "${OTLP_RECEIVER_HOST}"
+port = ${OTLP_RECEIVER_PORT}
+
+[processors.batch]
+max_queue_size = 2048
+schedule_delay_millis = 5000
+max_export_batch_size = 512
+
+[service]
+name = "${SERVICE_NAME}"
+
+[deployment]
+environment = "${DEPLOYMENT_ENVIRONMENT}"
+
+[sampler]
+name = "AlwaysOn"
+ratio = 1.0

@@ -18,18 +18,10 @@ module.exports = async () => {
   // Verify that the minikube cluster was destroyed.
   console.log('')
   console.log('Verifying that minikube cluster is destroyed...')
-  var verified = false
-  var ready = false
-  while (!verified) {
-    if (!await probe.status()) {
-      process.stdout.write('...verified.\n')
-      ready = true
-      verified = true
-    } else {
-      await utils.sleep(1000)
-      process.stdout.write('.')
-    }
-  }
-  if (!ready)
+  if (!(await probe.status())) {
+    process.stdout.write('...acknowledged. minikube is destroyed.\n')
+  } else {
+    process.stdout.write('...failure. minikube was not destroyed.\n')
     process.exit(1)
+  }
 }

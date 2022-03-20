@@ -1,0 +1,66 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  labels:
+    app: templates
+    service: api-gateway
+spec:
+  replicas: 2
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      service: api-gateway
+  template:
+    metadata:
+      labels:
+        app: templates
+        service: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: microbs-templates-api-gateway
+        imagePullPolicy: IfNotPresent
+        readinessProbe:
+          httpGet:
+            port: 8080
+            path: /healthz
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+        env:
+        - name: SERVICE_NAME
+          value: api-gateway
+        envFrom:
+        - secretRef:
+           name: microbs-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  labels:
+    app: templates
+    service: api-gateway
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    service: api-gateway
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway-external
+  labels:
+    app: templates
+spec:
+  type: NodePort
+  selector:
+    service: api-gateway
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
