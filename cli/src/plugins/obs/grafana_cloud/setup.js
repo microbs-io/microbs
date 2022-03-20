@@ -1,19 +1,19 @@
 // Standard packages
-const process = require('process')
 const { URL } = require('url')
 
 // Third-party packages
 const axios = require('axios')
 
 // Main packages
-const config = require('../../../config.js')
-const state = require('../../../state.js')
-const utils = require('../../../utils.js')
+const config = require('../../../config')
+const context = require('../../../context')
+const state = require('../../../state')
+const utils = require('../../../utils')
 
 // Plugin packages
-const constants = require('./constants.js')
-const probe = require('./probe.js')
-const rollout = require('./rollout.js')
+const constants = require('./constants')
+const probe = require('./probe')
+const rollout = require('./rollout')
 
 /**
  * Validate configuration.
@@ -26,7 +26,7 @@ const validate = () => {
   ]
   if (!utils.configHas(requiredFields)) {
     console.error()
-    console.error(`You must set these variables in ${config.get('_context.filepath')} to setup Grafana Cloud:`)
+    console.error(`You must set these variables in ${context.get('filepath')} to setup Grafana Cloud:`)
     console.error()
     console.error(requiredFields)
     process.exit(1)

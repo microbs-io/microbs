@@ -8,13 +8,14 @@
 const path = require('path')
 
 // Main packages
-const config = require('../../../config.js')
+const config = require('../../../config')
+const context = require('../../../context')
 
 /**
  * Absolute path to the directory of this plugin.
  */
 module.exports.pluginHome = () => {
-  return path.join(config.get('_context.homepath'), 'cli', 'src', 'plugins', 'obs', 'grafana_cloud')
+  return path.join(config.get('homepath'), 'cli', 'src', 'plugins', 'obs', 'grafana_cloud')
 }
 
 /**

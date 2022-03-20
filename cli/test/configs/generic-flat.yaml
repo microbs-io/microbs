@@ -1,4 +1,4 @@
-deployment.name: test
+deployment.name: test-flat
 deployment.app: templates
 deployment.plugins.alerts: template
 deployment.plugins.k8s: template

@@ -1,15 +1,13 @@
-// Standard packages
-const process = require('process')
-
 // Third-party packages
 const quote = require('shell-quote').quote
 
 // Main packages
-const config = require('../../../config.js')
-const utils = require('../../../utils.js')
+const config = require('../../../config')
+const context = require('../../../context')
+const utils = require('../../../utils')
 
 // Plugin packages
-const probe = require('./probe.js')
+const probe = require('./probe')
 
 /**
  * Validation for setting up GKE
@@ -22,7 +20,7 @@ const validate = () => {
   ]
   if (!utils.configHas(requiredFields)) {
     console.error()
-    console.error(`You must set these variables in ${config.get('_context.filepath')} to destroy GKE:`)
+    console.error(`You must set these variables in ${context.get('filepath')} to destroy GKE:`)
     console.error()
     console.error(requiredFields)
     process.exit(1)

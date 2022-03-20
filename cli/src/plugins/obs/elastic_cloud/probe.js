@@ -1,20 +1,17 @@
 /*
- * probej.s
+ * probe.js
  *
  * Check the status of various resources.
  */
-
-// Standard packages
-const process = require('process')
 
 // Third-party packages
 const _ = require('lodash')
 const axios = require('axios')
 
 // Main packages
-const config = require('../../../config.js')
-const state = require('../../../state.js')
-const utils = require('../../../utils.js')
+const config = require('../../../config')
+const state = require('../../../state')
+const utils = require('../../../utils')
 
 // Plugin packages
 const constants = require('./constants.js')

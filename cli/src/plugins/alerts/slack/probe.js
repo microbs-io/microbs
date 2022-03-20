@@ -8,10 +8,10 @@
 const axios = require('axios')
 
 // Main packages
-const utils = require('../../../utils.js')
+const utils = require('../../../utils')
 
 // Plugin packages
-const constants = require('./constants.js')
+const constants = require('./constants')
 
 module.exports.statusSlackChannel = async (channelName) => {
   try {

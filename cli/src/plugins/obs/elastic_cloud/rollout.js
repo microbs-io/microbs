@@ -8,7 +8,7 @@
 const path = require('path')
 
 // Main packages
-const rollout = require('../../../rollout.js')
+const rollout = require('../../../commands/rollout')
 
 module.exports = async (opts) => {
   var opts = opts || {}

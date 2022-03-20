@@ -1,12 +1,9 @@
-// Standard packages
-const process = require('process')
-
 // Third-party packages
 const quote = require('shell-quote').quote
 
 // Main packages
-const config = require('../../../config.js')
-const utils = require('../../../utils.js')
+const config = require('../../../config')
+const utils = require('../../../utils')
 
 // Regular expressions
 const RE_STATUS = new RegExp(/^status: (.*)/g, 'm')

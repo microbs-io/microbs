@@ -7,14 +7,15 @@ const hasbin = require('hasbin')
 const semver = require('semver')
 
 // Main packages
-const config = require('./config')
-const utils = require('./utils')
+const config = require('../config')
+const context = require('../context')
+const utils = require('../utils')
 
 /**
  * Validate Node.js version
  */
 const validateNodeVersion = () => {
-  const nvmrcFilepath = path.resolve(__dirname, '..', '..', '.nvmrc')
+  const nvmrcFilepath = path.resolve(context.get('homepath'), '.nvmrc')
   if (fs.existsSync(nvmrcFilepath)) {
     const versionRequired = semver.clean(fs.readFileSync(nvmrcFilepath).toString())
     const versionActual = semver.clean(semver.clean(process.version))
@@ -93,7 +94,7 @@ const validateSkaffoldVersion = () => {
 const validateConfigExists = () => {
   try {
     config.read()
-    console.info(`... config file exists: ${config.get('_context.filepath')}`)
+    console.info(`... config file exists: ${context.get('filepath')}`)
   } catch (e) {
     console.warn(e)
   }
@@ -125,7 +126,7 @@ const validateConfigSyntax = () => {
  */
 const validateConfigValues = () => {
   try {
-    config.load()
+    config.init()
   } catch (e) {
     console.warn(e)
   }
@@ -162,7 +163,7 @@ const validateConfigValues = () => {
   for (var i in pluginTypes) {
     const pluginName = config.get(`deployment.plugins.${pluginTypes[i]}`)
     if (pluginName) {
-      const pluginsInstalled = Object.keys(require('./plugins')[pluginTypes[i]])
+      const pluginsInstalled = Object.keys(require('../plugins')[pluginTypes[i]])
       if (!pluginsInstalled.includes(pluginName)) {
         hasErrors = true
         console.error(`... 'deployment.plugins.${pluginTypes[i]}' does not name an installed plugin: ${pluginName}`)
@@ -207,7 +208,7 @@ const validatePlugins = async () => {
   const pluginTypes = [ 'alerts', 'k8s', 'obs' ]
   for (var i in pluginTypes) {
     const pluginName = config.get(`deployment.plugins.${pluginTypes[i]}`)
-    var plugin = require('./plugins')[pluginTypes[i]][pluginName]
+    var plugin = require('../plugins')[pluginTypes[i]][pluginName]
     if (plugin) {
       if (plugin.validate) {
         await plugin.validate()

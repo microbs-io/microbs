@@ -5,7 +5,7 @@
  */
 
 // Main packages
-const utils = require('../../../utils.js')
+const utils = require('../../../utils')
 
 // Plugin packages
 const probe = require('./probe')

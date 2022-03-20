@@ -4,11 +4,8 @@
  * Probe the status of minikube.
  */
 
-// Standard packages
-const process = require('process')
-
 // Main packages
-const utils = require('../../../utils.js')
+const utils = require('../../../utils')
 
 module.exports.status = async () => {
   const command = 'minikube status -o json'

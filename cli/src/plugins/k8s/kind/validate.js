@@ -7,7 +7,7 @@ const hasbin = require('hasbin')
 const semver = require('semver')
 
 // Main packages
-const utils = require('../../../utils.js')
+const utils = require('../../../utils')
 
 /**
  * Validate kind installation

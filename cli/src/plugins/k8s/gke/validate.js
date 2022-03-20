@@ -7,8 +7,8 @@ const hasbin = require('hasbin')
 const semver = require('semver')
 
 // Main packages
-const config = require('../../../config.js')
-const utils = require('../../../utils.js')
+const config = require('../../../config')
+const utils = require('../../../utils')
 
 /**
  * Validate gcloud installation
@@ -46,7 +46,7 @@ const validateGcloudVersion = () => {
  */
 const validateConfig = () => {
   try {
-    config.load()
+    config.init()
   } catch (e) {
     console.error('... failed to load config.')
     console.error(e)

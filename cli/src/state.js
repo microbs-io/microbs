@@ -7,7 +7,6 @@
 // Standard packages
 const fs = require('fs')
 const path = require('path')
-const process = require('process')
 
 // Third-party packages
 const _ = require('lodash')
@@ -17,49 +16,85 @@ const yaml = require('js-yaml')
 const config = require('./config')
 const utils = require('./utils')
 
-// Get .state file
-const stateFilepath = path.join(process.cwd(), '.state')
-var stateFile
-try {
-  stateFile = fs.readFileSync(stateFilepath, 'utf8')
-} catch (err) {
-  if (err.code === 'ENOENT') {
-    // .state file doesn't exist. Create an empty one.
-    fs.closeSync(fs.openSync(stateFilepath, 'w'))
-    stateFile = fs.readFileSync(stateFilepath, 'utf8')
-  } else {
-    throw err
+// Global state object
+const state = {}
+
+/**
+ * Read .state file.
+ */
+const read = (filepath) => {
+  filepath = filepath || path.join(process.cwd(), '.state')
+  try {
+    return fs.readFileSync(filepath, 'utf8')
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      // .state file doesn't exist. Create an empty one.
+      fs.closeSync(fs.openSync(filepath, 'w'))
+      return fs.readFileSync(filepath, 'utf8')
+    } else {
+      throw err
+    }
   }
 }
 
-const get = (path) => {
-  return path ? _.get(state, path) : state
+/**
+ * Parse the contents of a .state file to a YAML object, and then flatten the
+ * structure of the object. Normally the .state file would already be flattened,
+ * but it's possible for a user to add nested fields to the file directly.
+ */
+const parse = (contents) => utils.flatten(yaml.load(contents || {}))
+
+/**
+ * Read and parse the .state file.
+ * Merge config into .state, overriding .state with config.
+ */
+const load = (filepath) => parse(read(filepath))
+
+/**
+ * Load the .state file and persist it in a mutable state object.
+ * Merge config into .state, overriding .state with config.
+ */
+const init = (filepath) => {
+  for (var key in state)
+    delete state[key]
+  for (const [key, value] of Object.entries(_.merge(load(filepath), config.get())))
+    state[key] = value
+  return state
 }
 
-const set = (path, value) => {
-  _.set(state, path, value)
-  delete state._context // Exclude the command-line context
+/**
+ * Persist the state object to the .state file.
+ */
+const save = (filepath) => {
+  filepath = filepath || path.join(process.cwd(), '.state')
+
+  // Save .state file
+  fs.writeFileSync(
+    filepath,
+    yaml.dump(utils.flatten(state), { sortKeys: true }),
+    'utf8',
+    (err) => console.error(err)
+  )
 }
 
-const merge = (obj) => {
-  _.merge(state, obj)
-  delete state._context // Exclude the command-line context
-}
+/**
+ * Get a value from the state object at a given path (i.e. dotted key),
+ * or get the entire state object if no path is given.
+ */
+const get = (path) => path ? _.get(_.isEmpty(state) ? init() : state, path) : _.isEmpty(state) ? init() : state
 
-const save = (path) => {
-  fs.writeFileSync(stateFilepath, yaml.dump(utils.flatten(state), { sortKeys: true }), 'utf8', (err) => console.error(err))
-}
-
-// Parse state file
-const state = yaml.load(stateFile) || {}
-
-// Merge config with state, overriding state with config
-merge(config.get())
+/**
+ * Set a value in the state object at a given path (i.e. dotted key).
+ */
+const set = (path, value) => _.set(_.isEmpty(state) ? init() : state, path, value)
 
 // Export state
 module.exports = {
   get: get,
   set: set,
-  merge: merge,
+  init: init,
+  load: load,
+  parse: parse,
+  read: parse,
   save: save
 }

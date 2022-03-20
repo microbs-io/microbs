@@ -4,11 +4,8 @@
  * Probe the status of kind.
  */
 
-// Standard packages
-const process = require('process')
-
 // Main packages
-const utils = require('../../../utils.js')
+const utils = require('../../../utils')
 
 module.exports.status = async () => {
   const command = 'kubectl cluster-info --context kind-kind'
