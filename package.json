@@ -2,8 +2,8 @@
   "name": "@microbs.io/microbs",
   "version": "0.1.0-alpha",
   "description": "microservices observability",
-  "license" : "Apache-2.0",
-  "url" : "https://microbs.io",
+  "license": "Apache-2.0",
+  "url": "https://microbs.io",
   "main": "./cli/src/index.js",
   "bin": {
     "microbs": "./microbs"
@@ -13,8 +13,18 @@
     "url": "https://github.com/microbs-io/microbs.git"
   },
   "keywords": [
-    "apm", "cli", "demo", "devops", "k8s", "kubernetes", "microservices",
-    "monitoring", "observability", "sre", "synthetics", "testing"
+    "apm",
+    "cli",
+    "demo",
+    "devops",
+    "k8s",
+    "kubernetes",
+    "microservices",
+    "monitoring",
+    "observability",
+    "sre",
+    "synthetics",
+    "testing"
   ],
   "scripts": {
     "test": "jest"

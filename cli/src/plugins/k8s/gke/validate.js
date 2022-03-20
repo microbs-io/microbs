@@ -8,16 +8,18 @@ const semver = require('semver')
 
 // Main packages
 const config = require('../../../config')
+const logger = require('../../../logger')
 const utils = require('../../../utils')
+const validate = require('../../../commands/validate')
 
 /**
  * Validate gcloud installation
  */
 const validateGcloudInstallation = () => {
   if(hasbin.sync('gcloud'))
-    console.info('... gcloud is installed')
+    validate.logSuccess('gcloud is installed')
   else
-    console.warn('... gcloud is not installed')
+    validate.logFailure('gcloud is not installed')
 }
 
 /**
@@ -30,14 +32,14 @@ const validateGcloudVersion = () => {
       versionActual = semver.clean(result.stdout.match(/Google Cloud SDK (.+)/)[1])
       versionRequired = semver.clean('372.0.0')
       if (semver.gte(versionActual, versionRequired))
-        console.info(`... gcloud is correct version [using=${versionActual}, required>=${versionRequired}]`)
+        validate.logSuccess(`gcloud is correct version [using=${versionActual}, required>=${versionRequired}]`)
       else
-        console.warn(`... gcloud is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
+        validate.logFailure(`gcloud is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
     } catch (e) {
-      console.error(e)
+      logger.error(e)
     }
   } else {
-    console.warn(result.stderr)
+    logger.warn(result.stderr)
   }
 }
 
@@ -48,8 +50,8 @@ const validateConfig = () => {
   try {
     config.init()
   } catch (e) {
-    console.error('... failed to load config.')
-    console.error(e)
+    validate.logFailure('failed to load config.')
+    logger.error(e)
     return
   }
   var hasErrors = false
@@ -66,12 +68,12 @@ const validateConfig = () => {
   for (var i in requiredAlways) {
     if (!config.get(requiredAlways[i])) {
       hasErrors = true
-      console.error(`... '${requiredAlways[i]}' is required but missing from gke plugin config.`)
+      validate.logFailure(`'${requiredAlways[i]}' is required but missing from gke plugin config.`)
     }
   }
 
   if (!hasErrors)
-    console.info('... no problems detected in gke plugin config.')
+    validate.logSuccess('no problems detected in gke plugin config.')
 }
 
 module.exports = async () => {

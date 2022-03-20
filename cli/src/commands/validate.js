@@ -3,13 +3,22 @@ const fs = require('fs')
 const path = require('path')
 
 // Third-party packages
+const chalk = require('chalk')
 const hasbin = require('hasbin')
 const semver = require('semver')
 
 // Main packages
 const config = require('../config')
 const context = require('../context')
+const logger = require('../logger')
 const utils = require('../utils')
+
+const logSuccess = (msg) => logger.info(`${chalk.bold.green('✓')} ${chalk.dim(msg)}`)
+const logFailure = (msg) => logger.error(`${chalk.bold.red('⨯')} ${msg}`)
+const logUnknown = (msg) => logger.warn(`${chalk.bold.yellow('?')} ${msg}`)
+module.exports.logSuccess = logSuccess
+module.exports.logFailure = logFailure
+module.exports.logUnknown = logUnknown
 
 /**
  * Validate Node.js version
@@ -20,11 +29,11 @@ const validateNodeVersion = () => {
     const versionRequired = semver.clean(fs.readFileSync(nvmrcFilepath).toString())
     const versionActual = semver.clean(semver.clean(process.version))
     if (semver.gte(versionActual, versionRequired))
-      console.info(`... node is correct version [using=${versionActual}, required>=${versionRequired}]`)
+      logSuccess(`node is correct version [using=${versionActual}, required>=${versionRequired}]`)
     else
-      console.warn(`... node is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
+      logFailure(`node is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
   } else {
-    console.warn('... could not find .nvmrc to determine the required version of node.')
+    logUnknown(`could not find .nvmrc to determine the required version of node.`)
   }
 }
 
@@ -33,9 +42,9 @@ const validateNodeVersion = () => {
  */
 const validateKubectlInstallation = () => {
   if(hasbin.sync('kubectl'))
-    console.info('... kubectl is installed')
+    logSuccess('kubectl is installed')
   else
-    console.warn('... kubectl is not installed')
+    logFailure('kubectl is not installed')
 }
 
 /**
@@ -48,14 +57,14 @@ const validateKubectlVersion = () => {
       versionActual = semver.clean(result.stdout.match(/GitVersion:"v([^"]+)"/)[1])
       versionRequired = semver.clean('1.23.4')
       if (semver.gte(versionActual, versionRequired))
-        console.info(`... kubectl is correct version [using=${versionActual}, required>=${versionRequired}]`)
+        logSuccess(`kubectl is correct version [using=${versionActual}, required>=${versionRequired}]`)
       else
-        console.warn(`... kubectl is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
+        logFailure(`kubectl is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
     } catch (e) {
-      console.error(e)
+      logger.error(e)
     }
   } else {
-    console.warn(result.stderr)
+    logger.warn(result.stderr)
   }
 }
 
@@ -64,9 +73,9 @@ const validateKubectlVersion = () => {
  */
 const validateSkaffoldInstallation = () => {
   if(hasbin.sync('skaffold'))
-    console.info('... skaffold is installed')
+    logSuccess('skaffold is installed')
   else
-    console.warn('... skaffold is not installed')
+    logFailure('skaffold is not installed')
 }
 
 /**
@@ -79,11 +88,11 @@ const validateSkaffoldVersion = () => {
       versionActual = semver.clean(result.stdout)
       versionRequired = semver.clean('1.36.0')
       if (semver.gte(versionActual, versionRequired))
-        console.info(`... skaffold is correct version [using=${versionActual}, required>=${versionRequired}]`)
+        logSuccess(`skaffold is correct version [using=${versionActual}, required>=${versionRequired}]`)
       else
-        console.warn(`... skaffold is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
+        logFailure(`skaffold is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
     } catch (e) {
-      console.error(e)
+      logger.error(e)
     }
   }
 }
@@ -94,9 +103,9 @@ const validateSkaffoldVersion = () => {
 const validateConfigExists = () => {
   try {
     config.read()
-    console.info(`... config file exists: ${context.get('filepath')}`)
+    logSuccess(`config file exists: ${context.get('filepath')}`)
   } catch (e) {
-    console.warn(e)
+    logger.warn(e)
   }
 }
 
@@ -106,17 +115,17 @@ const validateConfigExists = () => {
 const validateConfigSyntax = () => {
   try {
     config.parse(config.read())
-    console.info('... config file can be parsed.')
+    logSuccess('config file can be parsed.')
   } catch (e) {
     if (e.name == 'YAMLException') {
-      console.error('... config file cannot be parsed:')
-      console.error('')
-      console.error(e.reason)
-      console.error('')
-      console.error(e.mark.snippet)
-      console.error('')
+      logFailure('config file cannot be parsed:')
+      logger.error('')
+      logger.error(e.reason)
+      logger.error('')
+      logger.error(e.mark.snippet)
+      logger.error('')
     } else {
-      console.error(e)
+      logger.error(e)
     }
   }
 }
@@ -128,7 +137,7 @@ const validateConfigValues = () => {
   try {
     config.init()
   } catch (e) {
-    console.warn(e)
+    logger.warn(e)
   }
   var hasErrors = false
 
@@ -140,7 +149,7 @@ const validateConfigValues = () => {
   for (var i in requiredAlways) {
     if (!config.get(requiredAlways[i])) {
       hasErrors = true
-      console.error(`... '${requiredAlways[i]}' is required but missing from config.`)
+      logger.error(`... '${requiredAlways[i]}' is required but missing from config.`)
     }
   }
 
@@ -154,7 +163,7 @@ const validateConfigValues = () => {
   for (var i in requiredNormally) {
     if (!config.get(requiredNormally[i])) {
       hasErrors = true
-      console.error(`... '${requiredNormally[i]}' is required but missing from config.`)
+      logFailure(`'${requiredNormally[i]}' is required but missing from config.`)
     }
   }
 
@@ -166,27 +175,27 @@ const validateConfigValues = () => {
       const pluginsInstalled = Object.keys(require('../plugins')[pluginTypes[i]])
       if (!pluginsInstalled.includes(pluginName)) {
         hasErrors = true
-        console.error(`... 'deployment.plugins.${pluginTypes[i]}' does not name an installed plugin: ${pluginName}`)
+        logFailure(`'deployment.plugins.${pluginTypes[i]}' does not name an installed plugin: ${pluginName}`)
       }
     }
   }
   if (config.get('otlp.receiver.port')) {
     if (!config.get('otlp.receiver.port').toString().match(/^[0-9]+$/)) {
       hasErrors = true
-      console.error(`... 'otlp.receiver.port' expected an integer but found: ${config.get('otlp.receiver.port')}`)
+      logFailure(`'otlp.receiver.port' expected an integer but found: ${config.get('otlp.receiver.port')}`)
     }
   }
 
   if (!hasErrors)
-    console.info('... no problems detected in config file.')
+    logSuccess('no problems detected in config file.')
 }
 
 /**
  * Validate software dependencies of microbs.
  */
 const validateDependencies = () => {
-  console.log('')
-  console.log('Validating dependencies...')
+  logger.info('')
+  logger.info('Validating dependencies...')
   validateNodeVersion()
   validateKubectlInstallation()
   validateKubectlVersion()
@@ -195,16 +204,16 @@ const validateDependencies = () => {
 }
 
 const validateConfig = () => {
-  console.log('')
-  console.log('Validating config...')
+  logger.info('')
+  logger.info('Validating config...')
   validateConfigExists()
   validateConfigSyntax()
   validateConfigValues()
 }
 
 const validatePlugins = async () => {
-  console.log('')
-  console.log('Validating plugins...')
+  logger.info('')
+  logger.info('Validating plugins...')
   const pluginTypes = [ 'alerts', 'k8s', 'obs' ]
   for (var i in pluginTypes) {
     const pluginName = config.get(`deployment.plugins.${pluginTypes[i]}`)
@@ -213,12 +222,13 @@ const validatePlugins = async () => {
       if (plugin.validate) {
         await plugin.validate()
       } else {
-        console.debug(`... the '${pluginName}' ${pluginTypes[i]} plugin does not implement the 'validate' command.`)
+        logger.debug(`... the '${pluginName}' ${pluginTypes[i]} plugin does not implement the 'validate' command.`)
       }
     } else {
-      console.debug(`... no ${pluginTypes[i]} plugin was defined in the config file.`)
+      logger.debug(`... no ${pluginTypes[i]} plugin was defined in the config file.`)
     }
   }
+  logger.info('')
 }
 
 /**

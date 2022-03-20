@@ -20,7 +20,7 @@ const DEFAULT_CONTEXT = {
   homepath: path.join(process.cwd()),
   filepath: path.join(process.cwd(), 'config.yaml'),
   command: 'help',
-  args: { _: [] }
+  args: { _: [], 'log-level': 'info' }
 }
 
 // Global context object
@@ -57,31 +57,40 @@ const init = () => {
         // -c | --config  Path to configuration file
         case 'c':
         case 'config':
-          context.filepath = args[key][i]
+          context['filepath'] = args[key][i]
+          break
+
+        // -L | --log-level  Minimum log-level to show in the console
+        case 'L':
+        case 'log-level':
+          const value = (args[key][i].toString() || '').toLowerCase()
+          if (![ 'debug', 'info', 'warn', 'error' ].includes(value))
+            throw new Error('--log-level must be one of: debug, info, warn, error')
+          context.args['log-level'] = value
           break
 
         // -a | --app  Application under ./apps
         case 'a':
         case 'app':
-          context.args.app = true
+          context.args['app'] = true
           break
 
         // -k | --k8s  Kubernetes plugin under ./cli/src/plugins/k8s
         case 'k':
         case 'k8s':
-          context.args.k8s = true
+          context.args['k8s'] = true
           break
 
         // -l | --alerts  Alerts plugin under ./cli/src/plugins/alerts
         case 'l':
         case 'alerts':
-          context.args.alerts = true
+          context.args['alerts'] = true
           break
 
         // -o | --obs  Observability plugin under ./cli/src/plugins/obs
         case 'o':
         case 'obs':
-          context.args.obs = true
+          context.args['obs'] = true
           break
       }
     }

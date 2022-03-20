@@ -7,16 +7,18 @@ const hasbin = require('hasbin')
 const semver = require('semver')
 
 // Main packages
+const logger = require('../../../logger')
 const utils = require('../../../utils')
+const validate = require('../../../commands/validate')
 
 /**
  * Validate minikube installation
  */
 const validateMinikubeInstallation = () => {
   if(hasbin.sync('minikube'))
-    console.info('... minikube is installed')
+    validate.logSuccess('minikube is installed')
   else
-    console.warn('... minikube is not installed')
+    validate.logFailure('minikube is not installed')
 }
 
 /**
@@ -29,14 +31,14 @@ const validateMinikubeVersion = () => {
       versionActual = semver.clean(result.stdout.match(/minikube version: v(.+)/)[1])
       versionRequired = semver.clean('1.25.2')
       if (semver.gte(versionActual, versionRequired))
-        console.info(`... minikube is correct version [using=${versionActual}, required>=${versionRequired}]`)
+        validate.logSuccess(`minikube is correct version [using=${versionActual}, required>=${versionRequired}]`)
       else
-        console.warn(`... minikube is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
+        validate.logFailure(`minikube is incorrect version [using=${versionActual}, required>=${versionRequired}]`)
     } catch (e) {
-      console.error(e)
+      logger.error(e)
     }
   } else {
-    console.warn(result.stderr)
+    logger.warn(result.stderr)
   }
 }
 
