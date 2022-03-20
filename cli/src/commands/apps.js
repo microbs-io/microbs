@@ -8,12 +8,13 @@ const path = require('path')
 
 // Main packages
 const context = require('../context')
+const logger = require('../logger')
 
 module.exports.run = async (opts) => {
-  console.log('')
-  console.log('apps:')
+  logger.info('')
+  logger.info('apps:')
   glob.sync(path.join(context.get('homepath'), 'apps', '*/')).forEach((filepath) => {
-    console.log(`  - ${path.basename(filepath)}`)
+    logger.info(`  - ${path.basename(filepath)}`)
   })
-  console.log('')
+  logger.info('')
 }

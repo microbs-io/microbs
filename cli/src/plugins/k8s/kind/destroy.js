@@ -5,23 +5,24 @@
  */
 
 // Main packages
+const logger = require('../../../logger')
 const utils = require('../../../utils')
 
 // Plugin packages
 const probe = require('./probe')
 
 module.exports = async () => {
-  console.log('')
-  console.log('Destroying kind cluster...')
+  logger.info('')
+  logger.info('Destroying kind cluster...')
   utils.exec('kind delete cluster')
 
   // Verify that the kind cluster was destroyed.
-  console.log('')
-  console.log('Verifying that kind cluster is destroyed...')
+  logger.info('')
+  logger.info('Verifying that kind cluster is destroyed...')
   if (!(await probe.status())) {
-    process.stdout.write('...acknowledged. kind is destroyed.\n')
+    logger.info('...acknowledged. kind is destroyed.\n')
   } else {
-    process.stdout.write('...failure. kind was not destroyed.\n')
+    logger.error('...failure. kind was not destroyed.\n')
     process.exit(1)
   }
 }

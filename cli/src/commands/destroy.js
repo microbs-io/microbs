@@ -7,6 +7,7 @@
 // Main packages
 const config = require('../config')
 const context = require('../context')
+const logger = require('../logger')
 const plugins = require('../plugins')
 const rollout = require('./rollout')
 
@@ -31,10 +32,10 @@ module.exports.run = async () => {
         if (plugin.destroy) {
           await plugin.destroy()
         } else {
-          console.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'destroy' command.`)
+          logger.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'destroy' command.`)
         }
       } else {
-        console.debug(`No ${pluginType} plugin was defined in the config file.`)
+        logger.debug(`No ${pluginType} plugin was defined in the config file.`)
       }
     }
   }

@@ -8,6 +8,7 @@
 const axios = require('axios')
 
 // Main packages
+const logger = require('../../../logger')
 const utils = require('../../../utils')
 
 // Plugin packages
@@ -25,17 +26,17 @@ module.exports.statusSlackChannel = async (channelName) => {
       timeout: 60000,
       validateStatus: () => true
     })
-    console.log(response.data)
+    logger.info(response.data)
     if (response.status == 200 && response.data.ok === true) {
       for (var i in response.data.channels) {
         if (response.data.channels[i].name == channelName)
           return true
       }
     } else {
-      console.debug(response.data)
+      logger.debug(response.data)
     }
   } catch (err) {
-    console.error(err.message)
+    logger.error(err.message)
   }
   return false
 }

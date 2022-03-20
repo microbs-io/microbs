@@ -14,6 +14,7 @@ const yaml = require('js-yaml')
 
 // Main packages
 const config = require('./config')
+const logger = require('./logger')
 const utils = require('./utils')
 
 // Global state object
@@ -73,7 +74,7 @@ const save = (filepath) => {
     filepath,
     yaml.dump(utils.flatten(state), { sortKeys: true }),
     'utf8',
-    (err) => console.error(err)
+    (err) => logger.error(err)
   )
 }
 

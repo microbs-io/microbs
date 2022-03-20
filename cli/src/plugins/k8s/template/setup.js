@@ -4,7 +4,10 @@
  * Template setup command.
  */
 
+// Main packages
+const logger = require('../../../logger')
+
 module.exports = async () => {
-  console.log('')
-  console.log('You ran the setup command for the template k8s plugin.')
+  logger.info('')
+  logger.info('You ran the setup command for the template k8s plugin.')
 }

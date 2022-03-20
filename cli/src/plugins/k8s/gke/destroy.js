@@ -4,6 +4,7 @@ const quote = require('shell-quote').quote
 // Main packages
 const config = require('../../../config')
 const context = require('../../../context')
+const logger = require('../../../logger')
 const utils = require('../../../utils')
 
 // Plugin packages
@@ -19,10 +20,10 @@ const validate = () => {
     'plugins.gke.region_name',
   ]
   if (!utils.configHas(requiredFields)) {
-    console.error()
-    console.error(`You must set these variables in ${context.get('filepath')} to destroy GKE:`)
-    console.error()
-    console.error(requiredFields)
+    logger.error()
+    logger.error(`You must set these variables in ${context.get('filepath')} to destroy GKE:`)
+    logger.error()
+    logger.error(requiredFields)
     process.exit(1)
   }
 }
@@ -31,12 +32,12 @@ const validate = () => {
 module.exports = async () => {
   validate()
 
-  console.log('')
-  console.log(`Destroying GKE cluster 'microbs-${config.get('deployment.name')}'...`)
+  logger.info('')
+  logger.info(`Destroying GKE cluster 'microbs-${config.get('deployment.name')}'...`)
 
   // Check if the GKE cluster exists
   if (await probe.status() === 'NOT_FOUND')
-    return console.log(`...skipping. GKE cluster does not exist.`)
+    return logger.info(`...skipping. GKE cluster does not exist.`)
 
   // Destroy the GKE cluster
   const deploymentName = config.get('deployment.name')
@@ -51,14 +52,14 @@ module.exports = async () => {
       --region "${quote([ regionName ])}" \
       --quiet
   `
-  console.debug('...sending command:')
-  console.debug(command)
+  logger.debug('...sending command:')
+  logger.debug(command)
   const res = utils.exec(command, true)
   if (res.stderr)
-    console.warn(res.stderr)
-  console.log('')
+    logger.warn(res.stderr)
+  logger.info('')
 
   // Verify that the GKE cluster was destroyed
   if (await probe.status() === 'NOT_FOUND')
-    console.log(`...acknowledged. GKE cluster destroyed.`)
+    logger.info(`...acknowledged. GKE cluster destroyed.`)
 }

@@ -14,6 +14,7 @@ const yaml = require('js-yaml')
 
 // Main packages
 const context = require('./context')
+const logger = require('./logger')
 const utils = require('./utils')
 
 // Global config object
@@ -28,7 +29,7 @@ const read = (filepath) => {
     return fs.readFileSync(filepath, 'utf8')
   } catch (err) {
     if (err.code === 'ENOENT') {
-      console.error(`No configuration file at specified path: ${filepath}`)
+      logger.error(`No configuration file at specified path: ${filepath}`)
       process.exit(1)
     } else {
       throw err

@@ -9,6 +9,7 @@ const axios = require('axios')
 // Main packages
 const config = require('../../../config')
 const context = require('../../../context')
+const logger = require('../../../logger')
 const state = require('../../../state')
 const utils = require('../../../utils')
 
@@ -28,10 +29,10 @@ const validate = () => {
     'plugins.elastic_cloud.version',
   ]
   if (!utils.configHas(requiredFields)) {
-    console.error()
-    console.error(`You must set these variables in ${context.get('filepath')} to setup Elastic Cloud:`)
-    console.error()
-    console.error(requiredFields)
+    logger.error()
+    logger.error(`You must set these variables in ${context.get('filepath')} to setup Elastic Cloud:`)
+    logger.error()
+    logger.error(requiredFields)
     process.exit(1)
   }
 }
@@ -42,21 +43,21 @@ module.exports = async () => {
   // Check if 'deployment.name' exists on Elastic Cloud
   var deploymentExists = false
   if (state.get('plugins.elastic_cloud.deployment_id')) {
-    console.log('')
-    console.log(`Deployment ID exists in .state file: ${state.get('plugins.elastic_cloud.deployment_id')}`)
-    console.log('')
-    console.log('Checking if the deployment exists on Elastic Cloud...')
+    logger.info('')
+    logger.info(`Deployment ID exists in .state file: ${state.get('plugins.elastic_cloud.deployment_id')}`)
+    logger.info('')
+    logger.info('Checking if the deployment exists on Elastic Cloud...')
     deploymentExists = await probe.statusElasticCloud()
     if (deploymentExists)
-      console.log(`...deployment exists on Elastic Cloud: 'microbs-${config.get('deployment.name')}' [deployment_id=${state.get('plugins.elastic_cloud.deployment_id')}]`)
+      logger.info(`...deployment exists on Elastic Cloud: 'microbs-${config.get('deployment.name')}' [deployment_id=${state.get('plugins.elastic_cloud.deployment_id')}]`)
     else
-      console.log('...deployment does not exist on Elastic Cloud. A new one will be created, and the .state file will be updated.')
+      logger.info('...deployment does not exist on Elastic Cloud. A new one will be created, and the .state file will be updated.')
   }
 
   // Create deployment if it doesn't exist on Elastic Cloud
   if (!deploymentExists) {
-    console.log('')
-    console.log('Creating Elastic Cloud deployment...')
+    logger.info('')
+    logger.info('Creating Elastic Cloud deployment...')
     var filepath = path.join(constants.pluginHome(), 'assets', 'elastic_cloud_deployment_template.json')
     var deployment_template = utils.loadTemplateJson(filepath, config.get())
     var response
@@ -69,18 +70,18 @@ module.exports = async () => {
         timeout: 60000,
         validateStatus: () => true
       })
-      console.debug(response.status)
-      console.debug(response.data)
+      logger.debug(response.status)
+      logger.debug(response.data)
     } catch (err) {
-      console.error(err.message)
+      logger.error(err.message)
     }
 
     // Get deployment info
     if (response.data.created === true) {
-      console.log(`...created: 'microbs-${config.get('deployment.name')}' [deployment_id=${response.data.id}]`)
+      logger.info(`...created: 'microbs-${config.get('deployment.name')}' [deployment_id=${response.data.id}]`)
     } else {
-      console.log('...failure:')
-      console.log(JSON.stringify(response.data, null, indent=2))
+      logger.info('...failure:')
+      logger.info(JSON.stringify(response.data, null, indent=2))
       process.exit(1)
     }
 
@@ -108,8 +109,8 @@ module.exports = async () => {
     let components = [ 'elasticsearch', 'kibana', 'integrations_server' ]
     for (var i in components) {
       let component = components[i]
-      console.log('')
-      console.log(`Finding endpoint for ${component}...`)
+      logger.info('')
+      logger.info(`Finding endpoint for ${component}...`)
       var found = false
       while (!found) {
         try {
@@ -131,7 +132,7 @@ module.exports = async () => {
               state.set('plugins.elastic_cloud.integrations_server.exporter_endpoint', `${(new URL(url)).hostname}:443`)
             }
             process.stdout.write('\n')
-            console.log(`...found: ${url}`)
+            logger.info(`...found: ${url}`)
             state.save()
             found = true
           } else {
@@ -139,19 +140,19 @@ module.exports = async () => {
             await utils.sleep(1000)
           }
         } catch (err) {
-          console.error(err.message)
+          logger.error(err.message)
         }
       }
     }
 
-    console.log('')
-    console.log('The Elastic Cloud deployment will be ready in ~5 minutes.')
-    console.log('')
-    console.log(`Kibana URL:              ${state.get('plugins.elastic_cloud.kibana.url')}`)
-    console.log(`Elasticsearch URL:       ${state.get('plugins.elastic_cloud.elasticsearch.url')}`)
-    console.log(`  - Username:            ${state.get('plugins.elastic_cloud.elasticsearch.username')}`)
-    console.log(`  - Password:            ${state.get('plugins.elastic_cloud.elasticsearch.password')}`)
-    console.log(`Integration Server URL:  ${state.get('plugins.elastic_cloud.integrations_server.url')}`)
+    logger.info('')
+    logger.info('The Elastic Cloud deployment will be ready in ~5 minutes.')
+    logger.info('')
+    logger.info(`Kibana URL:              ${state.get('plugins.elastic_cloud.kibana.url')}`)
+    logger.info(`Elasticsearch URL:       ${state.get('plugins.elastic_cloud.elasticsearch.url')}`)
+    logger.info(`  - Username:            ${state.get('plugins.elastic_cloud.elasticsearch.username')}`)
+    logger.info(`  - Password:            ${state.get('plugins.elastic_cloud.elasticsearch.password')}`)
+    logger.info(`Integration Server URL:  ${state.get('plugins.elastic_cloud.integrations_server.url')}`)
   }
 
   // Deploy the Beats services to Kubernetes

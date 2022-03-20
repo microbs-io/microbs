@@ -4,6 +4,7 @@ const quote = require('shell-quote').quote
 // Main packages
 const config = require('../../../config')
 const context = require('../../../context')
+const logger = require('../../../logger')
 const utils = require('../../../utils')
 
 // Plugin packages
@@ -22,10 +23,10 @@ const validate = () => {
     'plugins.gke.service_account_name',
   ]
   if (!utils.configHas(requiredFields)) {
-    console.error()
-    console.error(`You must set these variables in ${context.get('filepath')} to setup GKE:`)
-    console.error()
-    console.error(requiredFields)
+    logger.error()
+    logger.error(`You must set these variables in ${context.get('filepath')} to setup GKE:`)
+    logger.error()
+    logger.error(requiredFields)
     process.exit(1)
   }
 }
@@ -33,12 +34,12 @@ const validate = () => {
 
 module.exports = async () => {
   validate()
-  console.log('')
-  console.log(`Creating GKE cluster 'microbs-${config.get('deployment.name')}'...`)
+  logger.info('')
+  logger.info(`Creating GKE cluster 'microbs-${config.get('deployment.name')}'...`)
 
   // Check if the GKE cluster exists
   if (await probe.status() === 'RUNNING')
-    return console.log(`...skipping. GKE cluster already exists.`)
+    return logger.info(`...skipping. GKE cluster already exists.`)
 
   // Create GKE cluster
   const deploymentName = config.get('deployment.name')
@@ -75,12 +76,12 @@ module.exports = async () => {
       --num-nodes "1" \
       --release-channel "regular"
   `
-  console.debug('...sending command:')
-  console.debug(command)
+  logger.debug('...sending command:')
+  logger.debug(command)
   const result = utils.exec(command, true)
   const exists = result.stderr ? result.stderr.includes('Already exists:') : false
   if (result.stderr)
-    console.warn(result.stderr)
+    logger.warn(result.stderr)
 
   // Exit if there was an issue creating the cluster
   if (result.stderr && result.stderr.includes('ERROR:') && !exists)
@@ -88,8 +89,8 @@ module.exports = async () => {
 
   // Verify that the GKE cluster was created
   if (await probe.status() === 'RUNNING') {
-    console.log('...acknowledged. GKE cluster created.')
-    console.log('')
-    console.log('Finished setting up GKE.')
+    logger.info('...acknowledged. GKE cluster created.')
+    logger.info('')
+    logger.info('Finished setting up GKE.')
   }
 }

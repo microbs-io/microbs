@@ -3,6 +3,7 @@ const quote = require('shell-quote').quote
 
 // Main packages
 const config = require('../../../config')
+const logger = require('../../../logger')
 const utils = require('../../../utils')
 
 // Regular expressions
@@ -27,9 +28,9 @@ module.exports.describe = describe
 module.exports.status = async () => {
   const result = await describe()
   if (result.code > 0) {
-    console.error('Error from GKE:')
-    console.error('')
-    console.error(result.stderr || result.stdout)
+    logger.error('Error from GKE:')
+    logger.error('')
+    logger.error(result.stderr || result.stdout)
     process.exit(1)
   }
   if (result.stderr) {

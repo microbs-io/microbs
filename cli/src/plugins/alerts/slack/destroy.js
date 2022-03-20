@@ -4,7 +4,10 @@
  * Setup Slack channel.
  */
 
+// Main packages
+const logger = require('../../../logger')
+
 module.exports = async () => {
-  console.log('')
-  console.log('Slack channels must be deleted via the Slack user interface.')
+  logger.info('')
+  logger.info('Slack channels must be deleted via the Slack user interface.')
 }

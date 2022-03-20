@@ -4,7 +4,10 @@
  * Template destroy command.
  */
 
+// Main packages
+const logger = require('../../../logger')
+
 module.exports = async () => {
-  console.log('')
-  console.log('You ran the destroy command for the template obs plugin.')
+  logger.info('')
+  logger.info('You ran the destroy command for the template obs plugin.')
 }

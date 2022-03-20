@@ -10,6 +10,7 @@ const axios = require('axios')
 
 // Main packages
 const config = require('../../../config')
+const logger = require('../../../logger')
 const state = require('../../../state')
 const utils = require('../../../utils')
 
@@ -32,7 +33,7 @@ module.exports.statusElasticCloud = async () => {
     if (_.range(400, 600).includes(response.status) && !_.range(404, 411).includes(response.status))
       throw new Error(response)
   } catch (err) {
-    console.error(err.message)
+    logger.error(err.message)
   }
   return false
 }

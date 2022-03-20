@@ -14,6 +14,7 @@ const quote = require('shell-quote').quote
 // Main packages
 const config = require('../config')
 const context = require('../context')
+const logger = require('../logger')
 const plugins = require('../plugins')
 const state = require('../state')
 const utils = require('../utils')
@@ -36,27 +37,26 @@ const rollout = async (opts) => {
   validate(opts)
 
   // Recreate microbs-secrets
-  console.log('')
-  console.log('Recreating microbs-secrets on Kubernetes...')
-  console.debug('...removing old microbs-secrets from Kubernetes...')
+  logger.info('')
+  logger.info('Recreating microbs-secrets on Kubernetes...')
+  logger.debug('...removing old microbs-secrets from Kubernetes...')
   utils.exec(`kubectl delete secret microbs-secrets --namespace=${quote([ opts.namespace ])}`, true)
 
   // Save .state
   state.save()
 
   // Turn .state into .env for microbs-secrets
-  console.debug(`...staging new microbs-secrets at ${process.cwd()}/.env`)
+  logger.debug(`...staging new microbs-secrets at ${process.cwd()}/.env`)
   const envFilepath = `${process.cwd()}/.env`
   utils.createEnvFile(state.get(), envFilepath)
 
-  //console.debug('')
-  console.debug('...deploying new microbs-secrets to Kubernetes...')
+  logger.debug('...deploying new microbs-secrets to Kubernetes...')
   utils.exec(`kubectl create secret generic microbs-secrets --from-env-file='${quote([ envFilepath ])}' --namespace=${quote([ opts.namespace ])}`, true)
-  console.log('...done.')
+  logger.info('...done.')
 
-  console.log('')
-  console.log(`Rolling out the '${opts.profile}' profile with skaffold...`)
-  console.log('')
+  logger.info('')
+  logger.info(`Rolling out the '${opts.profile}' profile with skaffold...`)
+  logger.info('')
   var command = `skaffold ${quote([ opts.action ])} -p "${quote([ opts.profile ])}" -f "${quote([ opts.skaffoldFilepath ])}"`
   if (opts.action == 'run')
     command = `${command} -l "skaffold.dev/run-id=microbs-${quote([ config.get('deployment.name') ])}"`
@@ -64,8 +64,8 @@ const rollout = async (opts) => {
     command = `${command} --default-repo="${quote([ config.get('docker.registry') ])}"`
   utils.exec(command)
 
-  console.log('')
-  console.log('Rollout complete.')
+  logger.info('')
+  logger.info('Rollout complete.')
 }
 
 /**
@@ -103,18 +103,18 @@ module.exports.run = async (opts) => {
         if (plugin.rollout) {
           await plugin.rollout(opts)
         } else {
-          console.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'rollout' command.`)
+          logger.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'rollout' command.`)
         }
       } else {
-        console.debug(`No ${pluginType} plugin was defined in the config file.`)
+        logger.debug(`No ${pluginType} plugin was defined in the config file.`)
       }
     }
   }
 
   // Rollout the application services, if given.
   if (all || args.app) {
-    console.log('')
-    console.log(`Starting services for the '${config.get('deployment.app')}' application on Kubernetes...`)
+    logger.info('')
+    logger.info(`Starting services for the '${config.get('deployment.app')}' application on Kubernetes...`)
     opts.skaffoldFilepath = path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'skaffold.yaml')
     await rollout(opts)
   }

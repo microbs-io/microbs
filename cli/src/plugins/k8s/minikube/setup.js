@@ -5,23 +5,24 @@
  */
 
 // Main packages
+const logger = require('../../../logger')
 const utils = require('../../../utils')
 
 // Plugin packages
 const probe = require('./probe')
 
 module.exports = async () => {
-  console.log('')
-  console.log('Creating minikube cluster...')
+  logger.info('')
+  logger.info('Creating minikube cluster...')
   utils.exec('minikube start', true)
 
   // Verify that the minikube cluster was created.
-  console.log('')
-  console.log('Verifying that minikube is available...')
+  logger.info('')
+  logger.info('Verifying that minikube is available...')
   if (await probe.status()) {
-    process.stdout.write('...acknowledged. minikube is ready.\n')
+    logger.info('...acknowledged. minikube is ready.\n')
   } else {
-    process.stdout.write('...failure. minikube did not start successfully.\n')
+    logger.error('...failure. minikube did not start successfully.\n')
     process.exit(1)
   }
 }

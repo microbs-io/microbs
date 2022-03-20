@@ -5,23 +5,24 @@
  */
 
 // Main packages
+const logger = require('../../../logger')
 const utils = require('../../../utils')
 
 // Plugin packages
 const probe = require('./probe')
 
 module.exports = async () => {
-  console.log('')
-  console.log('Destroying minikube cluster...')
+  logger.info('')
+  logger.info('Destroying minikube cluster...')
   utils.exec('minikube delete')
 
   // Verify that the minikube cluster was destroyed.
-  console.log('')
-  console.log('Verifying that minikube cluster is destroyed...')
+  logger.info('')
+  logger.info('Verifying that minikube cluster is destroyed...')
   if (!(await probe.status())) {
-    process.stdout.write('...acknowledged. minikube is destroyed.\n')
+    logger.info('...acknowledged. minikube is destroyed.')
   } else {
-    process.stdout.write('...failure. minikube was not destroyed.\n')
+    logger.error('...failure. minikube was not destroyed.')
     process.exit(1)
   }
 }

@@ -4,7 +4,10 @@
  * Template rollout command.
  */
 
+// Main packages
+const logger = require('../../../logger')
+
 module.exports = async () => {
-  console.log('')
-  console.log('You ran the rollout command for the template alerts plugin.')
+  logger.info('')
+  logger.info('You ran the rollout command for the template alerts plugin.')
 }
