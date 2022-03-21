@@ -15,7 +15,6 @@ const quote = require('shell-quote').quote
 const config = require('../config')
 const context = require('../context')
 const logger = require('../logger')
-const plugins = require('../plugins')
 const state = require('../state')
 const utils = require('../utils')
 
@@ -89,33 +88,9 @@ module.exports.run = async (opts) => {
   state.set('deployment.version', crypto.randomBytes(4).toString('hex'))
   state.save()
 
-  // Determine which plugins(s) to invoke for this command.
-  const all = (!args.alerts && !args.app && !args.k8s && !args.obs)
-  const pluginTypes = [ 'k8s', 'obs', 'alerts' ]
-
-  // Invoke the 'rollout' command for each given plugin that implements it.
-  for (var i in pluginTypes) {
-    let pluginType = pluginTypes[i]
-    if (all || args[pluginType]) {
-      var pluginName = config.get(`deployment.plugins.${pluginType}`)
-      var plugin = plugins[pluginType][pluginName]
-      if (plugin) {
-        if (plugin.rollout) {
-          await plugin.rollout(opts)
-        } else {
-          logger.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'rollout' command.`)
-        }
-      } else {
-        logger.debug(`No ${pluginType} plugin was defined in the config file.`)
-      }
-    }
-  }
-
   // Rollout the application services, if given.
-  if (all || args.app) {
-    logger.info('')
-    logger.info(`Starting services for the '${config.get('deployment.app')}' application on Kubernetes...`)
-    opts.skaffoldFilepath = path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'skaffold.yaml')
-    await module.exports.rollout(opts)
-  }
+  logger.info('')
+  logger.info(`Starting services for the '${config.get('deployment.app')}' application on Kubernetes...`)
+  opts.skaffoldFilepath = path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'skaffold.yaml')
+  await module.exports.rollout(opts)
 }
