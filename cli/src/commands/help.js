@@ -29,7 +29,7 @@ Usage: ${chalk.cyan('microbs COMMAND [options]')}
   ${chalk.cyan('microbs rollout')}     Rollout a variant of a deployed application
     [VARIANT_NAME]    Name of the variant to rollout
 
-  ${chalk.cyan('microbs stabilize')}   Revert a deployed application to its stable scenario
+  ${chalk.cyan('microbs stabilize')}   Revert a deployed application to its main profile
   ${chalk.cyan('microbs validate')}    Validate microbs installation and config
   ${chalk.cyan('microbs apps')}        List all deployable applications
   ${chalk.cyan('microbs plugins')}     List all available plugins
