@@ -26,7 +26,7 @@ const validate = (opts) => {
     throw new Error('opts.skaffoldFilepath must be given')
 }
 
-const rollout = async (opts) => {
+module.exports.rollout = async (opts) => {
   var opts = opts || {}
   if (!opts.action)
     opts.action = 'run'
@@ -116,6 +116,6 @@ module.exports.run = async (opts) => {
     logger.info('')
     logger.info(`Starting services for the '${config.get('deployment.app')}' application on Kubernetes...`)
     opts.skaffoldFilepath = path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'skaffold.yaml')
-    await rollout(opts)
+    await module.exports.rollout(opts)
   }
 }

@@ -67,6 +67,8 @@ const init = (filepath) => {
  * Persist the state object to the .state file.
  */
 const save = (filepath) => {
+  if (_.isEmpty(state))
+    init()
   filepath = filepath || path.join(process.cwd(), '.state')
 
   // Save .state file
@@ -82,12 +84,20 @@ const save = (filepath) => {
  * Get a value from the state object at a given path (i.e. dotted key),
  * or get the entire state object if no path is given.
  */
-const get = (path) => path ? _.get(_.isEmpty(state) ? init() : state, path) : _.isEmpty(state) ? init() : state
+const get = (path) => {
+  if (_.isEmpty(state))
+    init()
+  return path ? _.get(state, path) : state
+}
 
 /**
  * Set a value in the state object at a given path (i.e. dotted key).
  */
-const set = (path, value) => _.set(_.isEmpty(state) ? init() : state, path, value)
+const set = (path, value) => {
+  if (_.isEmpty(state))
+    init()
+  _.set(state, path, value)
+}
 
 // Export state
 module.exports = {
@@ -96,6 +106,6 @@ module.exports = {
   init: init,
   load: load,
   parse: parse,
-  read: parse,
+  read: read,
   save: save
 }

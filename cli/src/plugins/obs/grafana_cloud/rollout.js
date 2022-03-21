@@ -13,5 +13,5 @@ const rollout = require('../../../commands/rollout')
 module.exports = async (opts) => {
   var opts = opts || {}
   opts.skaffoldFilepath = path.join(__dirname, 'skaffold.yaml')
-  return await rollout(opts)
+  return await rollout.rollout(opts)
 }

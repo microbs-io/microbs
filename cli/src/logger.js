@@ -40,6 +40,7 @@ const verboseMessage = (message, level, lineNum) => {
 }
 
 const debug = (message, lineNum) => {
+  message = message.toString()
 
   // Filter log message if --log-level is greater than debug
   if (!showDebug())
@@ -61,6 +62,7 @@ const debug = (message, lineNum) => {
 }
 
 const info = (message, lineNum) => {
+  message = message.toString()
 
   // Filter log message if --log-level is greater than info
   if (!showInfo())
@@ -82,6 +84,7 @@ const info = (message, lineNum) => {
 }
 
 const warn = (message, lineNum) => {
+  message = message.toString()
 
   // Filter log message if --log-level is greater than warn
   if (!showWarn())
@@ -103,6 +106,7 @@ const warn = (message, lineNum) => {
 }
 
 const error = (message, lineNum) => {
+  message = message.toString()
 
   // Write log message if not --verbose
   if (!verbose())
