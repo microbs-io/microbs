@@ -20,9 +20,9 @@ module.exports = async () => {
   logger.info('')
   logger.info('Verifying that kind is available...')
   if (await probe.status()) {
-    logger.info('...acknowledged. kind is ready.\n')
+    logger.info('...acknowledged. kind is ready.')
   } else {
-    logger.error('...failure. kind did not start successfully.\n')
+    logger.error('...failure. kind did not start successfully.')
     process.exit(1)
   }
 }

@@ -20,9 +20,9 @@ module.exports = async () => {
   logger.info('')
   logger.info('Verifying that minikube is available...')
   if (await probe.status()) {
-    logger.info('...acknowledged. minikube is ready.\n')
+    logger.info('...acknowledged. minikube is ready.')
   } else {
-    logger.error('...failure. minikube did not start successfully.\n')
+    logger.error('...failure. minikube did not start successfully.')
     process.exit(1)
   }
 }

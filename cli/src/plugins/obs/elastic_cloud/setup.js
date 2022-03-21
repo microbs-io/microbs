@@ -131,12 +131,10 @@ module.exports = async () => {
               state.set('plugins.elastic_cloud.integrations_server.url', url)
               state.set('plugins.elastic_cloud.integrations_server.exporter_endpoint', `${(new URL(url)).hostname}:443`)
             }
-            process.stdout.write('\n')
             logger.info(`...found: ${url}`)
             state.save()
             found = true
           } else {
-            process.stdout.write('.')
             await utils.sleep(1000)
           }
         } catch (err) {

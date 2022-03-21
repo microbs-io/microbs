@@ -20,9 +20,9 @@ module.exports = async () => {
   logger.info('')
   logger.info('Verifying that kind cluster is destroyed...')
   if (!(await probe.status())) {
-    logger.info('...acknowledged. kind is destroyed.\n')
+    logger.info('...acknowledged. kind is destroyed.')
   } else {
-    logger.error('...failure. kind was not destroyed.\n')
+    logger.error('...failure. kind was not destroyed.')
     process.exit(1)
   }
 }

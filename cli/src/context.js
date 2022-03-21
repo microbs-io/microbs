@@ -69,6 +69,12 @@ const init = () => {
           context.args['log-level'] = value
           break
 
+        // -v | --verbose  Display timestamps and log levels with each log line
+        case 'v':
+        case 'verbose':
+          context.args['verbose'] = true
+          break
+
         // -a | --app  Application under ./apps
         case 'a':
         case 'app':
