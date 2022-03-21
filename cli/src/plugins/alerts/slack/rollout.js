@@ -5,9 +5,9 @@
  */
 
 // Main packages
-const logger = ('../../../logger')
+const logger = require('../../../logger')
 
 module.exports = async () => {
   logger.info('')
-  logger.info('You ran the rollout command for the template alerts plugin.')
+  logger.info('The slack alerts plugin does not implement rollout.')
 }
