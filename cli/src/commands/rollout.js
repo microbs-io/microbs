@@ -58,13 +58,16 @@ module.exports.rollout = async (opts) => {
   logger.info('')
   var command = `skaffold ${quote([ opts.action ])} -p "${quote([ opts.profile ])}" -f "${quote([ opts.skaffoldFilepath ])}"`
   if (opts.action == 'run')
-    command = `${command} -l "skaffold.dev/run-id=microbs-${quote([ config.get('deployment.name') ])}"`
+    command = `${command} -l "skaffold.dev/run-id=microbs-${quote([ config.get('deployment.name') ])}" --status-check=false`
   if (config.get('docker.registry'))
     command = `${command} --default-repo="${quote([ config.get('docker.registry') ])}"`
   utils.exec(command)
 
   logger.info('')
-  logger.info('Rollout complete.')
+  if (opts.action == 'run')
+    logger.info('Rollout complete. It might take a moment for changes to take effect.')
+  else
+    logger.info('Rollout complete.')
 }
 
 /**

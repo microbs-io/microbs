@@ -1,105 +1,149 @@
-// Standarcd packages
-const process = require('process')
+// Node.js packages
+import * as faker from '@faker-js/faker'
+import { GenCC } from 'creditcard-generator'
 
-// Third-party packages
-const _ = require('lodash')
-const { chromium } = require('playwright')
-const concurrently = require('concurrently')
-const generator = require('creditcard-generator')
-const parseArgs = require('minimist')
+// k6 packages
+import http from 'k6/http'
+import { sleep } from 'k6'
 
-const SERVICE_HOST_WEB_GATEWAY = process.env.SERVICE_HOST_WEB_GATEWAY || 'web-gateway.default.svc.cluster.local'
-const SERVICE_PORT_WEB_GATEWAY = process.env.SERVICE_HOST_WEB_GATEWAY || 80
+ // TODO: Revert default
+const SERVICE_HOST_WEB_GATEWAY = __ENV.SERVICE_HOST_WEB_GATEWAY || 'web-gateway.default.svc.cluster.local'
+const SERVICE_PORT_WEB_GATEWAY = __ENV.SERVICE_HOST_WEB_GATEWAY || 80
 const BASE_URL = `http://${SERVICE_HOST_WEB_GATEWAY}:${SERVICE_PORT_WEB_GATEWAY}`
 
-const randomTime = () => {
-  return _.random(200, 2000)
+// k6 Configuration
+export const options = {
+  vus: 3,
+  duration: '36500d',
 }
 
-/**
- * Synthetic journey for shopping and submitting an order.
- */
-const journey = async () => {
-
-  // Setup
-  const browser = await chromium.launch({ headless: true })
-  const context = await browser.newContext()
-  const page = await context.newPage()
-
-  // Load home
-  await page.goto(BASE_URL)
-  await page.waitForTimeout(randomTime())
-
-  // Select a random product and click the "Add to cart" button
-  n = _.random(0, await page.locator('.card').count())
-  await page.locator('.card > .extra button').nth(n).click()
-  await page.waitForTimeout(randomTime())
-
-  // Click the "View Cart" button
-  await page.locator('.top .blue').click()
-  await page.waitForSelector('.bottom .blue')
-  await page.waitForTimeout(randomTime())
-
-  // Click the "Proceed to Checkout" button
-  await page.locator('.bottom .blue').click()
-  await page.waitForSelector('.bottom .teal')
-  await page.waitForTimeout(randomTime())
-
-  // Provide a random valid card number
-  const cardNumber = generator.GenCC('VISA')[0]
-  await page.fill('input[placeholder="Card Number"]', cardNumber)
-  await page.waitForTimeout(randomTime())
-
-  // Click the "Submit Order" button
-  await page.locator('.bottom .teal').click()
-  await page.waitForSelector('text="Hooray!"')
-  await page.waitForTimeout(randomTime())
-
-  // Teardown
-  await context.close()
-  await browser.close()
+// Utils
+const pause = () => sleep(1 + Math.random() * 2)
+const json = (data) => JSON.stringify(data)
+const jsonParams = () => {
+  return { headers: { 'Content-Type': 'application/json' }}
 }
-
-/**
- * Run journey in a loop.
- */
-const run = async () => {
-  while (true) {
-    try {
-      await journey()
-    } catch (e) {
-      console.error(e)
+const randomUser = () => {
+  faker.setLocale('en_US')
+  const name = faker.name.findName()
+  const postalCode = faker.address.zipCode()
+  const identity = {
+    address: {
+      street_1: faker.address.streetAddress(),
+      street_2: faker.address.secondaryAddress(),
+      city: faker.address.cityName(),
+      state: faker.address.stateAbbr(),
+      postal_code: postalCode,
+      country: 'US'
+    },
+    card: {
+      name: name,
+      number: GenCC('VISA')[0],
+      expiration: faker.date.future(),
+      security_code: faker.finance.creditCardCVV(),
+      postal_code: postalCode
     }
   }
+  return identity
 }
 
-/**
- * Run multiple journeys in a loop.
- */
-const runConcurrently = async (num) => {
-  const processes = []
-  for (var i in _.range(0, num))
-    processes.push('node ./index.js')
-  concurrently(processes)
-}
+export default () => {
+  const user = randomUser()
 
-if (require.main === module) {
-  const args = parseArgs(process.argv.slice(2))
-  var num = 1
-  for (var key in args) {
-    if (!Array.isArray(args[key]))
-      args[key] = [ args[key] ]
-    for (var i in args[key]) {
-      switch (key) {
-        case 'n':
-        case 'num':
-          num = parseInt(args[key][i]) || 1
-          break
+  ////  Load home   ////////////////////////////////////////////////////////////
+
+  // User request
+  console.debug('Load home...')
+  http.get(`${BASE_URL}/`)
+  const session_id = (http.cookieJar().cookiesForURL(`${BASE_URL}/`).session_id || [])[0]
+
+  // Browser XHR
+  http.post(`${BASE_URL}/api/v1/product/search`, json({ query: '', page: { size: 6 }}), jsonParams())
+  http.post(`${BASE_URL}/api/v1/cart`, json({ session_id: session_id }), jsonParams())
+  http.get(`${BASE_URL}/api/v1/content/sweet-tea.jpeg`)
+  http.get(`${BASE_URL}/api/v1/content/cinnamon-tea.jpeg`)
+  http.get(`${BASE_URL}/api/v1/content/coffee.jpeg`)
+  http.get(`${BASE_URL}/api/v1/content/watermelon-juice.jpeg`)
+  http.get(`${BASE_URL}/api/v1/content/mocha-latte.jpeg`)
+  http.get(`${BASE_URL}/api/v1/content/hot-chocolate.jpeg`)
+
+  pause()
+
+  ////  Add product to cart   //////////////////////////////////////////////////
+
+  // User XHR
+  console.debug('Add product to cart...')
+  http.put(`${BASE_URL}/api/v1/cart/f95e2475/1`, json({ session_id: session_id }), jsonParams())
+
+  // Browser XHR
+  http.post(`${BASE_URL}/api/v1/cart`, json({ session_id: session_id }), jsonParams())
+  http.post(`${BASE_URL}/api/v1/product/documents`, json([ 'f95e2475' ]), jsonParams())
+
+  pause()
+
+  ////  View cart  /////////////////////////////////////////////////////////////
+
+  // User request
+  console.debug('View cart...')
+  http.get(`${BASE_URL}/cart`)
+
+  // Browser XHR
+  http.post(`${BASE_URL}/api/v1/product/documents`, json([ 'f95e2475' ]), jsonParams())
+  http.get(`${BASE_URL}/api/v1/content/sweet-tea.jpeg`)
+
+  pause()
+
+  ////  Proceed to checkout   //////////////////////////////////////////////////
+
+  // Request
+  console.debug('Proceed to checkout...')
+  http.get(`${BASE_URL}/checkout`)
+
+  // Browser XHR
+  http.post(`${BASE_URL}/api/v1/cart`, json({ session_id: session_id }), jsonParams())
+  http.post(`${BASE_URL}/api/v1/product/documents`, json([ 'f95e2475' ]), jsonParams())
+
+  pause()
+
+  ////  Submit payment   ///////////////////////////////////////////////////////
+
+  // User XHR
+  console.debug('Submit payment...')
+  http.post(`${BASE_URL}/api/v1/checkout/process`, json({
+    amount: 3.5,
+    shipping: {
+      address: {
+        street_1: user.address.street_1,
+        street_2: user.address.street_2,
+        city: user.address.city,
+        state: user.address.state,
+        postal_code: user.address.postal_code,
+        country: user.address.country
       }
-    }
-  }
-  if (num > 1)
-    runConcurrently(num)
-  else
-    run()
+    },
+    billing: {
+      address: {
+        street_1: user.address.street_1,
+        street_2: user.address.street_2,
+        city: user.address.city,
+        state: user.address.state,
+        postal_code: user.address.postal_code,
+        country: user.address.country
+      },
+      card: {
+        name: user.card.name,
+        number: user.card.number,
+        expiration: user.card.expiration,
+        security_code: user.card.security_code,
+        postal_code: user.card.postal_codde
+      }
+    },
+    session_id: session_id
+  }), jsonParams())
+
+  // Browser XHR
+  http.post(`${BASE_URL}/api/v1/cart`, json({ session_id: session_id }), jsonParams())
+
+  pause()
+
 }
