@@ -23,9 +23,6 @@ spec:
         image: microbs-ecommerce-synthetics
         imagePullPolicy: IfNotPresent
         resources:
-          limits:
-            cpu: "2"
-            memory: 512Mi
           requests:
             cpu: "1"
             memory: 128Mi

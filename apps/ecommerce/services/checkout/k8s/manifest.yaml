@@ -36,6 +36,12 @@ spec:
           value: api-gateway
         - name: SERVICE_PORT_API_GATEWAY
           value: "80"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: pod=$(POD_NAME)
         envFrom:
         - secretRef:
            name: microbs-secrets

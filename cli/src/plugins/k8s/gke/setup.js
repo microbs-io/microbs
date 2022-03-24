@@ -56,7 +56,7 @@ module.exports = async () => {
       --subnetwork "projects/${quote([ projectName ])}/regions/${quote([ regionName ])}/subnetworks/${quote([ subnetworkName ])}" \
       --service-account "${quote([ serviceAccountName ]).replace('\\@', '@')}" \
       --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver \
-      --cluster-version "1.21.6-gke.1503" \
+      --cluster-version "1.21" \
       --default-max-pods-per-node "110" \
       --disk-size "32" \
       --disk-type "pd-ssd" \

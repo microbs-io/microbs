@@ -32,6 +32,12 @@ spec:
         env:
         - name: SERVICE_NAME
           value: payment
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: pod=$(POD_NAME)
         envFrom:
         - secretRef:
            name: microbs-secrets

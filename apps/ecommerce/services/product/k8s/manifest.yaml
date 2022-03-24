@@ -40,6 +40,12 @@ spec:
           value: postgres
         - name: SERVICE_PASSWORD_PRODUCT_DATA
           value: password
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: pod=$(POD_NAME)
         envFrom:
         - secretRef:
            name: microbs-secrets

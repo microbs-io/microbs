@@ -66,4 +66,14 @@ profiles:
   deploy:
     kubectl:
       manifests:
-      - ./apps/ecommerce/variants/basic-bug/product/k8s/*.yaml
+      - ./apps/ecommerce/variants/basic-bug/*/k8s/*.yaml
+
+- name: traffic-spike
+  build:
+    artifacts:
+    - image: microbs-ecommerce-synthetics
+      context: ./apps/ecommerce/variants/traffic-spike/synthetics
+  deploy:
+    kubectl:
+      manifests:
+      - ./apps/ecommerce/variants/traffic-spike/*/k8s/*.yaml
