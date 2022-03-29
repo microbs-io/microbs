@@ -100,16 +100,42 @@ module.exports = async () => {
     state.set('plugins.grafana_cloud.tempo.username', response.data.htInstanceId)
     state.save()
 
+    // Create Grafana API Key
+    //
+    // This key is different from the Grafana Cloud API Key. It's used to manage
+    // resources such as dashboards within the Grafana instance.
     logger.info('')
-    logger.info('The Grafana Cloud deployment is ready.')
-    logger.info('')
-    logger.info(`Grafana URL:       ${state.get('plugins.grafana_cloud.grafana.url')}`)
-    logger.info(`Loki URL:          ${state.get('plugins.grafana_cloud.loki.url')}`)
-    logger.info(`  - Username:      ${state.get('plugins.grafana_cloud.loki.username')}`)
-    logger.info(`Prometheus URL:    ${state.get('plugins.grafana_cloud.prometheus.url')}`)
-    logger.info(`  - Username:      ${state.get('plugins.grafana_cloud.prometheus.username')}`)
-    logger.info(`Tempo URL:         ${state.get('plugins.grafana_cloud.tempo.url')}`)
-    logger.info(`  - Username:      ${state.get('plugins.grafana_cloud.tempo.username')}`)
+    logger.info('Creating Grafana API Key...')
+    var response
+    try {
+      response = await axios.request({
+        method: 'post',
+        url: `https://grafana.com/api/instances/${state.get('plugins.grafana_cloud.stack_slug')}/api/auth/keys`,
+        data: {
+          name: 'microbs',
+          role: 'Admin'
+        },
+        headers: constants.grafanaCloudApiHeaders(),
+        timeout: 60000,
+        validateStatus: () => true
+      })
+      logger.debug(response.status)
+      logger.debug(response.data)
+    } catch (err) {
+      logger.error(err.message)
+    }
+
+    // Get stack info
+    if (response.status == 200) {
+      logger.info('...created.')
+    } else if (response.status == 409 && response.data.message.includes('must be unique')) {
+      logger.info('...exists.')
+    } else {
+      logger.info('...failure:')
+      logger.info(JSON.stringify(response.data, null, indent=2))
+      process.exit(1)
+    }
+    state.set('plugins.grafana_cloud.grafana_api_key', response.data.key)
   }
 
   // Deploy the grafana-agent service to Kubernetes

@@ -23,6 +23,6 @@ module.exports.pluginHome = () => {
  */
 module.exports.elasticCloudApiHeaders = (elasticCloudApiKey) => {
   return {
-    "Authorization": `ApiKey ${elasticCloudApiKey || config.get('plugins.elastic_cloud.api_key')}`
+    Authorization: `ApiKey ${elasticCloudApiKey || config.get('plugins.elastic_cloud.api_key')}`
   }
 }

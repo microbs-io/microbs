@@ -13,12 +13,12 @@ const rollout = require('./rollout')
 
 module.exports.run = async () => {
   const args = context.get('args')
+  const pluginTypes = [ 'alerts', 'k8s', 'obs' ]
 
   // Determine which plugins(s) to invoke for this command.
   const all = (!args.alerts && !args.app && !args.k8s && !args.obs)
 
   // Invoke the 'setup' command for each plugin that implements it.
-  const pluginTypes = [ 'alerts', 'k8s', 'obs' ]
   for (var i in pluginTypes) {
     let pluginType = pluginTypes[i]
     if (all || args[pluginType]) {
@@ -37,6 +37,24 @@ module.exports.run = async () => {
   }
 
   // Rollout the application services for the 'main' profile, if applicable.
-  if (all || args.app)
+  if (all || args.app) {
     await rollout.run({ profile: 'main' })
+
+    // Invoke the 'onSetupApp' hook for each plugin that implements it.
+    for (var i in pluginTypes) {
+      let pluginType = pluginTypes[i]
+      var pluginName = config.get(`deployment.plugins.${pluginType}`)
+      var plugin = plugins[pluginType][pluginName]
+      if (plugin) {
+        if (plugin.hooks && plugin.hooks.onSetupApp) {
+          logger.debug(`Calling 'onSetupApp' from the '${pluginName}' ${pluginType} plugin.`)
+          await plugin.hooks.onSetupApp()
+        } else {
+          logger.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'onSetupApp' command.`)
+        }
+      } else {
+        logger.debug(`No ${pluginType} plugin was defined in the config file.`)
+      }
+    }
+  }
 }

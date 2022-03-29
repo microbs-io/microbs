@@ -10,6 +10,7 @@ const path = require('path')
 // Main packages
 const config = require('../../../config')
 const context = require('../../../context')
+const state = require('../../../state')
 
 /**
  * Absolute path to the directory of this plugin.
@@ -23,6 +24,15 @@ module.exports.pluginHome = () => {
  */
 module.exports.grafanaCloudApiHeaders = (grafanaCloudApiKey) => {
   return {
-    "Authorization": `Bearer ${grafanaCloudApiKey || config.get('plugins.grafana_cloud.api_key')}`
+    Authorization: `Bearer ${grafanaCloudApiKey || config.get('plugins.grafana_cloud.api_key')}`
+  }
+}
+
+/**
+ * Shorthand for setting Grafana API headers.
+ */
+module.exports.grafanaApiHeaders = (grafanaApiKey) => {
+  return {
+    Authorization: `Bearer ${grafanaApiKey || state.get('plugins.grafana_cloud.grafana_api_key')}`
   }
 }

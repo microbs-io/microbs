@@ -44,6 +44,13 @@ module.exports.loadTemplateJson = (filepath, values) => {
 }
 
 /**
+ * Read a file and convert it to a JSON object without populating any variables.
+ */
+module.exports.loadJson = (filepath) => {
+  return JSON.parse(module.exports.loadFile(filepath).trim())
+}
+
+/**
  * Sleep for a given number of milliseconds.
  */
 module.exports.sleep = (ms) => {
