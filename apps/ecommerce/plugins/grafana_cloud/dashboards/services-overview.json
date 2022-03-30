@@ -21,8 +21,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 35,
-  "iteration": 1648565898127,
+  "id": 38,
+  "iteration": 1648572715534,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -70,7 +70,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "never",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -116,7 +116,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "#00ff00",
+                  "fixedColor": "text",
                   "mode": "fixed"
                 }
               },
@@ -205,7 +205,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "never",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -245,13 +245,19 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "#00ff00",
+                  "fixedColor": "text",
                   "mode": "fixed"
                 }
               },
               {
                 "id": "custom.fillOpacity",
                 "value": 0
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
               }
             ]
           }
@@ -514,7 +520,7 @@
   "timepicker": {},
   "timezone": "",
   "title": "Services Overview",
-  "uid": "zgRIIQE7z",
-  "version": 1,
+  "uid": "services-overview",
+  "version": 2,
   "weekStart": ""
 }

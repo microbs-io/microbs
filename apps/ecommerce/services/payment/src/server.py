@@ -17,7 +17,7 @@ def process_payment(card_number, amount):
     """
     Process a payment. Wait for a random time to simulate processing.
     """
-    time.sleep(random.uniform(1.0, 4.0))
+    time.sleep(random.uniform(0.5, 1.0))
 
 def validate_card_number(card_number):
     """
