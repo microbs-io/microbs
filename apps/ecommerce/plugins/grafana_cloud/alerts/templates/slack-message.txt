@@ -1,0 +1,1 @@
+{{ define "ecommerce-message" }}{{ range .Alerts.Firing }} {{ template "ecommerce-alert" . }} {{ end }}{{ end }}

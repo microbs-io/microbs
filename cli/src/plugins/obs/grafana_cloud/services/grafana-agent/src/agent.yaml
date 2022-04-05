@@ -95,6 +95,21 @@ traces:
       backend: logs_instance
       logs_instance_name: integrations
       roots: true
+    scrape_configs:
+    - pipeline_stages:
+      - docker:
+      job_name: kubernetes-pods-name
+      kubernetes_sd_configs:
+      - role: pod
+      relabel_configs:
+      - action: replace
+        source_labels:
+        - __meta_kubernetes_pod_label_app
+        target_label: __service__
+      - action: replace
+        source_labels:
+        - __meta_kubernetes_pod_node_name
+        target_label: __host__
 
 logs:
   configs:

@@ -1,0 +1,120 @@
+{
+  "name": "Latency",
+  "interval": "10s",
+  "rules": [{
+    "grafana_alert": {
+      "uid": "LbM8aYynk",
+      "title": "High Latency",
+      "condition": "B",
+      "no_data_state": "NoData",
+      "exec_err_state": "Alerting",
+      "data": [{
+        "refId": "A",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 300,
+          "to": 0
+        },
+        "datasourceUid": "grafanacloud-prom",
+        "model": {
+          "exemplar": false,
+          "expr": "histogram_quantile(.95, sum(rate(traces_spanmetrics_latency_bucket{}[1m])) by (le, service_name)) > 2000",
+          "hide": false,
+          "interval": "",
+          "intervalMs": 1000,
+          "legendFormat": "",
+          "maxDataPoints": 43200,
+          "refId": "A"
+        }
+      }, {
+        "refId": "B",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 0,
+          "to": 0
+        },
+        "datasourceUid": "-100",
+        "model": {
+          "conditions": [{
+            "evaluator": {
+              "params": [2, 0],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": ["A"]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }],
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "A",
+          "hide": false,
+          "intervalMs": 1000,
+          "maxDataPoints": 43200,
+          "reducer": "mean",
+          "refId": "B",
+          "settings": {
+            "mode": ""
+          },
+          "type": "reduce"
+        }
+      }, {
+        "refId": "C",
+        "queryType": "",
+        "relativeTimeRange": {
+          "from": 0,
+          "to": 0
+        },
+        "datasourceUid": "-100",
+        "model": {
+          "conditions": [{
+            "evaluator": {
+              "params": [0, 0],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": []
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }],
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "$B / 1000.0",
+          "hide": false,
+          "intervalMs": 1000,
+          "maxDataPoints": 43200,
+          "refId": "C",
+          "type": "math"
+        }
+      }]
+    },
+    "for": "1m",
+    "annotations": {
+      "SLO": "2.0s",
+      "Value": "{{ humanizeDuration $values.C.Value }}",
+      "__dashboardUid__": "services-overview",
+      "summary": "High Latency - {{ $labels.service_name }}"
+    },
+    "labels": {
+      "severity": "3"
+    }
+  }]
+}

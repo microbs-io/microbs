@@ -1,0 +1,10 @@
+{
+  "receiver": "Slack",
+  "routes": [{
+    "receiver": "Slack",
+    "object_matchers": [
+      ["alertname", "=", "High Latency"]
+    ],
+    "repeat_interval": "5m"
+  }]
+}

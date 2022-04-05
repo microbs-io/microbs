@@ -7,7 +7,7 @@ metadata:
     app: ecommerce
     service: synthetics
 spec:
-  replicas: 3
+  replicas: 6
   revisionHistoryLimit: 0
   selector:
     matchLabels:
@@ -29,6 +29,8 @@ spec:
         env:
         - name: SERVICE_NAME
           value: synthetics
+        - name: NUM_VIRTUAL_USERS
+          value: "40"
         envFrom:
         - secretRef:
            name: microbs-secrets

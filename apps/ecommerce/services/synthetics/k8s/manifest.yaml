@@ -32,6 +32,8 @@ spec:
         env:
         - name: SERVICE_NAME
           value: synthetics
+        - name: NUM_VIRTUAL_USERS
+          value: "2"
         envFrom:
         - secretRef:
            name: microbs-secrets

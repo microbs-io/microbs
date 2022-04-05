@@ -24,6 +24,7 @@ const validateConfig = () => {
   // Validate required fields
   const requiredAlways = [
     'plugins.slack.bot_user_oauth_access_token',
+    'plugins.slack.channel',
   ]
   for (var i in requiredAlways) {
     if (!config.get(requiredAlways[i])) {

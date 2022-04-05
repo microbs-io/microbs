@@ -56,7 +56,7 @@ module.exports.rollout = async (opts) => {
   logger.info('')
   logger.info(`Rolling out the '${opts.profile}' profile with skaffold...`)
   logger.info('')
-  var command = `skaffold ${quote([ opts.action ])} -p "${quote([ opts.profile ])}" -f "${quote([ opts.skaffoldFilepath ])}"`
+  var command = `VARIANT=${quote([ opts.profile ])} skaffold ${quote([ opts.action ])} -p "${quote([ opts.profile ])}" -f "${quote([ opts.skaffoldFilepath ])}"`
   if (opts.action == 'run')
     command = `${command} -l "skaffold.dev/run-id=microbs-${quote([ config.get('deployment.name') ])}" --status-check=false`
   if (config.get('docker.registry'))

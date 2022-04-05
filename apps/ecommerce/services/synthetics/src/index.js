@@ -13,7 +13,7 @@ const BASE_URL = `http://${SERVICE_HOST_WEB_GATEWAY}:${SERVICE_PORT_WEB_GATEWAY}
 
 // k6 Configuration
 export const options = {
-  vus: 2,
+  vus: parseInt(__ENV.NUM_VIRTUAL_USERS || '1'),
   duration: '36500d',
 }
 

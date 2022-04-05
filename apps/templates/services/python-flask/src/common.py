@@ -8,6 +8,7 @@ import logging
 import os
 import re
 import sys
+import traceback
 
 
 ####  Configuration  ###########################################################
@@ -109,9 +110,9 @@ class LogfmtFormatter(logging.Formatter):
             log_formatted.append(( 'traceID', trace.format_trace_id(trace.get_current_span().get_span_context().trace_id) ))
             log_formatted.append(( 'spanID', trace.format_span_id(trace.get_current_span().get_span_context().span_id) ))
         if log.exc_info:
-            log_formatted.append(('exception', self.formatException(log.exc_info)))
+            log_formatted.append(('exception', '\\n'.join(self.formatException(log.exc_info).split('\n'))))
         if log.stack_info:
-            log_formatted.append(('stack', self.formatStack(log.stack_info)))
+            log_formatted.append(('stack', '\\n'.join(self.formatStack(log.stack_info).split('\n'))))
         return logfmt(log_formatted)
 
 # Use logfmt with tags OpenTelemetry data
@@ -122,15 +123,19 @@ logger.addHandler(logHandler)
 logger.setLevel(config.get('LOG_LEVEL'))
 
 # Suppress default Flask logger except in the case of errors
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+loggerWerkzeug = logging.getLogger('werkzeug')
+logHandlerWerkzeug = logging.StreamHandler(stream=sys.stdout)
+logHandlerWerkzeug.setFormatter(LogfmtFormatter())
+loggerWerkzeug.addHandler(logHandlerWerkzeug)
+loggerWerkzeug.setLevel(logging.ERROR)
 
 
 ####  App  #####################################################################
 
-from flask import Flask, request
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from werkzeug.exceptions import HTTPException
 
 # Log requests and responses using logfmt, tags, and OpenTelemetry data
 def response_hook(span, status, response_headers):
@@ -146,6 +151,26 @@ def response_hook(span, status, response_headers):
 # Instantiate application
 app = Flask(config.get('SERVICE_NAME'))
 FlaskInstrumentor().instrument_app(app, response_hook=response_hook)
+
+# Unhandled exceptions
+@app.errorhandler(Exception)
+def handle_exception(e):
+    if isinstance(e, HTTPException):
+        return e
+    logger.exception(e, extra={
+        'tags': [
+            ( 'ip', request.environ.get('REMOTE_ADDR') ),
+            ( 'method', request.method ),
+            ( 'path', request.path ),
+        ]
+    })
+    span = trace.get_current_span()
+    span.record_exception(e)
+    span.set_status(Status(StatusCode.ERROR))
+    return jsonify({
+        'message': getattr(e, 'message', repr(e)),
+        'stacktrace': traceback.format_exc()
+    })
 
 # Enable CORS
 cors = CORS(app, resources={r'*': {'origins': '*'}})
