@@ -15,7 +15,7 @@ const context = require('../../../context')
  * Absolute path to the directory of this plugin.
  */
 module.exports.pluginHome = () => {
-  return path.join(config.get('homepath'), 'cli', 'src', 'plugins', 'obs', 'elastic_cloud')
+  return path.join(context.get('homepath'), 'cli', 'src', 'plugins', 'obs', 'elastic_cloud')
 }
 
 /**
