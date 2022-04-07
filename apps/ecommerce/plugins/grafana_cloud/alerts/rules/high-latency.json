@@ -6,8 +6,8 @@
       "uid": "LbM8aYynk",
       "title": "High Latency",
       "condition": "B",
-      "no_data_state": "NoData",
-      "exec_err_state": "Alerting",
+      "no_data_state": "OK",
+      "exec_err_state": "Error",
       "data": [{
         "refId": "A",
         "queryType": "",
