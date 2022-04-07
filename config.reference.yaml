@@ -30,9 +30,9 @@ deployment:
   name: changeme
   app: ecommerce
   plugins:
-    alerts:
+    alerts: 
     k8s: minikube
-    obs:
+    obs: 
   environment: development
 
 
@@ -43,7 +43,7 @@ deployment:
 # `skaffold run --default-repo=${docker.registry}`
 
 docker:
-  registry:
+  registry: 
 
 
 ####  OpenTelemetry config  ####################################################
@@ -64,17 +64,18 @@ otlp:
 ####  slack plugin config
 
 plugins.slack:
-  bot_user_oauth_access_token:
+  bot_user_oauth_access_token: 
+  channel: 
 
 ####  gke plugin config
 
 plugins.gke:
-  project_name:
+  project_name: 
   region_name: us-central1
-  network_name:
-  subnetwork_name:
-  service_account_name:
-  service_account_key_path:
+  network_name: 
+  subnetwork_name: 
+  service_account_name: 
+  service_account_key_path: 
 
 ####  kind plugin config
 
@@ -87,13 +88,13 @@ plugins.minikube:
 ####  elastic_cloud plugin config
 
 plugins.elastic_cloud:
-  api_key:
+  api_key: 
   region: gcp-us-central1
   version: 8.1.0
 
 ####  grafana_cloud plugin config
 
 plugins.grafana_cloud:
-  api_key:
-  org_slug:
+  api_key: 
+  org_slug: 
   region: us
