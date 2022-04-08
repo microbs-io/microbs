@@ -79,8 +79,8 @@ module.exports = async () => {
     if (response.status == 200) {
       logger.info(`...created: '${channelName}'`)
     } else {
-      logger.info('...failure:')
-      logger.info(JSON.stringify(response.data, null, indent=2))
+      logger.error('...failure:')
+      logger.error(response.data)
       process.exit(1)
     }
 

@@ -80,8 +80,8 @@ module.exports = async () => {
     if (response.status == 200) {
       logger.info(`...created: 'microbs-${config.get('deployment.name')}' [stack_id=${response.data.id}, stack_slug=${response.data.slug}]`)
     } else {
-      logger.info('...failure:')
-      logger.info(JSON.stringify(response.data, null, indent=2))
+      logger.error('...failure:')
+      logger.error(response.data)
       process.exit(1)
     }
 
@@ -140,8 +140,8 @@ module.exports = async () => {
         logger.info('...exists.')
         break
       } else {
-        logger.info('...failure:')
-        logger.info(JSON.stringify(response.data, null, indent=2))
+        logger.error('...failure:')
+        logger.error(response.data)
         process.exit(1)
       }
     }

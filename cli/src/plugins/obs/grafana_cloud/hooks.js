@@ -58,8 +58,8 @@ const createAlertRules = async () => {
     if (response.status == 200 || response.status == 202) {
       logger.info(`...created.`)
     } else {
-      logger.info(`...failure.`)
-      logger.info(JSON.stringify(response.data, null, indent=2))
+      logger.error(`...failure.`)
+      logger.error(response.data)
       process.exit(1)
     }
   }
@@ -108,6 +108,7 @@ const createAlertContactPoints = async () => {
   		receivers: receivers
   	}
   }
+  console.log(data)
 
   // Create contact points
   const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/alertmanager/grafana/config/api/v1/alerts`
@@ -132,8 +133,8 @@ const createAlertContactPoints = async () => {
   if (response.status == 200 || response.status == 202) {
     logger.info(`...created.`)
   } else {
-    logger.info(`...failure.`)
-    logger.info(JSON.stringify(response.data, null, indent=2))
+    logger.error(`...failure.`)
+    logger.error(response.data)
     process.exit(1)
   }
 }
@@ -183,8 +184,8 @@ const createDashboard = async (filepath) => {
   if (response.status == 200) {
     logger.info(`...created: ${dashboard.uid}`)
   } else {
-    logger.info(`...failure: ${dashboard.uid}`)
-    logger.info(JSON.stringify(response.data, null, indent=2))
+    logger.error(`...failure: ${dashboard.uid}`)
+    logger.error(response.data)
     process.exit(1)
   }
 }
@@ -222,8 +223,8 @@ const destroyDashboard = async (filepath) => {
   } else if (response.status == 404) {
     logger.info(`...not found: ${uid}`)
   } else {
-    logger.info(`...failure: ${uid}`)
-    logger.info(JSON.stringify(response.data, null, indent=2))
+    logger.error(`...failure: ${uid}`)
+    logger.error(response.data)
     process.exit(1)
   }
 }

@@ -80,8 +80,8 @@ module.exports = async () => {
     if (response.data.created === true) {
       logger.info(`...created: 'microbs-${config.get('deployment.name')}' [deployment_id=${response.data.id}]`)
     } else {
-      logger.info('...failure:')
-      logger.info(JSON.stringify(response.data, null, indent=2))
+      logger.error('...failure:')
+      logger.error(response.data)
       process.exit(1)
     }
 

@@ -30,17 +30,68 @@ const showError = () => SHOW_ERROR.includes(logLevel())
  */
 const verboseMessage = (message, level, lineNum) => {
   const ts = lineNum ? ''.padEnd(24, ' ') : new Date().toISOString()
+  var levelFormatted = level
+  var messageFormatted = message
   if (level == 'warn')
-    level = chalk.yellowBright((lineNum ? '' : level).padEnd(5, ' ') + ' |')
+    levelFormatted = chalk.yellowBright((lineNum ? '' : level).padEnd(5, ' ') + ' |')
   else if (level == 'error')
-    level = chalk.redBright((lineNum ? '' : level).padEnd(5, ' ') + ' |')
+    levelFormatted = chalk.redBright((lineNum ? '' : level).padEnd(5, ' ') + ' |')
   else
-    level = chalk.dim((lineNum ? '' : level).padEnd(5, ' ') + ' |')
-  return `${chalk.dim(ts)} ${level} ${message}`
+    levelFormatted = chalk.dim((lineNum ? '' : level).padEnd(5, ' ') + ' |')
+  if (level == 'debug')
+    messageFormatted = chalk.dim(message)
+  return `${chalk.dim(ts)} ${levelFormatted} ${messageFormatted}`
+}
+
+/**
+ * Serializes messages as strings, or as formatted JSON objects or arrays.
+ */
+const serialize = (message) => {
+  if (typeof message === 'object' || Array.isArray(message)) {
+    try {
+      return JSON.stringify(message, null, 2)
+    } catch (e) {
+      
+      // Handle circular references by serializing only the first level of keys.
+      if (typeof message === 'object') {
+        
+        // Serialize the first level of an object with circular references.
+        const obj = {}
+        for (var key in message)
+          obj[key] = message[key].toString()
+        try {
+          return JSON.stringify(obj, null, 2)
+        } catch (e) {
+          return message.toString()
+        }
+      } else {
+        
+        // Serialize the first level of an array with circular references.
+        const arr = []
+        for (var i in message) {
+          if (typeof message[i] === 'object') {
+            const obj = {}
+            for (var key in message[i])
+              obj[key] = message[i][key].toString()
+            arr.push(obj)
+          } else {
+            arr.push(message[i].toString())
+          }
+          try {
+            return JSON.stringify(arr, null, 2)
+          } catch (e) {
+            return message.toString()
+          }
+        }
+      }
+    }
+  } else {
+    return message.toString()
+  }
 }
 
 const debug = (message, lineNum) => {
-  message = message.toString()
+  message = serialize(message)
 
   // Filter log message if --log-level is greater than debug
   if (!showDebug())
@@ -62,7 +113,7 @@ const debug = (message, lineNum) => {
 }
 
 const info = (message, lineNum) => {
-  message = message.toString()
+  message = serialize(message)
 
   // Filter log message if --log-level is greater than info
   if (!showInfo())
@@ -84,7 +135,7 @@ const info = (message, lineNum) => {
 }
 
 const warn = (message, lineNum) => {
-  message = message.toString()
+  message = serialize(message)
 
   // Filter log message if --log-level is greater than warn
   if (!showWarn())
@@ -106,7 +157,7 @@ const warn = (message, lineNum) => {
 }
 
 const error = (message, lineNum) => {
-  message = message.toString()
+  message = serialize(message)
 
   // Write log message if not --verbose
   if (!verbose())
