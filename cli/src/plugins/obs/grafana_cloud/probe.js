@@ -26,7 +26,7 @@ module.exports.statusGrafanaCloud = async () => {
       timeout: 60000,
       validateStatus: () => true
     })
-    logger.info(response)
+    logger.debug(response)
     if (_.range(200, 300).includes(response.status) && response.data.status == 'active')
       return true
     if (_.range(400, 600).includes(response.status) && !_.range(404, 411).includes(response.status))

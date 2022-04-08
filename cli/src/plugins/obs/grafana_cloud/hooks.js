@@ -27,6 +27,32 @@ const constants = require('./constants')
  */
 const createAlertRules = async () => {
   logger.info(`Creating alert rules...`)
+  
+  // Fetch any existing rules 
+  logger.debug('Getting existing alerts...')
+  logger.debug(`GET ${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules`)
+  var response
+  try {
+    response = await axios.request({
+      method: 'get',
+      url: `${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules`,
+      headers: constants.grafanaApiHeaders(),
+      timeout: 60000,
+      validateStatus: () => true
+    })
+    logger.debug(response.status)
+    logger.debug(response.data)
+  } catch (err) {
+    logger.error(err.message)
+  }
+  const rulesExisting = {}
+  if (response.data.GrafanaCloud) {
+    for (var i in response.data.GrafanaCloud) {
+      const rule = response.data.GrafanaCloud[i]
+      const name = rule.name
+      rulesExisting[name] = rule
+    }
+  }
 
   // Load and parse alert rules
   const rules = {}
@@ -34,6 +60,25 @@ const createAlertRules = async () => {
     rules[filename] = utils.loadJson(filename)
   })
   for (var filename in rules) {
+    if (rulesExisting[rules[filename].name]) {
+      logger.info(`Deleting old alert rule: ${rules[filename].name}`)
+      const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules/GrafanaCloud/${rules[filename].name}`
+      logger.debug(`DELETE ${url}`)
+      var response
+      try {
+        response = await axios.request({
+          method: 'delete',
+          url: url,
+          headers: constants.grafanaApiHeaders(),
+          timeout: 60000,
+          validateStatus: () => true
+        })
+        logger.debug(response.status)
+        logger.debug(response.data)
+      } catch (err) {
+        logger.error(err.message)
+      }
+    }
     logger.info(`Creating alert rule: ${filename}`)
     const data = rules[filename]
     const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules/GrafanaCloud`
@@ -89,7 +134,7 @@ const createAlertContactPoints = async () => {
   // Load and parse receivers
   const receivers = []
   glob.sync(path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'plugins', 'grafana_cloud', 'alerts', 'receivers', '*.json')).forEach((filename) => {
-    receivers.push(utils.loadTemplateJson(filename))
+    receivers.push(utils.loadTemplateJson(filename, config.get()))
   })
 
   // Load and parse route for the configured alerts plugin
@@ -108,7 +153,6 @@ const createAlertContactPoints = async () => {
   		receivers: receivers
   	}
   }
-  console.log(data)
 
   // Create contact points
   const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/alertmanager/grafana/config/api/v1/alerts`

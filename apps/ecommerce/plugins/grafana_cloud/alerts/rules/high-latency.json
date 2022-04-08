@@ -3,7 +3,6 @@
   "interval": "10s",
   "rules": [{
     "grafana_alert": {
-      "uid": "LbM8aYynk",
       "title": "High Latency",
       "condition": "B",
       "no_data_state": "OK",

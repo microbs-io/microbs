@@ -26,7 +26,7 @@ module.exports.statusSlackChannel = async (channelName) => {
       timeout: 60000,
       validateStatus: () => true
     })
-    logger.info(response.data)
+    logger.debug(response.data)
     if (response.status == 200 && response.data.ok === true) {
       for (var i in response.data.channels) {
         if (response.data.channels[i].name == channelName)
