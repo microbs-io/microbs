@@ -23,7 +23,7 @@ const utils = require('../../../utils')
 const constants = require('./constants')
 
 /**
- *
+ * Create alert rules.
  */
 const createAlertRules = async () => {
   logger.info(`Creating alert rules...`)
@@ -111,10 +111,63 @@ const createAlertRules = async () => {
 }
 
 /**
- *
+ * Destroy alert rules.
  */
 const destroyAlertRules = async () => {
-  // TODO: Implement
+  logger.info(`Destroying alert rules...`)
+  
+  // Fetch any existing rules 
+  logger.debug('Getting existing alerts...')
+  logger.debug(`GET ${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules`)
+  var response
+  try {
+    response = await axios.request({
+      method: 'get',
+      url: `${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules`,
+      headers: constants.grafanaApiHeaders(),
+      timeout: 60000,
+      validateStatus: () => true
+    })
+    logger.debug(response.status)
+    logger.debug(response.data)
+  } catch (err) {
+    logger.error(err.message)
+  }
+  const rulesExisting = {}
+  if (response.data.GrafanaCloud) {
+    for (var i in response.data.GrafanaCloud) {
+      const rule = response.data.GrafanaCloud[i]
+      const name = rule.name
+      rulesExisting[name] = rule
+    }
+  }
+
+  // Load and parse alert rules
+  const rules = {}
+  glob.sync(path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'plugins', 'grafana_cloud', 'alerts', 'rules', '*.json')).forEach((filename) => {
+    rules[filename] = utils.loadJson(filename)
+  })
+  for (var filename in rules) {
+    if (rulesExisting[rules[filename].name]) {
+      logger.info(`Deleting alert rule: ${rules[filename].name}`)
+      const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules/GrafanaCloud/${rules[filename].name}`
+      logger.debug(`DELETE ${url}`)
+      var response
+      try {
+        response = await axios.request({
+          method: 'delete',
+          url: url,
+          headers: constants.grafanaApiHeaders(),
+          timeout: 60000,
+          validateStatus: () => true
+        })
+        logger.debug(response.status)
+        logger.debug(response.data)
+      } catch (err) {
+        logger.error(err.message)
+      }
+    }
+  }
 }
 
 /**
@@ -172,8 +225,6 @@ const createAlertContactPoints = async () => {
   } catch (err) {
     logger.error(err.message)
   }
-
-  // Get stack info
   if (response.status == 200 || response.status == 202) {
     logger.info(`...created.`)
   } else {
@@ -184,10 +235,35 @@ const createAlertContactPoints = async () => {
 }
 
 /**
- *
+ * Reset the alerting configuration to its default on Grafana Cloud.
  */
 const destroyAlertContactPoints = async () => {
-// TODO: Implement
+  logger.info(`Destroying alert configuration...`)
+
+  // Destroy alerting configuration
+  const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/alertmanager/grafana/config/api/v1/alerts`
+  logger.debug(`DELETE ${url}`)
+  var response
+  try {
+    response = await axios.request({
+      method: 'delete',
+      url: url,
+      headers: constants.grafanaApiHeaders(),
+      timeout: 60000,
+      validateStatus: () => true
+    })
+    logger.debug(response.status)
+    logger.debug(response.data)
+  } catch (err) {
+    logger.error(err.message)
+  }
+  if (response.status == 200 || response.status == 202) {
+    logger.info(`...destroyed.`)
+  } else {
+    logger.error(`...failure.`)
+    logger.error(response.data)
+    process.exit(1)
+  }
 }
 
 /**
@@ -275,7 +351,7 @@ const destroyDashboard = async (filepath) => {
 
 /**
  * For each file in ./apps/APP/plugins/grafana_cloud/dashboards/*.json
- * invoke createDashboard()
+ * invoke createDashboard() and then create alert rules and contact points.
  */
 const onSetupApp = async () => {
   glob.sync(path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'plugins', 'grafana_cloud', 'dashboards', '*.json')).forEach(async (filepath) => {
@@ -287,7 +363,7 @@ const onSetupApp = async () => {
 
 /**
  * For each file in ./apps/APP/plugins/grafana_cloud/dashboards/*.json
- * invoke destroyDashboard()
+ * invoke destroyDashboard() and then destroy alert rules and contact points.
  */
 const onDestroyApp = async () => {
   glob.sync(path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'plugins', 'grafana_cloud', 'dashboards', '*.json')).forEach(async (filepath) => {
