@@ -17,7 +17,7 @@
         "datasourceUid": "grafanacloud-prom",
         "model": {
           "exemplar": false,
-          "expr": "histogram_quantile(.95, sum(rate(traces_spanmetrics_latency_bucket{}[1m])) by (le, service_name)) > 2000",
+          "expr": "histogram_quantile(.95, sum(rate(traces_spanmetrics_latency_bucket{}[1m])) by (le, service_name)) > 2000 < 86400000",
           "hide": false,
           "interval": "",
           "intervalMs": 1000,
