@@ -350,30 +350,44 @@ const destroyDashboard = async (filepath) => {
 }
 
 /**
- * For each file in ./apps/APP/plugins/grafana_cloud/dashboards/*.json
- * invoke createDashboard() and then create alert rules and contact points.
+ * When the application is setup, invoke createDashboard() for each file in
+ * ./apps/APP/plugins/grafana_cloud/dashboards/*.json.
  */
 const onSetupApp = async () => {
   glob.sync(path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'plugins', 'grafana_cloud', 'dashboards', '*.json')).forEach(async (filepath) => {
     await createDashboard(filepath)
   })
-  await createAlertRules()
-  await createAlertContactPoints()
 }
 
 /**
- * For each file in ./apps/APP/plugins/grafana_cloud/dashboards/*.json
- * invoke destroyDashboard() and then destroy alert rules and contact points.
+ * When the application is destroyed, invoke destroyDashboard() for each file in 
+ * ./apps/APP/plugins/grafana_cloud/dashboards/*.json.
  */
 const onDestroyApp = async () => {
   glob.sync(path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'plugins', 'grafana_cloud', 'dashboards', '*.json')).forEach(async (filepath) => {
     await destroyDashboard(filepath)
   })
-  await destroyAlertRules()
-  await destroyAlertContactPoints()
+}
+
+/**
+ * When rolling out a variant, setup alerts.
+ * When rolling back to the "main" profile, destroy alerts.
+ */
+const onRollout = async () => {
+  const args = context.get('args')
+  if (args._.length === 1) {
+    // A named variant is rolling out. Setup alerts.
+    await createAlertRules()
+    await createAlertContactPoints()
+  } else if (args._.length === 0 || args._[0] == 'main') {
+    // The "main" profile is rolling out. Destroy alerts.
+    await destroyAlertRules()
+    await destroyAlertContactPoints()
+  }
 }
 
 module.exports = {
   onDestroyApp: onDestroyApp,
-  onSetupApp: onSetupApp
+  onSetupApp: onSetupApp,
+  onRollout: onRollout
 }

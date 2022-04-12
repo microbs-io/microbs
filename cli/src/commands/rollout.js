@@ -15,6 +15,7 @@ const quote = require('shell-quote').quote
 const config = require('../config')
 const context = require('../context')
 const logger = require('../logger')
+const plugins = require('../plugins')
 const state = require('../state')
 const utils = require('../utils')
 
@@ -96,4 +97,22 @@ module.exports.run = async (opts) => {
   logger.info(`Starting services for the '${config.get('deployment.app')}' application on Kubernetes...`)
   opts.skaffoldFilepath = path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'skaffold.yaml')
   await module.exports.rollout(opts)
+  
+  // Invoke the 'onRollout' hook for each plugin that implements it.
+  const pluginTypes = [ 'alerts', 'k8s', 'obs' ]
+  for (var i in pluginTypes) {
+    let pluginType = pluginTypes[i]
+    var pluginName = config.get(`deployment.plugins.${pluginType}`)
+    var plugin = plugins[pluginType][pluginName]
+    if (plugin) {
+      if (plugin.hooks && plugin.hooks.onRollout) {
+        logger.debug(`Calling 'onRollout' from the '${pluginName}' ${pluginType} plugin.`)
+        await plugin.hooks.onRollout()
+      } else {
+        logger.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'onRollout' command.`)
+      }
+    } else {
+      logger.debug(`No ${pluginType} plugin was defined in the config file.`)
+    }
+  }
 }
