@@ -11,7 +11,7 @@
         "refId": "A",
         "queryType": "",
         "relativeTimeRange": {
-          "from": 300,
+          "from": 60,
           "to": 0
         },
         "datasourceUid": "grafanacloud-prom",
@@ -105,7 +105,7 @@
         }
       }]
     },
-    "for": "1m",
+    "for": "11s",
     "annotations": {
       "SLO": "2.0s",
       "Value": "{{ humanizeDuration $values.C.Value }}",
