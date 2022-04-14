@@ -3,15 +3,17 @@ import json
 import os
 
 # Third-party packages
+import psycopg2
+import psycopg2.extras
 from flask import jsonify, request
 from flask_cors import cross_origin
+from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
 
 # Service packages
 from common import app, cors, config, logger, tracer
 
 # Configure Postgres
-import psycopg2
-import psycopg2.extras
+Psycopg2Instrumentor().instrument()
 def postgres():
     return psycopg2.connect(
         dbname='products',

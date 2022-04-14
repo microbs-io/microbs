@@ -5,13 +5,15 @@ import re
 
 # Third-party packages
 import redis
-from flask import jsonify, make_response, request
+from flask import jsonify, request
 from flask_cors import cross_origin
+from opentelemetry.instrumentation.redis import RedisInstrumentor
 
 # Service packages
 from common import app, cors, config, logger, tracer
 
 # Configure Redis client
+RedisInstrumentor().instrument()
 r = redis.Redis(
     host=(os.environ.get('SERVICE_HOST_CART_DATA') or 'cart-data'),
     port=(os.environ.get('SERVICE_PORT_CART_DATA') or 6379),

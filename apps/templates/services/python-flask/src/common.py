@@ -15,7 +15,7 @@ import traceback
 
 config = {}
 config['DEBUG'] = os.environ.get('DEBUG') or False
-config['ENVIRONMENT'] = os.environ.get('ENVIRONMENT') or 'development'
+config['DEPLOYMENT_ENVIRONMENT'] = os.environ.get('DEPLOYMENT_ENVIRONMENT') or 'development'
 config['LOG_LEVEL'] = 'DEBUG' if config.get('DEBUG') else (os.environ.get('LOG_LEVEL') or 'INFO').upper()
 config['SERVICE_NAME'] = os.environ.get('SERVICE_NAME') or 'service'
 config['SERVICE_BIND_HOST'] = os.environ.get('SERVICE_BIND_HOST') or '0.0.0.0'
@@ -35,7 +35,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExport
 from opentelemetry.trace.status import Status, StatusCode
 RequestsInstrumentor().instrument()
 tracer_provider = TracerProvider(resource=Resource.create({
-    'deployment.environment': config.get('ENVIRONMENT'),
+    'deployment.environment': config.get('DEPLOYMENT_ENVIRONMENT'),
     'service.name': config.get('SERVICE_NAME')
 }))
 tracer_provider.add_span_processor(

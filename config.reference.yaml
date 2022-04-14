@@ -90,7 +90,7 @@ plugins.minikube:
 plugins.elastic_cloud:
   api_key: 
   region: gcp-us-central1
-  version: 8.1.0
+  version: 8.1.2
 
 ####  grafana_cloud plugin config
 

@@ -54,7 +54,7 @@ data:
           ignore_missing: true
       - copy_fields:
           fields:
-            - from: kubernetes.labels.app
+            - from: kubernetes.labels.service
               to: event.dataset
           fail_on_error: false
           ignore_missing: true
