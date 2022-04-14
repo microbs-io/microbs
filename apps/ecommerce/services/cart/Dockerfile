@@ -1,15 +1,10 @@
-# Build
-FROM python:3.8-slim as build
+FROM python:3.8-slim
+WORKDIR /service
 
 # Requirements for service
-COPY ./requirements.txt .
+COPY ./services/cart .
+COPY ./common/python ./src
 RUN pip install -r ./requirements.txt
-
-# Run
-FROM build
-WORKDIR /service
-COPY --from=build /usr/local/lib/python3.8/ /usr/local/lib/python3.8/
-COPY ./src .
 
 # Configuration inputs
 ARG DEPLOYMENT_ENVIRONMENT
@@ -31,5 +26,5 @@ ENV OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
 ENV OTLP_RECEIVER_HOST=${OTLP_RECEIVER_HOST}
 ENV OTLP_RECEIVER_PORT=${OTLP_RECEIVER_PORT}
 
-ENTRYPOINT [ "python", "server.py" ]
+ENTRYPOINT [ "python", "./src/server.py" ]
 EXPOSE ${SERVICE_BIND_PORT}

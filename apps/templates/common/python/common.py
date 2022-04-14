@@ -1,7 +1,8 @@
 """
 Configuration, tracing, and logging common to all Python services in the
-microbs ecommerce application. Copy this file to the ./src directory of any
-Python service to reuse common configurations.
+microbs ecommerce application and its variants. This file must be copied to the
+./src directory of any service that imports it. Currently the Dockerfile of each
+service is responsible for copying this file.
 """
 
 # Standard packages

@@ -1,8 +1,8 @@
 FROM iquirino91/nginx-opentelemetry@sha256:008914fd4d4aa8e060e14d7a2af56e48418d95832251473a8cffb5c348681703
 RUN apk add bash gettext
 
-COPY ./src/nginx.conf ./nginx.conf.template
-COPY ./src/otel-nginx.toml ./otel-nginx.toml.template
+COPY ./services/nginx/src/nginx.conf ./nginx.conf.template
+COPY ./services/nginx/src/otel-nginx.toml ./otel-nginx.toml.template
 
 ARG DEPLOYMENT_ENVIRONMENT
 ARG SERVICE_NAME

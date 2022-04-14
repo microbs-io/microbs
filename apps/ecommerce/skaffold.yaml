@@ -19,41 +19,53 @@ profiles:
   build:
     artifacts:
     - image: microbs-ecommerce-api-gateway
-      context: ./apps/ecommerce/services/api-gateway
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: services/api-gateway/Dockerfile
     - image: microbs-ecommerce-cart
-      context: ./apps/ecommerce/services/cart
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: services/cart/Dockerfile
     - image: microbs-ecommerce-checkout
-      context: ./apps/ecommerce/services/checkout
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: services/checkout/Dockerfile
     - image: microbs-ecommerce-cart-data
-      context: ./apps/ecommerce/services/cart-data
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: services/cart-data/Dockerfile
     - image: microbs-ecommerce-content
-      context: ./apps/ecommerce/services/content
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: services/content/Dockerfile
     - image: microbs-ecommerce-payment
-      context: ./apps/ecommerce/services/payment
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: services/payment/Dockerfile
     - image: microbs-ecommerce-product
-      context: ./apps/ecommerce/services/product
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: services/product/Dockerfile
     - image: microbs-ecommerce-product-data
-      context: ./apps/ecommerce/services/product-data
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: services/product-data/Dockerfile
     - image: microbs-ecommerce-session-data
-      context: ./apps/ecommerce/services/session-data
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: services/session-data/Dockerfile
     - image: microbs-ecommerce-synthetics
-      context: ./apps/ecommerce/services/synthetics
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: services/synthetics/Dockerfile
     - image: microbs-ecommerce-web-gateway
-      context: ./apps/ecommerce/services/web-gateway
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: services/web-gateway/Dockerfile
   deploy:
     kubectl:
       manifests:
-      - ./apps/ecommerce/services/api-gateway/k8s/*.yaml
-      - ./apps/ecommerce/services/cart/k8s/*.yaml
-      - ./apps/ecommerce/services/cart-data/k8s/*.yaml
-      - ./apps/ecommerce/services/checkout/k8s/*.yaml
-      - ./apps/ecommerce/services/content/k8s/*.yaml
-      - ./apps/ecommerce/services/payment/k8s/*.yaml
-      - ./apps/ecommerce/services/product/k8s/*.yaml
-      - ./apps/ecommerce/services/product-data/k8s/*.yaml
-      - ./apps/ecommerce/services/session-data/k8s/*.yaml
-      - ./apps/ecommerce/services/synthetics/k8s/*.yaml
-      - ./apps/ecommerce/services/web-gateway/k8s/*.yaml
+      - ./apps/ecommerce/services/*/k8s/*.yaml
 
 
 ####  Variants  ################################################################
@@ -62,7 +74,9 @@ profiles:
   build:
     artifacts:
     - image: microbs-ecommerce-product
-      context: ./apps/ecommerce/variants/basic-bug/product
+      context: ./apps/ecommerce
+      docker:
+        dockerfile: variants/basic-bug/product/Dockerfile
   deploy:
     kubectl:
       manifests:

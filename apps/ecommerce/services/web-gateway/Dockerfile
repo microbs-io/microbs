@@ -1,7 +1,8 @@
+# Build ./public
 FROM node:17 AS build-client
 WORKDIR /service
-COPY ./src/public ./src/public
-COPY ./package.json .
+COPY ./services/web-gateway/src/public ./src/public
+COPY ./services/web-gateway/package.json .
 
 ARG DEPLOYMENT_ENVIRONMENT
 ARG SERVICE_NAME
@@ -21,18 +22,16 @@ ENV OTLP_RECEIVER_PORT=${OTLP_RECEIVER_PORT}
 RUN yarn install
 RUN yarn run build
 
-# Build
-FROM python:3.8-slim as build-server
+# Build ./server
+FROM python:3.8-slim
+WORKDIR /service
 
 # Requirements for service
-COPY ./requirements.txt .
+COPY ./services/web-gateway/src/server ./src
+COPY ./services/web-gateway/requirements.txt .
+COPY ./common/python ./src
 RUN pip install -r ./requirements.txt
 
-# Run
-FROM build-server
-WORKDIR /service
-COPY ./src/server .
-COPY --from=build-server /usr/local/lib/python3.8/ /usr/local/lib/python3.8/
 COPY --from=build-client /service/dist /service/dist
 
 # Configuration inputs
@@ -57,5 +56,5 @@ ENV SERVICE_HOST_SESSION_DATA=${SERVICE_HOST_SESSION_DATA}
 ENV OTLP_RECEIVER_HOST=${OTLP_RECEIVER_HOST}
 ENV OTLP_RECEIVER_PORT=${OTLP_RECEIVER_PORT}
 
-ENTRYPOINT [ "python", "server.py" ]
+ENTRYPOINT [ "python", "./src/server.py" ]
 EXPOSE ${SERVICE_BIND_PORT}

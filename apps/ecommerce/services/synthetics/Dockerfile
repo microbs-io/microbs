@@ -3,11 +3,11 @@ FROM node:16-slim as build
 
 # Requirements for service
 WORKDIR /
-COPY ./.nvmrc .
-COPY ./package.json .
-COPY ./babel.config.json .
-COPY ./webpack.config.js .
-COPY ./src ./src
+COPY ./services/synthetics/.nvmrc .
+COPY ./services/synthetics/package.json .
+COPY ./services/synthetics/babel.config.json .
+COPY ./services/synthetics/webpack.config.js .
+COPY ./services/synthetics/src ./src
 
 # Build
 RUN npm install

@@ -1,5 +1,8 @@
 """
-Configuration, tracing, and logging.
+Configuration, tracing, and logging common to all Python services in the
+microbs ecommerce application and its variants. This file must be copied to the
+./src directory of any service that imports it. Currently the Dockerfile of each
+service is responsible for copying this file.
 """
 
 # Standard packages
@@ -8,7 +11,6 @@ import logging
 import os
 import re
 import sys
-import traceback
 
 
 ####  Configuration  ###########################################################
@@ -20,6 +22,8 @@ config['LOG_LEVEL'] = 'DEBUG' if config.get('DEBUG') else (os.environ.get('LOG_L
 config['SERVICE_NAME'] = os.environ.get('SERVICE_NAME') or 'service'
 config['SERVICE_BIND_HOST'] = os.environ.get('SERVICE_BIND_HOST') or '0.0.0.0'
 config['SERVICE_BIND_PORT'] = os.environ.get('SERVICE_BIND_PORT') or 80
+config['SERVICE_HOST_API_GATEWAY'] = os.environ.get('SERVICE_HOST_API_GATEWAY') or 'localhost'
+config['SERVICE_PORT_API_GATEWAY'] = os.environ.get('SERVICE_PORT_API_GATEWAY') or 8080
 config['OTLP_RECEIVER_HOST'] = os.environ.get('OTLP_RECEIVER_HOST') or 'localhost'
 config['OTLP_RECEIVER_PORT'] = os.environ.get('OTLP_RECEIVER_PORT') or 4317
 
@@ -132,7 +136,7 @@ loggerWerkzeug.setLevel(logging.ERROR)
 
 ####  App  #####################################################################
 
-from flask import Flask, jsonify, request
+from flask import Flask, request
 from flask_cors import CORS
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from werkzeug.exceptions import HTTPException

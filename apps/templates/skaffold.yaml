@@ -12,14 +12,18 @@ profiles:
   build:
     artifacts:
     - image: microbs-templates-api-gateway
-      context: ./apps/templates/services/api-gateway
+      context: ./apps/templates
+      docker:
+        dockerfile: services/api-gateway/Dockerfile
     - image: microbs-templates-nginx
-      context: ./apps/templates/services/nginx
+      context: ./apps/templates
+      docker:
+        dockerfile: services/nginx/Dockerfile
     - image: microbs-templates-python-flask
-      context: ./apps/templates/services/python-flask
+      context: ./apps/templates
+      docker:
+        dockerfile: services/python-flask/Dockerfile
   deploy:
     kubectl:
       manifests:
-      - ./apps/templates/services/api-gateway/k8s/*.yaml
-      - ./apps/templates/services/nginx/k8s/*.yaml
-      - ./apps/templates/services/python-flask/k8s/*.yaml
+      - ./apps/templates/services/*/k8s/*.yaml
