@@ -7,6 +7,7 @@
 // Main packages
 const config = require('../config')
 const context = require('../context')
+const hooks = require('../hooks')
 const logger = require('../logger')
 const plugins = require('../plugins')
 const rollout = require('./rollout')
@@ -26,7 +27,9 @@ module.exports.run = async () => {
       var plugin = plugins[pluginType][pluginName]
       if (plugin) {
         if (plugin.setup) {
+          await hooks.run(`before_setup_${pluginType}`)
           await plugin.setup()
+          await hooks.run(`after_setup_${pluginType}`)
         } else {
           logger.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'setup' command.`)
         }
@@ -38,23 +41,8 @@ module.exports.run = async () => {
 
   // Rollout the application services for the 'main' profile, if applicable.
   if (all || args.app) {
+    await hooks.run('before_setup_app')
     await rollout.run({ profile: 'main' })
-
-    // Invoke the 'onSetupApp' hook for each plugin that implements it.
-    for (var i in pluginTypes) {
-      let pluginType = pluginTypes[i]
-      var pluginName = config.get(`deployment.plugins.${pluginType}`)
-      var plugin = plugins[pluginType][pluginName]
-      if (plugin) {
-        if (plugin.hooks && plugin.hooks.onSetupApp) {
-          logger.debug(`Calling 'onSetupApp' from the '${pluginName}' ${pluginType} plugin.`)
-          await plugin.hooks.onSetupApp()
-        } else {
-          logger.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'onSetupApp' command.`)
-        }
-      } else {
-        logger.debug(`No ${pluginType} plugin was defined in the config file.`)
-      }
-    }
+    await hooks.run('after_setup_app')
   }
 }

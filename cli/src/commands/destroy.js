@@ -7,6 +7,7 @@
 // Main packages
 const config = require('../config')
 const context = require('../context')
+const hooks = require('../hooks')
 const logger = require('../logger')
 const plugins = require('../plugins')
 const rollout = require('./rollout')
@@ -20,24 +21,9 @@ module.exports.run = async () => {
 
   // Remove the application services, if given.
   if (all || args.app) {
+    await hooks.run('before_destroy_app')
     await rollout.run({ action: 'delete' })
-
-    // Invoke the 'onDestroyApp' hook for each plugin that implements it.
-    for (var i in pluginTypes) {
-      let pluginType = pluginTypes[i]
-      var pluginName = config.get(`deployment.plugins.${pluginType}`)
-      var plugin = plugins[pluginType][pluginName]
-      if (plugin) {
-        if (plugin.hooks && plugin.hooks.onDestroyApp) {
-          logger.debug(`Calling 'onDestroyApp' from the '${pluginName}' ${pluginType} plugin.`)
-          await plugin.hooks.onDestroyApp()
-        } else {
-          logger.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'onDestroyApp' command.`)
-        }
-      } else {
-        logger.debug(`No ${pluginType} plugin was defined in the config file.`)
-      }
-    }
+    await hooks.run('after_destroy_app')
   }
 
   // Invoke the 'destroy' command for each plugin that implements it.
@@ -48,7 +34,9 @@ module.exports.run = async () => {
       var plugin = plugins[pluginType][pluginName]
       if (plugin) {
         if (plugin.destroy) {
+          await hooks.run(`before_destroy_${pluginType}`)
           await plugin.destroy()
+          await hooks.run(`after_destroy_${pluginType}`)
         } else {
           logger.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'destroy' command.`)
         }

@@ -15,7 +15,6 @@ const quote = require('shell-quote').quote
 const config = require('../config')
 const context = require('../context')
 const logger = require('../logger')
-const plugins = require('../plugins')
 const state = require('../state')
 const utils = require('../utils')
 
@@ -86,6 +85,10 @@ module.exports.run = async (opts) => {
     opts.profile = args._[0]
   else if (!opts.profile)
     opts.profile = 'main'
+  
+  // Invoke any before_rollout hooks
+  const hooks = require('../hooks')
+  await hooks.run('before_rollout')
 
   // Set the application version to a random value. This new version will only
   // apply to the services that have changed since the prior variant.
@@ -98,21 +101,6 @@ module.exports.run = async (opts) => {
   opts.skaffoldFilepath = path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'skaffold.yaml')
   await module.exports.rollout(opts)
   
-  // Invoke the 'onRollout' hook for each plugin that implements it.
-  const pluginTypes = [ 'alerts', 'k8s', 'obs' ]
-  for (var i in pluginTypes) {
-    let pluginType = pluginTypes[i]
-    var pluginName = config.get(`deployment.plugins.${pluginType}`)
-    var plugin = plugins[pluginType][pluginName]
-    if (plugin) {
-      if (plugin.hooks && plugin.hooks.onRollout) {
-        logger.debug(`Calling 'onRollout' from the '${pluginName}' ${pluginType} plugin.`)
-        await plugin.hooks.onRollout()
-      } else {
-        logger.debug(`The '${pluginName}' ${pluginType} plugin does not implement the 'onRollout' command.`)
-      }
-    } else {
-      logger.debug(`No ${pluginType} plugin was defined in the config file.`)
-    }
-  }
+  // Invoke any after_rollout hooks
+  await hooks.run('after_rollout')
 }
