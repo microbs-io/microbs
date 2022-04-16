@@ -31,29 +31,9 @@ config['OTLP_RECEIVER_PORT'] = os.environ.get('OTLP_RECEIVER_PORT') or 4317
 ####  Tracing  #################################################################
 
 from opentelemetry import trace
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from opentelemetry.trace.status import Status, StatusCode
 RequestsInstrumentor().instrument()
-tracer_provider = TracerProvider(resource=Resource.create({
-    'deployment.environment': config.get('DEPLOYMENT_ENVIRONMENT'),
-    'service.name': config.get('SERVICE_NAME')
-}))
-tracer_provider.add_span_processor(
-    BatchSpanProcessor(
-        OTLPSpanExporter(endpoint="http://{}:{}".format(
-            config.get('OTLP_RECEIVER_HOST'),
-            config.get('OTLP_RECEIVER_PORT')
-        ))
-    )
-)
-if config.get('DEBUG'):
-    tracer_provider.add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
-trace.set_tracer_provider(tracer_provider)
-tracer = trace.get_tracer(config.get('SERVICE_NAME'))
 
 
 ####  Logging  #################################################################
@@ -136,7 +116,7 @@ loggerWerkzeug.setLevel(logging.ERROR)
 
 ####  App  #####################################################################
 
-from flask import Flask, request
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from werkzeug.exceptions import HTTPException

@@ -26,5 +26,5 @@ ENV OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
 ENV OTLP_RECEIVER_HOST=${OTLP_RECEIVER_HOST}
 ENV OTLP_RECEIVER_PORT=${OTLP_RECEIVER_PORT}
 
-ENTRYPOINT [ "python", "./src/server.py" ]
+ENTRYPOINT [ "gunicorn", "--chdir", "src", "server:app", "-w", "2", "--threads", "2", "-b", "0.0.0.0:80", "-c", "./src/gunicorn.py" ]
 EXPOSE ${SERVICE_BIND_PORT}

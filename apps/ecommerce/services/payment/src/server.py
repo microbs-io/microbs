@@ -9,7 +9,7 @@ from flask import jsonify, request
 from flask_cors import cross_origin
 
 # Service packages
-from common import app, cors, config, logger, tracer
+from common import app, cors, config, logger
 
 RE_NON_DIGITS = re.compile(r'[^0-9]')
 

@@ -10,7 +10,7 @@ from flask_cors import cross_origin
 from flask_session import Session
 
 # Service packages
-from common import app, cors, config, logger, tracer
+from common import app, cors, config, logger
 
 # Configure application
 app.static_folder=(os.environ.get('STATIC_PATH') or '/service/dist')

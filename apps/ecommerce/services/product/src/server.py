@@ -10,7 +10,7 @@ from flask_cors import cross_origin
 from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
 
 # Service packages
-from common import app, cors, config, logger, tracer
+from common import app, cors, config, logger
 
 # Configure Postgres
 Psycopg2Instrumentor().instrument()

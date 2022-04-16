@@ -1,5 +1,5 @@
 # Build ./public
-FROM node:17 AS build-client
+FROM node:17 AS build-react
 WORKDIR /service
 COPY ./services/web-gateway/src/public ./src/public
 COPY ./services/web-gateway/package.json .
@@ -32,7 +32,7 @@ COPY ./services/web-gateway/requirements.txt .
 COPY ./common/python ./src
 RUN pip install -r ./requirements.txt
 
-COPY --from=build-client /service/dist /service/dist
+COPY --from=build-react /service/dist /service/dist
 
 # Configuration inputs
 ARG DEPLOYMENT_ENVIRONMENT
@@ -56,5 +56,5 @@ ENV SERVICE_HOST_SESSION_DATA=${SERVICE_HOST_SESSION_DATA}
 ENV OTLP_RECEIVER_HOST=${OTLP_RECEIVER_HOST}
 ENV OTLP_RECEIVER_PORT=${OTLP_RECEIVER_PORT}
 
-ENTRYPOINT [ "python", "./src/server.py" ]
+ENTRYPOINT [ "gunicorn", "--chdir", "src", "server:app", "-w", "2", "--threads", "2", "-b", "0.0.0.0:80", "-c", "./src/gunicorn.py" ]
 EXPOSE ${SERVICE_BIND_PORT}

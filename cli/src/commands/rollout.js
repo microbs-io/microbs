@@ -61,7 +61,11 @@ module.exports.rollout = async (opts) => {
     command = `${command} -l "skaffold.dev/run-id=microbs-${quote([ config.get('deployment.name') ])}" --status-check=false`
   if (config.get('docker.registry'))
     command = `${command} --default-repo="${quote([ config.get('docker.registry') ])}"`
-  utils.exec(command)
+  const result = utils.exec(command)
+  if (result.err) {
+    logger.error('Rollout failed.')
+    process.exit(1)
+  }
 
   logger.info('')
   if (opts.action == 'run')

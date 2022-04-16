@@ -10,7 +10,7 @@ from flask_cors import cross_origin
 from opentelemetry.instrumentation.redis import RedisInstrumentor
 
 # Service packages
-from common import app, cors, config, logger, tracer
+from common import app, cors, config, logger
 
 # Configure Redis client
 RedisInstrumentor().instrument()

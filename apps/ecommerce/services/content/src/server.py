@@ -8,7 +8,7 @@ from flask import jsonify, request, Response
 from flask_cors import cross_origin
 
 # Service packages
-from common import app, cors, config, logger, tracer
+from common import app, cors, config, logger
 
 # Configure content source
 CONTENT_BASE_PATH = "https://storage.googleapis.com/cdn.microbs.io/apps/ecommerce/main/content/images"
