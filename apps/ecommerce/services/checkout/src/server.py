@@ -6,6 +6,8 @@ import uuid
 import requests
 from flask import jsonify, request
 from flask_cors import cross_origin
+from opentelemetry import trace
+from opentelemetry.trace.status import Status, StatusCode
 
 # Service packages
 from common import app, cors, config, logger
@@ -38,6 +40,9 @@ def post_checkout():
     url = "{}/payment/process".format(BASE_URL_API_GATEWAY)
     response = requests.post(url, json=data_payment)
     if response.status_code != 200:
+        span = trace.get_current_span()
+        span.set_attribute('event.outcome', 'failure')
+        span.set_status(Status(StatusCode.ERROR))
         return jsonify({ 'message': 'failure' }), response.status_code
 
     # Clear the cart
@@ -47,6 +52,9 @@ def post_checkout():
     url="{}/cart".format(BASE_URL_API_GATEWAY)
     response = requests.delete(url, json=data_cart)
     if response.status_code != 200:
+        span = trace.get_current_span()
+        span.set_attribute('event.outcome', 'failure')
+        span.set_status(Status(StatusCode.ERROR))
         return jsonify({ 'message': 'failure' }), response.status_code
     return jsonify({ 'message': 'success' })
 

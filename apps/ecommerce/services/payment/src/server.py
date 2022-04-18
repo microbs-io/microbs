@@ -7,6 +7,8 @@ import time
 # Third-party packages
 from flask import jsonify, request
 from flask_cors import cross_origin
+from opentelemetry import trace
+from opentelemetry.trace.status import Status, StatusCode
 
 # Service packages
 from common import app, cors, config, logger
@@ -45,6 +47,9 @@ def post_payment():
     """
     data = request.get_json()
     if not validate_card_number(data.get('card', {}).get('number')):
+        span = trace.get_current_span()
+        span.set_attribute('event.outcome', 'failure')
+        span.set_status(Status(StatusCode.ERROR))
         return jsonify({ 'message': 'failure', 'reason': 'Invalid card number' }), 400
     process_payment(data.get('card', {}).get('number'), data.get('amount'))
     return jsonify({ 'message': 'success' })

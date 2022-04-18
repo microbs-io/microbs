@@ -11,6 +11,7 @@ import logging
 import os
 import re
 import sys
+import traceback
 
 
 ####  Configuration  ###########################################################
@@ -150,6 +151,7 @@ def handle_exception(e):
     })
     span = trace.get_current_span()
     span.record_exception(e)
+    span.set_attribute('event.outcome', 'failure')
     span.set_status(Status(StatusCode.ERROR))
     return jsonify({
         'message': getattr(e, 'message', repr(e)),
