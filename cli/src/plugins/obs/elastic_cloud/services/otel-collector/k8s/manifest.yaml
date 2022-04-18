@@ -24,6 +24,14 @@ data:
           receivers: [otlp]
           processors: [batch]
           exporters: [logging, otlp/elastic]
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [logging, otlp/elastic]
+        logs: 
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [logging, otlp/elastic]
 ---
 apiVersion: apps/v1
 kind: Deployment

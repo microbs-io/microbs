@@ -47,7 +47,8 @@ def postgres_client():
         user=os.environ.get('SERVICE_USERNAME_POSTGRES'),
         password=os.environ.get('SERVICE_PASSWORD_POSTGRES'),
         host=os.environ.get('SERVICE_HOST_POSTGRES'),
-        port=os.environ.get('SERVICE_PORT_POSTGRES')
+        port=os.environ.get('SERVICE_PORT_POSTGRES'),
+        cursor_factory=psycopg2.extras.DictCursor
     )
 
 import redis
@@ -103,7 +104,7 @@ def test_postgres(id):
     try:
         rows = []
         with postgres_client() as connection:
-            cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cursor = connection.cursor()
             cursor.execute("select * from test.test where key = %s", ( id, ))
             rows = cursor.fetchall()
         return jsonify({ 'message': rows[0]["value"] })

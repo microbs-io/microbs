@@ -77,7 +77,10 @@ module.exports = async () => {
 
     // Get stack info
     if (response.status == 200) {
-      logger.info(`...created: '${channelName}'`)
+      if (response.error && response.error == 'name_taken')
+        logger.info(`...exists: '${channelName}'`)
+      else
+        logger.info(`...created: '${channelName}'`)
     } else {
       logger.error('...failure:')
       logger.error(response.data)

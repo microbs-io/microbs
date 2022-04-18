@@ -5,6 +5,7 @@ opentelemetry-api==1.10.0
 opentelemetry-exporter-otlp==1.10.0
 opentelemetry-sdk==1.10.0
 opentelemetry-instrumentation-flask==0.29b0
+opentelemetry-instrumentation-psycopg2==0.29b0
 opentelemetry-instrumentation-requests==0.29b0
-psycopg2-binary==2.9.3
+psycopg2==2.9.3
 requests==2.27.1

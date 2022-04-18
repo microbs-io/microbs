@@ -1,12 +1,9 @@
-FROM python:3.9-slim
-WORKDIR /service
+FROM iquirino91/nginx-opentelemetry@sha256:008914fd4d4aa8e060e14d7a2af56e48418d95832251473a8cffb5c348681703
+RUN apk add bash gettext
 
-# Requirements for service
-COPY ./services/api-gateway .
-COPY ./common/python ./src
-RUN pip install -r ./requirements.txt
+COPY ./services/api-gateway-nginx/src/nginx.conf ./nginx.conf.template
+COPY ./services/api-gateway-nginx/src/otel-nginx.toml ./otel-nginx.toml.template
 
-# Configuration inputs
 ARG DEPLOYMENT_ENVIRONMENT
 ARG SERVICE_NAME
 ARG SERVICE_BIND_HOST
@@ -22,5 +19,4 @@ ENV OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
 ENV OTLP_RECEIVER_HOST=${OTLP_RECEIVER_HOST}
 ENV OTLP_RECEIVER_PORT=${OTLP_RECEIVER_PORT}
 
-ENTRYPOINT [ "gunicorn", "--chdir", "src", "server:app", "-w", "2", "--threads", "2", "-b", "0.0.0.0:80", "-c", "./src/gunicorn.py" ]
-EXPOSE ${SERVICE_BIND_PORT}
+CMD sh -c "cp ./nginx.conf.template /etc/nginx/nginx.conf && envsubst < ./otel-nginx.toml.template > /etc/nginx/otel-nginx.toml && /etc/nginx/nginx -g 'daemon off;'"

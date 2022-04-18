@@ -49,31 +49,31 @@ module.exports = async () => {
   const subnetworkName = config.get('plugins.gke.subnetwork_name')
   const serviceAccountName = config.get('plugins.gke.service_account_name')
   const command = `
-  gcloud container clusters create 'microbs-${quote([ deploymentName ])}' \
-      --project "${quote([ projectName ])}" \
-      --region "${quote([ regionName ])}" \
-      --network "projects/${quote([ projectName ])}/global/networks/${quote([ networkName ])}" \
-      --subnetwork "projects/${quote([ projectName ])}/regions/${quote([ regionName ])}/subnetworks/${quote([ subnetworkName ])}" \
-      --service-account "${quote([ serviceAccountName ]).replace('\\@', '@')}" \
-      --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver \
-      --cluster-version "1.21" \
-      --default-max-pods-per-node "110" \
-      --disk-size "32" \
-      --disk-type "pd-ssd" \
-      --enable-autorepair \
-      --enable-autoupgrade \
-      --enable-ip-alias \
-      --image-type "COS_CONTAINERD" \
-      --machine-type "e2-highcpu-4" \
-      --max-pods-per-node "110" \
-      --max-surge-upgrade 1 \
-      --max-unavailable-upgrade 0 \
-      --metadata disable-legacy-endpoints=true \
-      --no-enable-basic-auth \
-      --no-enable-intra-node-visibility \
-      --no-enable-master-authorized-networks \
-      --no-shielded-integrity-monitoring \
-      --num-nodes "1" \
+  gcloud container clusters create 'microbs-${quote([ deploymentName ])}' \\
+      --project "${quote([ projectName ])}" \\
+      --region "${quote([ regionName ])}" \\
+      --network "projects/${quote([ projectName ])}/global/networks/${quote([ networkName ])}" \\
+      --subnetwork "projects/${quote([ projectName ])}/regions/${quote([ regionName ])}/subnetworks/${quote([ subnetworkName ])}" \\
+      --service-account "${quote([ serviceAccountName ]).replace('\\@', '@')}" \\
+      --addons HorizontalPodAutoscaling,HttpLoadBalancing,GcePersistentDiskCsiDriver \\
+      --cluster-version "1.21" \\
+      --default-max-pods-per-node "110" \\
+      --disk-size "32" \\
+      --disk-type "pd-ssd" \\
+      --enable-autorepair \\
+      --enable-autoupgrade \\
+      --enable-ip-alias \\
+      --image-type "COS_CONTAINERD" \\
+      --machine-type "e2-highcpu-8" \\
+      --max-pods-per-node "110" \\
+      --max-surge-upgrade 1 \\
+      --max-unavailable-upgrade 0 \\
+      --metadata disable-legacy-endpoints=true \\
+      --no-enable-basic-auth \\
+      --no-enable-intra-node-visibility \\
+      --no-enable-master-authorized-networks \\
+      --no-shielded-integrity-monitoring \\
+      --num-nodes "1" \\
       --release-channel "regular"
   `
   logger.debug('...sending command:')

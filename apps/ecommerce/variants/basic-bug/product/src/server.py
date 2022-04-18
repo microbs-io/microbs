@@ -4,22 +4,25 @@ import math
 import os
 
 # Third-party packages
+import psycopg2
+import psycopg2.extras
 from flask import jsonify, request
 from flask_cors import cross_origin
+from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
 
 # Service packages
 from common import app, cors, config, logger
 
 # Configure Postgres
-import psycopg2
-import psycopg2.extras
+Psycopg2Instrumentor().instrument()
 def postgres():
     return psycopg2.connect(
         dbname='products',
         user=(os.environ.get('SERVICE_USERNAME_PRODUCT_DATA') or 'postgres'),
         password=(os.environ.get('SERVICE_PASSWORD_PRODUCT_DATA') or 'password'),
         host=(os.environ.get('SERVICE_HOST_PRODUCT_DATA') or 'localhost'),
-        port=(os.environ.get('SERVICE_PORT_PRODUCT_DATA') or 5432)
+        port=(os.environ.get('SERVICE_PORT_PRODUCT_DATA') or 5432),
+        cursor_factory=psycopg2.extras.DictCursor
     )
 
 def parse_result(rows):
@@ -61,7 +64,7 @@ def get_products():
     """
     basic_bug()
     with postgres() as connection:
-        cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor = connection.cursor()
         ids = (request.get_json() or [])
         if not ids:
             cursor.execute(
@@ -83,7 +86,7 @@ def search_products():
     with postgres() as connection:
         query = (request.get_json() or { 'query': '' }).get('query', '')
         size = (request.get_json() or { 'page': {}}).get('page', { 'size': 'all' }).get('size', 'all')
-        cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor = connection.cursor()
         if query == '':
             cursor.execute(
                 "select * from products order by rating desc limit {};".format(size)
@@ -104,7 +107,7 @@ def get_suggestions():
     with postgres() as connection:
         query = (request.get_json() or { 'query': '' }).get('query', '')
         size = (request.get_json() or { 'page': {}}).get('page', { 'size': 'all' }).get('size', 'all')
-        cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor = connection.cursor()
         if query == '':
             cursor.execute(
                 "select * from products order by rating desc limit {};".format(size)
