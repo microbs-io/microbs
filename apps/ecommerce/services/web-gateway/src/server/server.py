@@ -8,9 +8,13 @@ import requests
 from flask import jsonify, make_response, request, send_from_directory
 from flask_cors import cross_origin
 from flask_session import Session
+from opentelemetry.instrumentation.redis import RedisInstrumentor
 
 # Service packages
 from common import app, cors, config, logger
+
+# Configure Redis client
+RedisInstrumentor().instrument()
 
 # Configure application
 app.static_folder=(os.environ.get('STATIC_PATH') or '/service/dist')
