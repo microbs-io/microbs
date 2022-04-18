@@ -1,3 +1,8 @@
+"""
+Gunicorn requires that tracing be configured in the post_fork() hook.
+https://opentelemetry-python.readthedocs.io/en/latest/examples/fork-process-model/README.html
+"""
+
 def post_fork(server, worker):
     
     # Service packages
@@ -11,6 +16,7 @@ def post_fork(server, worker):
     from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
     tracer_provider = TracerProvider(resource=Resource.create({
         'deployment.environment': config.get('DEPLOYMENT_ENVIRONMENT'),
+        'process.pid': str(worker.pid),
         'service.name': config.get('SERVICE_NAME')
     }))
     tracer_provider.add_span_processor(

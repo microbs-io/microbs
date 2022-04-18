@@ -78,17 +78,25 @@ traces:
       otlp:
         protocols:
           grpc:
-          http:
     remote_write:
     - endpoint: ${PLUGINS_GRAFANA_CLOUD_TEMPO_ENDPOINT}
       basic_auth:
         username: ${PLUGINS_GRAFANA_CLOUD_TEMPO_USERNAME}
         password: ${PLUGINS_GRAFANA_CLOUD_API_KEY}
+    load_balancing:
+      exporter:
+        insecure: true
+      resolver:
+        dns:
+          hostname: grafana-agent-headless.default.svc.cluster.local
+          port: 4318
     spanmetrics:
       metrics_instance: integrations
       latency_histogram_buckets: [ 2ms, 4ms, 6ms, 8ms, 10ms, 50ms, 100ms, 150ms, 200ms, 250ms, 500ms, 750ms, 1000ms, 1500ms, 2000ms, 2500ms, 5000ms, 10000ms, 60000ms ]
       dimensions:
+        - name: k8s.pod.ip
         - name: k8s.pod.name
+        - name: process.pid
     service_graphs:
       enabled: false
     automatic_logging:
@@ -157,6 +165,11 @@ logs:
         source_labels:
         - __meta_kubernetes_namespace
         target_label: k8s_namespace_name
+
+      - action: replace
+        source_labels:
+        - __meta_kubernetes_pod_ip
+        target_label: k8s_pod_ip
 
       - action: replace
         source_labels:

@@ -1,3 +1,3 @@
-FROM grafana/agent:v0.23.0
+FROM grafana/agent:v0.24.1
 
 COPY ./src/agent.yaml /etc/agent/agent.yaml

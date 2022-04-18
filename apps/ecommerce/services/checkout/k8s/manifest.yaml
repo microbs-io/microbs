@@ -50,12 +50,16 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
+        - name: K8S_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
         - name: K8S_POD_NAME
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: k8s.app=$(K8S_APP),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.node.name=$(K8S_NODE_NAME),k8s.pod.name=$(K8S_POD_NAME)
+          value: k8s.app=$(K8S_APP),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.node.name=$(K8S_NODE_NAME),k8s.pod.ip=$(K8S_POD_IP),k8s.pod.name=$(K8S_POD_NAME)
         envFrom:
         - secretRef:
            name: microbs-secrets

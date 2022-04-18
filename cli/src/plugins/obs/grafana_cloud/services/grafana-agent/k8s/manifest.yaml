@@ -33,7 +33,7 @@ spec:
           "-config.expand-env",
           "--config.enable-read-api",
           "--config.file=/etc/agent/agent.yaml",
-          "--prometheus.wal-directory=/etc/agent/data"
+          "--metrics.wal-directory=/etc/agent/data"
         ]
         resources:
           limits:
@@ -143,8 +143,22 @@ spec:
   - port: 4317
     targetPort: 4317
     name: grpc
+  selector:
+    app: grafana-agent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-agent-headless
+  namespace: default
+  labels:
+    app: grafana-agent
+    name: grafana-agent-headless
+spec:
+  clusterIP: None
+  ports:
   - port: 4318
     targetPort: 4318
-    name: http
+    name: grpc
   selector:
-    name: grafana-agent
+    app: grafana-agent

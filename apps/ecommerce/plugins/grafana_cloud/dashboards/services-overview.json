@@ -289,7 +289,7 @@
             "uid": "grafanacloud-prom"
           },
           "exemplar": true,
-          "expr": "sum(rate(traces_spanmetrics_calls_total_total{service_name=~\"$services\",operation=~\"$operations\"}[10s])) by (service_name)",
+          "expr": "sum(rate(traces_spanmetrics_calls_total{service_name=~\"$services\",operation=~\"$operations\"}[10s])) by (service_name)",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{ service_name }}",
@@ -301,7 +301,7 @@
             "uid": "grafanacloud-prom"
           },
           "exemplar": true,
-          "expr": "sum(sum(rate(traces_spanmetrics_calls_total_total{service_name=~\"$services\",operation=~\"$operations\"}[10s])) by (service_name))",
+          "expr": "sum(sum(rate(traces_spanmetrics_calls_total{service_name=~\"$services\",operation=~\"$operations\"}[10s])) by (service_name))",
           "hide": false,
           "interval": "",
           "legendFormat": "(total)",
@@ -514,7 +514,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
