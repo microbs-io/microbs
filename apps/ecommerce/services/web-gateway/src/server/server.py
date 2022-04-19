@@ -43,7 +43,6 @@ def send_static(path, extension):
     """
     Serve static assets.
     """
-    logger.debug("{} /{}.{}".format(request.method, path, extension))
     return send_from_directory(app.static_folder, request.path.lstrip('/'))
 
 @app.route('/api/v1/<path:path>', methods=['GET','POST','PUT','DELETE',])
@@ -52,7 +51,6 @@ def proxy(path):
     """
     Forward API requests to api-gateway.
     """
-    logger.debug("{} /api/v1/{}".format(request.method, path))
     url = "http://{}:{}/api/v1/{}".format(
         config.get('SERVICE_HOST_API_GATEWAY'),
         config.get('SERVICE_PORT_API_GATEWAY'),
@@ -79,7 +77,6 @@ def healthz():
     """
     Handle liveness and readiness probes.
     """
-    logger.debug('GET /healthz')
     return jsonify({ 'healthy': True })
 
 @app.route('/<path:path>')

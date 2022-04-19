@@ -40,7 +40,6 @@ def healthz():
     """
     Handle liveness and readiness probes.
     """
-    logger.debug('GET /healthz')
     return jsonify({ 'healthy': True })
 
 @app.route('/')
@@ -49,7 +48,6 @@ def home():
     """
     Handle base path.
     """
-    logger.debug('GET /')
     return app.response_class(
         response=json.dumps(config, indent=2, sort_keys=True),
         mimetype='application/json',

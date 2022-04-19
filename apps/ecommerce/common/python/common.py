@@ -5,6 +5,9 @@ microbs ecommerce application and its variants. This file must be copied to the
 service is responsible for copying this file.
 """
 
+import gevent.monkey
+gevent.monkey.patch_all()
+
 # Standard packages
 import datetime
 import logging

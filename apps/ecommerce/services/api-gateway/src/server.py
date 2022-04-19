@@ -15,7 +15,6 @@ def proxy(service, path):
     """
     Forward API requests to services.
     """
-    logger.debug("{} /api/v1/{}/{}".format(request.method, service, path))
     url = "http://{}/{}".format(service, path)
     headers = dict(request.headers)
     headers.pop('Connection', None)
@@ -38,7 +37,6 @@ def proxy_base(service):
     """
     Forward API requests to services.
     """
-    logger.debug("{} /api/v1/{}".format(request.method, service))
     url = "http://{}.default.svc.cluster.local/".format(service)
     headers = dict(request.headers)
     headers.pop('Connection', None)
@@ -61,7 +59,6 @@ def healthz():
     """
     Handle liveness and readiness probes.
     """
-    logger.debug('GET /healthz')
     return jsonify({ 'healthy': True })
 
 @app.route('/')
@@ -70,7 +67,6 @@ def home():
     """
     Handle base path.
     """
-    logger.debug('GET /')
     return app.response_class(
         response=json.dumps(config, indent=2, sort_keys=True),
         mimetype='application/json',
