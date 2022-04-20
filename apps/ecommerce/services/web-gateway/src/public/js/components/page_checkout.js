@@ -1,5 +1,5 @@
 // Third-party packages
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import {
   Button,
@@ -14,6 +14,9 @@ import {
   Placeholder,
   Segment,
 } from 'semantic-ui-react'
+import dateFormat from 'dateformat'
+import faker from '@faker-js/faker/dist/faker.js'
+import { GenCC } from 'creditcard-generator'
 
 // Main packages
 import * as api from '../api'
@@ -45,6 +48,53 @@ const CheckoutPage = () => {
   const [billingCardExpiration, setBillingCardExpiration] = useState('')
   const [billingCardSecurityCode, setBillingCardSecurityCode] = useState('')
   const [billingCardPostalCode, setBillingCardPostalCode] = useState('')
+  
+  const randomUser = () => {
+    faker.setLocale('en_US')
+    const postalCode = faker.address.zipCode().split('-')[0]
+    const user = {
+      address: {
+        street_1: faker.address.streetAddress(),
+        street_2: Math.random() > 0.8 ? faker.address.secondaryAddress() : '',
+        city: faker.address.cityName(),
+        state: faker.address.stateAbbr(),
+        postal_code: postalCode,
+        country: 'US'
+      },
+      card: {
+        name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+        number: GenCC('VISA')[0],
+        expiration: dateFormat(faker.date.future(), 'mm/yy'),
+        security_code: faker.finance.creditCardCVV(),
+        postal_code: postalCode
+      }
+    }
+    return user
+  }
+  const randomizeCheckoutForm = () => {
+    const user = randomUser()
+    setShippingAddressStreet1(user.address.street_1)
+    setShippingAddressStreet2(user.address.street_2)
+    setShippingAddressCity(user.address.city)
+    setShippingAddressState(user.address.state)
+    setShippingAddressPostalCode(user.address.postal_code)
+    setShippingAddressCountry(user.address.country)
+    setBillingAddressStreet1(user.address.street_1)
+    setBillingAddressStreet2(user.address.street_2)
+    setBillingAddressCity(user.address.city)
+    setBillingAddressState(user.address.state)
+    setBillingAddressPostalCode(user.address.postal_code)
+    setBillingAddressCountry(user.address.country)
+    setBillingCardName(user.card.name)
+    setBillingCardNumber(user.card.number)
+    setBillingCardExpiration(user.card.expiration)
+    setBillingCardSecurityCode(user.card.security_code)
+    setBillingCardPostalCode(user.card.postal_code)
+  }
+  
+  useEffect(() => {
+    randomizeCheckoutForm()
+  }, [])
 
   var title = 'Checkout'
   var subtitle = ''

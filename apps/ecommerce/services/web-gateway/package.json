@@ -5,7 +5,10 @@
     "dev": "NODE_ENV=development parcel ./src/public/index.html"
   },
   "dependencies": {
+    "@faker-js/faker": "^5.5.3",
     "axios": "0.26.0",
+    "creditcard-generator": "^0.0.7",
+    "dateformat": "^5.0.3",
     "js-cookie": "3.0.1",
     "react": "17.0.0",
     "react-dom": "17.0.0",

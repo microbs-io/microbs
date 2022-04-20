@@ -1,4 +1,5 @@
 // Node.js packages
+import dateFormat from 'dateformat'
 import * as faker from '@faker-js/faker'
 import { GenCC } from 'creditcard-generator'
 
@@ -25,26 +26,25 @@ const jsonParams = () => {
 }
 const randomUser = () => {
   faker.setLocale('en_US')
-  const name = faker.name.findName()
-  const postalCode = faker.address.zipCode()
-  const identity = {
+  const postalCode = faker.address.zipCode().split('-')[0]
+  const user = {
     address: {
       street_1: faker.address.streetAddress(),
-      street_2: faker.address.secondaryAddress(),
+      street_2: Math.random() > 0.8 ? faker.address.secondaryAddress() : '',
       city: faker.address.cityName(),
       state: faker.address.stateAbbr(),
       postal_code: postalCode,
       country: 'US'
     },
     card: {
-      name: name,
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
       number: GenCC('VISA')[0],
-      expiration: faker.date.future(),
+      expiration: dateFormat(faker.date.future(), 'mm/yy'),
       security_code: faker.finance.creditCardCVV(),
       postal_code: postalCode
     }
   }
-  return identity
+  return user
 }
 
 export default () => {
