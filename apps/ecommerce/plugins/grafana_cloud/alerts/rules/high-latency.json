@@ -110,6 +110,7 @@
       "SLO": "2.0s",
       "Value": "{{ humanizeDuration $values.C.Value }}",
       "__dashboardUid__": "services-overview",
+      "__panelId__": "7",
       "summary": "High Latency - {{ $labels.service_name }}"
     },
     "labels": {
