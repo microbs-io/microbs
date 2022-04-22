@@ -1,10 +1,3 @@
-/*
- * apps.js
- *
- * Manage resources that applications specify in their respective
- * ./apps/APP_NAME/plugins directories.
- */
-
 // Standard packages
 const glob = require('glob')
 const path = require('path')

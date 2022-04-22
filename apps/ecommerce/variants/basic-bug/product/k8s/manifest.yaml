@@ -29,6 +29,9 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 5
+        envFrom:
+        - secretRef:
+            name: microbs-secrets
         env:
         - name: SERVICE_HOST_PRODUCT_DATA
           value: product-data
@@ -42,6 +45,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.labels['service']
+        - name: SERVICE_VERSION
+          value: $(DEPLOYMENT_VERSION)
         - name: K8S_APP
           valueFrom:
             fieldRef:
@@ -64,9 +69,6 @@ spec:
               fieldPath: metadata.name
         - name: OTEL_RESOURCE_ATTRIBUTES
           value: k8s.app=$(K8S_APP),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.node.name=$(K8S_NODE_NAME),k8s.pod.ip=$(K8S_POD_IP),k8s.pod.name=$(K8S_POD_NAME)
-        envFrom:
-        - secretRef:
-           name: microbs-secrets
 ---
 apiVersion: v1
 kind: Service

@@ -24,6 +24,7 @@ config['SERVICE_BIND_HOST'] = os.environ.get('SERVICE_BIND_HOST') or '0.0.0.0'
 config['SERVICE_BIND_PORT'] = os.environ.get('SERVICE_BIND_PORT') or 80
 config['SERVICE_HOST_API_GATEWAY'] = os.environ.get('SERVICE_HOST_API_GATEWAY') or 'localhost'
 config['SERVICE_PORT_API_GATEWAY'] = os.environ.get('SERVICE_PORT_API_GATEWAY') or 8080
+config['SERVICE_VERSION'] = os.environ.get('SERVICE_VERSION') or ''
 config['OTLP_RECEIVER_HOST'] = os.environ.get('OTLP_RECEIVER_HOST') or 'localhost'
 config['OTLP_RECEIVER_PORT'] = os.environ.get('OTLP_RECEIVER_PORT') or 4317
 
@@ -40,7 +41,8 @@ from opentelemetry.trace.status import Status, StatusCode
 RequestsInstrumentor().instrument()
 tracer_provider = TracerProvider(resource=Resource.create({
     'deployment.environment': config.get('DEPLOYMENT_ENVIRONMENT'),
-    'service.name': config.get('SERVICE_NAME')
+    'service.name': config.get('SERVICE_NAME'),
+    'service.version': config.get('SERVICE_VERSION')
 }))
 tracer_provider.add_span_processor(
     BatchSpanProcessor(

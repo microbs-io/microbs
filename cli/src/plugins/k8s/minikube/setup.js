@@ -14,7 +14,7 @@ const probe = require('./probe')
 module.exports = async () => {
   logger.info('')
   logger.info('Creating minikube cluster...')
-  utils.exec('minikube start', true)
+  utils.exec('minikube start')
 
   // Verify that the minikube cluster was created.
   logger.info('')

@@ -26,11 +26,11 @@ spec:
           requests:
             cpu: "1"
             memory: 128Mi
+        envFrom:
+        - secretRef:
+            name: microbs-secrets
         env:
         - name: SERVICE_NAME
           value: synthetics
         - name: NUM_VIRTUAL_USERS
           value: "150"
-        envFrom:
-        - secretRef:
-           name: microbs-secrets

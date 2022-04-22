@@ -23,6 +23,7 @@ const showDebug = () => SHOW_DEBUG.includes(logLevel())
 const showInfo = () => SHOW_INFO.includes(logLevel())
 const showWarn = () => SHOW_WARN.includes(logLevel())
 const showError = () => SHOW_ERROR.includes(logLevel())
+const stringify = (value) => value === undefined ? 'undefined' : value.toString()
 
 /**
  * Include timestamps and log levels with messages when using --verbose, but
@@ -58,11 +59,11 @@ const serialize = (message) => {
         // Serialize the first level of an object with circular references.
         const obj = {}
         for (var key in message)
-          obj[key] = message[key].toString()
+          obj[key] = stringify(message[key])
         try {
           return JSON.stringify(obj, null, 2)
         } catch (e) {
-          return message.toString()
+          return stringify(message)
         }
       } else {
         
@@ -72,21 +73,21 @@ const serialize = (message) => {
           if (typeof message[i] === 'object') {
             const obj = {}
             for (var key in message[i])
-              obj[key] = message[i][key].toString()
+              obj[key] = stringify(message[i][key])
             arr.push(obj)
           } else {
-            arr.push(message[i].toString())
+            arr.push(stringify(message[i]))
           }
           try {
             return JSON.stringify(arr, null, 2)
           } catch (e) {
-            return message.toString()
+            return stringify(message)
           }
         }
       }
     }
   } else {
-    return message.toString()
+    return stringify(message)
   }
 }
 

@@ -39,14 +39,16 @@ spec:
           requests:
            cpu: 100m
            memory: 128Mi
+        envFrom:
+        - secretRef:
+            name: microbs-secrets
         env:
         - name: POSTGRES_USER
           value: postgres
         - name: POSTGRES_PASSWORD
           value: password
-        envFrom:
-        - secretRef:
-           name: microbs-secrets
+        - name: SERVICE_VERSION
+          value: $(DEPLOYMENT_VERSION)
 ---
 apiVersion: v1
 kind: Service

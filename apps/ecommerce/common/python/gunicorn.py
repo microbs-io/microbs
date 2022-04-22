@@ -6,7 +6,7 @@ https://opentelemetry-python.readthedocs.io/en/latest/examples/fork-process-mode
 def post_fork(server, worker):
     
     # Service packages
-    from common import config
+    from common import config, logger
     
     # Configure tracing
     from opentelemetry import trace
@@ -17,7 +17,8 @@ def post_fork(server, worker):
     tracer_provider = TracerProvider(resource=Resource.create({
         'deployment.environment': config.get('DEPLOYMENT_ENVIRONMENT'),
         'process.pid': str(worker.pid),
-        'service.name': config.get('SERVICE_NAME')
+        'service.name': config.get('SERVICE_NAME'),
+        'service.version': config.get('SERVICE_VERSION')
     }))
     tracer_provider.add_span_processor(
         BatchSpanProcessor(
