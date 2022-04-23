@@ -79,7 +79,7 @@ logs:
       sync_period: 10s
     scrape_configs:
     - pipeline_stages:
-      - docker:
+      - cri:
       job_name: kubernetes-pods-name
       kubernetes_sd_configs:
       - role: pod
