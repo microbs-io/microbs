@@ -47,7 +47,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": 17,
-  "iteration": 1650743503692,
+  "iteration": 1650743774298,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -505,7 +505,12 @@
         "y": 3
       },
       "id": 37,
-      "links": [],
+      "links": [
+        {
+          "title": "Show details",
+          "url": "/d/rq0JrllZz/synthetic-monitoring-http?var-job=ecommerce-web-gateway"
+        }
+      ],
       "options": {
         "colorMode": "value",
         "fieldOptions": {
@@ -710,7 +715,12 @@
         "y": 7
       },
       "id": 38,
-      "links": [],
+      "links": [
+        {
+          "title": "Show details",
+          "url": "/d/rq0JrllZz/synthetic-monitoring-http?var-job=ecommerce-api-gateway"
+        }
+      ],
       "options": {
         "colorMode": "value",
         "fieldOptions": {
@@ -1551,6 +1561,6 @@
   "timezone": "",
   "title": "Services Overview",
   "uid": "services-overview",
-  "version": 3,
+  "version": 2,
   "weekStart": ""
 }
