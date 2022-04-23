@@ -1,0 +1,37 @@
+{
+	"job": "ecommerce-api-gateway",
+	"target": "http://api-gateway.default.svc.cluster.local/",
+	"enabled": true,
+	"labels": [],
+	"probes": [],
+	"timeout": 3000,
+	"frequency": 10000,
+	"alertSensitivity": "high",
+	"settings": {
+		"http": {
+			"method": "GET",
+			"ipVersion": "V4",
+			"noFollowRedirects": false,
+			"validStatusCodes": [200],
+			"validHTTPVersions": [],
+			"headers": [],
+			"body": "",
+			"proxyURL": "",
+			"cacheBustingQueryParamName": "",
+			"failIfNotSSL": false,
+			"failIfSSL": false,
+			"failIfBodyMatchesRegexp": [],
+			"failIfBodyNotMatchesRegexp": [],
+			"failIfHeaderMatchesRegexp": [],
+			"failIfHeaderNotMatchesRegexp": [],
+			"tlsConfig": {
+				"clientCert": "",
+				"caCert": "",
+				"clientKey": "",
+				"insecureSkipVerify": false,
+				"serverName": ""
+			}
+		}
+	},
+	"basicMetricsOnly": true
+}

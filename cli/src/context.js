@@ -60,6 +60,12 @@ const init = () => {
           context['filepath'] = args[key][i]
           break
 
+        // -i | --indented  Indent logged objects
+        case 'i':
+        case 'indented':
+          context.args['indented'] = true
+          break
+
         // -L | --log-level  Minimum log-level to show in the console
         case 'L':
         case 'log-level':

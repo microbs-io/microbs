@@ -21,3 +21,4 @@ profiles:
     kubectl:
       manifests:
       - ./cli/src/plugins/obs/grafana_cloud/services/grafana-agent/k8s/*.yaml
+      - ./cli/src/plugins/obs/grafana_cloud/services/synthetics-agent/k8s/*.yaml

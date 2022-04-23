@@ -2,9 +2,6 @@
 const glob = require('glob')
 const path = require('path')
 
-// Third-party packages
-const axios = require('axios')
-
 // Main packages
 const config = require('../../../config')
 const context = require('../../../context')
@@ -23,20 +20,16 @@ const createAlertRules = async () => {
   
   // Fetch any existing rules 
   logger.debug('Getting existing alerts...')
-  logger.debug(`GET ${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules`)
   var response
   try {
-    response = await axios.request({
+    response = await utils.http({
       method: 'get',
       url: `${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules`,
-      headers: constants.grafanaApiHeaders(),
-      timeout: 60000,
-      validateStatus: () => true
+      headers: constants.grafanaApiHeaders()
     })
-    logger.debug(response.status)
-    logger.debug(response.data)
   } catch (err) {
-    logger.error(err.message)
+    logger.error(err)
+    return
   }
   const rulesExisting = {}
   if (response.data.GrafanaCloud) {
@@ -56,40 +49,32 @@ const createAlertRules = async () => {
     if (rulesExisting[rules[filename].name]) {
       logger.info(`Deleting old alert rule: ${rules[filename].name}`)
       const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules/GrafanaCloud/${rules[filename].name}`
-      logger.debug(`DELETE ${url}`)
       var response
       try {
-        response = await axios.request({
+        response = await utils.http({
           method: 'delete',
           url: url,
-          headers: constants.grafanaApiHeaders(),
-          timeout: 60000,
-          validateStatus: () => true
+          headers: constants.grafanaApiHeaders()
         })
-        logger.debug(response.status)
-        logger.debug(response.data)
       } catch (err) {
-        logger.error(err.message)
+        logger.error(err)
+        return
       }
     }
     logger.info(`Creating alert rule: ${filename}`)
     const data = rules[filename]
     const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules/GrafanaCloud`
-    logger.debug(`POST ${url}`)
     var response
     try {
-      response = await axios.request({
+      response = await utils.http({
         method: 'post',
         url: url,
         data: data,
-        headers: constants.grafanaApiHeaders(),
-        timeout: 60000,
-        validateStatus: () => true
+        headers: constants.grafanaApiHeaders()
       })
-      logger.debug(response.status)
-      logger.debug(response.data)
     } catch (err) {
-      logger.error(err.message)
+      logger.error(err)
+      return
     }
 
     // Get stack info
@@ -111,20 +96,16 @@ const destroyAlertRules = async () => {
   
   // Fetch any existing rules 
   logger.debug('Getting existing alerts...')
-  logger.debug(`GET ${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules`)
   var response
   try {
-    response = await axios.request({
+    response = await utils.http({
       method: 'get',
       url: `${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules`,
-      headers: constants.grafanaApiHeaders(),
-      timeout: 60000,
-      validateStatus: () => true
+      headers: constants.grafanaApiHeaders()
     })
-    logger.debug(response.status)
-    logger.debug(response.data)
   } catch (err) {
-    logger.error(err.message)
+    logger.error(err)
+    return
   }
   const rulesExisting = {}
   if (response.data.GrafanaCloud) {
@@ -144,20 +125,16 @@ const destroyAlertRules = async () => {
     if (rulesExisting[rules[filename].name]) {
       logger.info(`Deleting alert rule: ${rules[filename].name}`)
       const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/ruler/grafana/api/v1/rules/GrafanaCloud/${rules[filename].name}`
-      logger.debug(`DELETE ${url}`)
       var response
       try {
-        response = await axios.request({
+        response = await utils.http({
           method: 'delete',
           url: url,
-          headers: constants.grafanaApiHeaders(),
-          timeout: 60000,
-          validateStatus: () => true
+          headers: constants.grafanaApiHeaders()
         })
-        logger.debug(response.status)
-        logger.debug(response.data)
       } catch (err) {
-        logger.error(err.message)
+        logger.error(err)
+        return
       }
     }
   }
@@ -202,21 +179,17 @@ const createAlertContactPoints = async () => {
 
   // Create contact points
   const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/alertmanager/grafana/config/api/v1/alerts`
-  logger.debug(`POST ${url}`)
   var response
   try {
-    response = await axios.request({
+    response = await utils.http({
       method: 'post',
       url: url,
-      data: data,
       headers: constants.grafanaApiHeaders(),
-      timeout: 60000,
-      validateStatus: () => true
+      data: data
     })
-    logger.debug(response.status)
-    logger.debug(response.data)
   } catch (err) {
-    logger.error(err.message)
+    logger.error(err)
+    return
   }
   if (response.status == 200 || response.status == 202) {
     logger.info(`...created.`)
@@ -235,20 +208,16 @@ const destroyAlertContactPoints = async () => {
 
   // Destroy alerting configuration
   const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/alertmanager/grafana/config/api/v1/alerts`
-  logger.debug(`DELETE ${url}`)
   var response
   try {
-    response = await axios.request({
+    response = await utils.http({
       method: 'delete',
       url: url,
-      headers: constants.grafanaApiHeaders(),
-      timeout: 60000,
-      validateStatus: () => true
+      headers: constants.grafanaApiHeaders()
     })
-    logger.debug(response.status)
-    logger.debug(response.data)
   } catch (err) {
-    logger.error(err.message)
+    logger.error(err)
+    return
   }
   if (response.status == 200 || response.status == 202) {
     logger.info(`...destroyed.`)
@@ -276,21 +245,17 @@ const createDashboard = async (filepath) => {
 
   // Import dashboard
   const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/dashboards/db`
-  logger.debug(`POST ${url}`)
   var response
   try {
-    response = await axios.request({
+    response = await utils.http({
       method: 'post',
       url: url,
-      data: data,
       headers: constants.grafanaApiHeaders(),
-      timeout: 60000,
-      validateStatus: () => true
+      data: data
     })
-    logger.debug(response.status)
-    logger.debug(response.data)
   } catch (err) {
-    logger.error(err.message)
+    logger.error(err)
+    return
   }
 
   // Get stack info
@@ -314,20 +279,16 @@ const destroyDashboard = async (filepath) => {
 
   // Import dashboard
   const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/dashboards/uid/${uid}`
-  logger.debug(`DELETE ${url}`)
   var response
   try {
-    response = await axios.request({
+    response = await utils.http({
       method: 'delete',
       url: url,
-      headers: constants.grafanaApiHeaders(),
-      timeout: 60000,
-      validateStatus: () => true
+      headers: constants.grafanaApiHeaders()
     })
-    logger.debug(response.status)
-    logger.debug(response.data)
   } catch (err) {
-    logger.error(err.message)
+    logger.error(err)
+    return
   }
 
   // Get stack info
@@ -342,11 +303,117 @@ const destroyDashboard = async (filepath) => {
   }
 }
 
+const getSyntheticMonitoringChecks = async () => {
+  const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/datasources/proxy/21/sm/check/list`
+  var response
+  try {
+    response = await utils.http({
+      method: 'get',
+      url: url,
+      headers: constants.grafanaApiHeaders()
+    })
+  } catch (err) {
+    logger.error(err)
+    return
+  }
+  if (response.status == 200 && response.data)
+    return response.data
+  else
+    logger.error('...failed to list synthetic monitoring checks.')
+}
+
 /**
- * When the application is setup, invoke createDashboard() for each file in
- * ./apps/APP/plugins/grafana_cloud/dashboards/*.json.
+ * Create synthetic monitoring check.
+ */
+const createSyntheticMonitoringCheck = async (filepath) => {
+  logger.info(`Creating synthetic monitoring check: ${filepath}`)
+
+  // Load and parse synthetic monitoring check from file
+  const data = utils.loadJson(filepath) 
+  delete data.probes
+  data.probes = [ state.get('plugins.grafana_cloud.synthetic_monitoring.probe.id') ]
+  const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/datasources/proxy/21/sm/check/add`
+  var response
+  try {
+    response = await utils.http({
+      method: 'post',
+      url: url,
+      headers: constants.grafanaApiHeaders(),
+      data: data
+    })
+  } catch (err) {
+    logger.error(err)
+    return
+  }
+  if (response.status == 200)
+    logger.info(`...created: ${filepath}`)
+  else if (response.status == 409)
+    logger.info(`...exists: ${filepath}`)
+  else
+    logger.info(`...failure: ${filepath}`)
+}
+
+/**
+ * Create synthetic monitoring checks.
+ */
+const createSyntheticMonitoringChecks = async () => {
+  glob.sync(path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'plugins', 'grafana_cloud', 'synthetic-monitoring', '*.json')).forEach(async (filepath) => {
+    await createSyntheticMonitoringCheck(filepath)
+  })
+}
+
+const destroySyntheticMonitoringCheck = async (filepath, checks) => {
+  logger.info(`Removing synthetic monitoring check: ${filepath}`)
+  
+  // Load and parse synthetic monitoring check from file
+  const checkName = utils.loadJson(filepath).job
+  var checkId
+  for (var i in checks) {
+    if (checkName == checks[i].job) {
+      checkId = checks[i].id
+      break
+    }
+  }
+  if (!checkId) {
+    logger.info(`...check does not exist: ${filepath}`)
+    return
+  }
+  const url = `${state.get('plugins.grafana_cloud.grafana.url')}/api/datasources/proxy/21/sm/check/delete/${checkId}`
+  var response
+  try {
+    response = await utils.http({
+      method: 'delete',
+      url: url,
+      headers: constants.grafanaApiHeaders()
+    })
+  } catch (err) {
+    logger.error(err)
+    return
+  }
+  if (response.status == '200') {
+    logger.info(`...deleted check: ${filepath}`)
+  } else {
+    logger.error('...failure:')
+    logger.error(response.data)
+  }
+}
+
+/**
+ * Remove the synthetic monitoring checks.
+ */
+const destroySyntheticMonitoringChecks = async () => {
+  const checks = await getSyntheticMonitoringChecks()
+  glob.sync(path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'plugins', 'grafana_cloud', 'synthetic-monitoring', '*.json')).forEach(async (filepath) => {
+    await destroySyntheticMonitoringCheck(filepath, checks)
+  })
+}
+
+/**
+ * When the application is setup, create synthetic monitoring checks and invoke
+ * createDashboard() for each file in ./apps/APP/plugins/grafana_cloud/dashboards/*.json.
  */
 const after_setup_app = async () => {
+  await createSyntheticMonitoringChecks()
   glob.sync(path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'plugins', 'grafana_cloud', 'dashboards', '*.json')).forEach(async (filepath) => {
     await createDashboard(filepath)
   })
@@ -354,12 +421,14 @@ const after_setup_app = async () => {
 
 /**
  * When the application is destroyed, invoke destroyDashboard() for each file in 
- * ./apps/APP/plugins/grafana_cloud/dashboards/*.json.
+ * ./apps/APP/plugins/grafana_cloud/dashboards/*.json and destroy synthetic
+ * monitoring checks.
  */
 const after_destroy_app = async () => {
   glob.sync(path.join(context.get('homepath'), 'apps', config.get('deployment.app'), 'plugins', 'grafana_cloud', 'dashboards', '*.json')).forEach(async (filepath) => {
     await destroyDashboard(filepath)
   })
+  await destroySyntheticMonitoringChecks()
 }
 
 /**

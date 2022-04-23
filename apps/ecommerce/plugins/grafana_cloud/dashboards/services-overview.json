@@ -46,8 +46,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 10,
-  "iteration": 1650658289024,
+  "id": 17,
+  "iteration": 1650743503692,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -70,137 +70,23 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "grafanacloud-prom"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "reqps"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "(total)"
-            },
-            "properties": [
-              {
-                "id": "custom.lineWidth",
-                "value": 3
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "text",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 0
-              },
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "fill": "solid"
-                }
-              }
-            ]
-          }
-        ]
+        "type": "datasource",
+        "uid": "grafana"
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 2,
+        "w": 4,
         "x": 0,
         "y": 1
       },
-      "id": 2,
-      "interval": "1s",
+      "id": 40,
       "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "right"
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
+        "content": "<div style=\"height:100%;width:100%;display:flex;align-items:end;text-align:center;\">\n  <h2>web-gateway</h2>\n</div>",
+        "mode": "html"
       },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafanacloud-prom"
-          },
-          "exemplar": true,
-          "expr": "sum(rate(traces_spanmetrics_calls_total{service_name=~\"$services\",operation=~\"$operations\"}[10s])) by (service_name)",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{ service_name }}",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafanacloud-prom"
-          },
-          "exemplar": true,
-          "expr": "sum(sum(rate(traces_spanmetrics_calls_total{service_name=~\"$services\",operation=~\"$operations\"}[10s])) by (service_name))",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "(total)",
-          "refId": "B"
-        }
-      ],
-      "title": "Service Throughput",
-      "type": "timeseries"
+      "pluginVersion": "8.5.0",
+      "transparent": true,
+      "type": "text"
     },
     {
       "datasource": {
@@ -293,8 +179,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
+        "w": 10,
+        "x": 4,
         "y": 1
       },
       "id": 7,
@@ -341,6 +227,530 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "reqps"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "(total)"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "text",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 1
+      },
+      "id": 2,
+      "interval": "1s",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "exemplar": true,
+          "expr": "sum(rate(traces_spanmetrics_calls_total{service_name=~\"$services\",operation=~\"$operations\"}[10s])) by (service_name)",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{ service_name }}",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "exemplar": true,
+          "expr": "sum(sum(rate(traces_spanmetrics_calls_total{service_name=~\"$services\",operation=~\"$operations\"}[10s])) by (service_name))",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "(total)",
+          "refId": "B"
+        }
+      ],
+      "title": "Service Throughput",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "The fraction of time the target was up during the whole period.",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 0.99
+              },
+              {
+                "color": "green",
+                "value": 0.995
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 0,
+        "y": 3
+      },
+      "id": 34,
+      "links": [
+        {
+          "title": "Show details",
+          "url": "/d/rq0JrllZz/synthetic-monitoring-http?var-job=ecommerce-web-gateway"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "exemplar": true,
+          "expr": "sum_over_time(\n  (\n    ceil(\n      sum by (instance, job) (increase(probe_all_success_sum{instance=\"http://web-gateway.default.svc.cluster.local/\", job=\"ecommerce-web-gateway\"}[5m]))\n      /\n      sum by (instance, job) (increase(probe_all_success_count{instance=\"http://web-gateway.default.svc.cluster.local/\", job=\"ecommerce-web-gateway\"}[5m]))\n    )\n  )[$__range:]\n)\n/\ncount_over_time(\n  (\n      sum by (instance, job) (increase(probe_all_success_count{instance=\"http://web-gateway.default.svc.cluster.local/\", job=\"ecommerce-web-gateway\"}[5m]))\n  )[$__range:]\n)",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
+        }
+      ],
+      "title": "Uptime",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "The percentage of all the checks that have succeeded during the whole time period.",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 0.99
+              },
+              {
+                "color": "green",
+                "value": 0.995
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 2,
+        "y": 3
+      },
+      "id": 37,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "exemplar": true,
+          "expr": "sum(\n  increase(probe_all_success_sum{instance=\"http://web-gateway.default.svc.cluster.local/\", job=\"ecommerce-web-gateway\"}[$__range])\n   )\n/\nsum(\n  increase(probe_all_success_count{instance=\"http://web-gateway.default.svc.cluster.local/\", job=\"ecommerce-web-gateway\"}[$__range])\n)",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
+        }
+      ],
+      "title": "Reachability",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 4,
+        "x": 0,
+        "y": 5
+      },
+      "id": 39,
+      "options": {
+        "content": "<div style=\"height:100%;width:100%;display:flex;align-items:end;text-align:center;\">\n  <h2>api-gateway</h2>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "8.5.0",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "The fraction of time the target was up during the whole period.",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 0.99
+              },
+              {
+                "color": "green",
+                "value": 0.995
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 0,
+        "y": 7
+      },
+      "id": 35,
+      "links": [
+        {
+          "title": "Show details",
+          "url": "/d/rq0JrllZz/synthetic-monitoring-http?var-job=ecommerce-api-gateway"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "exemplar": true,
+          "expr": "sum_over_time(\n  (\n    ceil(\n      sum by (instance, job) (increase(probe_all_success_sum{instance=\"http://api-gateway.default.svc.cluster.local/\", job=\"ecommerce-api-gateway\"}[5m]))\n      /\n      sum by (instance, job) (increase(probe_all_success_count{instance=\"http://api-gateway.default.svc.cluster.local/\", job=\"ecommerce-api-gateway\"}[5m]))\n    )\n  )[$__range:]\n)\n/\ncount_over_time(\n  (\n      sum by (instance, job) (increase(probe_all_success_count{instance=\"http://api-gateway.default.svc.cluster.local/\", job=\"ecommerce-api-gateway\"}[5m]))\n  )[$__range:]\n)",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
+        }
+      ],
+      "title": "Uptime",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "The percentage of all the checks that have succeeded during the whole time period.",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 0.99
+              },
+              {
+                "color": "green",
+                "value": 0.995
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 2,
+        "y": 7
+      },
+      "id": 38,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "exemplar": true,
+          "expr": "sum(\n  increase(probe_all_success_sum{instance=\"http://api-gateway.default.svc.cluster.local/\", job=\"ecommerce-api-gateway\"}[$__range])\n   )\n/\nsum(\n  increase(probe_all_success_count{instance=\"http://api-gateway.default.svc.cluster.local/\", job=\"ecommerce-api-gateway\"}[$__range])\n)",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
+        }
+      ],
+      "title": "Reachability",
+      "type": "stat"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
@@ -360,43 +770,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 10
-      },
-      "id": 14,
-      "options": {
-        "dedupStrategy": "signature",
-        "enableLogDetails": true,
-        "prettifyLogMessage": false,
-        "showCommonLabels": false,
-        "showLabels": false,
-        "showTime": false,
-        "sortOrder": "Descending",
-        "wrapLogMessage": false
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "grafanacloud-logs"
-          },
-          "expr": "{cluster=\"microbs\",k8s_container_name=~\"$services\",k8s_app!=\"grafana-agent\"} | logfmt != \"healthz\"",
-          "refId": "A"
-        }
-      ],
-      "title": "Logs - All",
-      "type": "logs"
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "grafanacloud-logs"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
+        "w": 10,
+        "x": 4,
         "y": 10
       },
       "id": 9,
@@ -421,6 +796,41 @@
         }
       ],
       "title": "Logs - Errors",
+      "type": "logs"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "grafanacloud-logs"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 10
+      },
+      "id": 14,
+      "options": {
+        "dedupStrategy": "signature",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": false,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "grafanacloud-logs"
+          },
+          "expr": "{cluster=\"microbs\",k8s_container_name=~\"$services\",k8s_app!=\"grafana-agent\"} | logfmt != \"healthz\"",
+          "refId": "A"
+        }
+      ],
+      "title": "Logs - All",
       "type": "logs"
     },
     {
@@ -1015,7 +1425,10 @@
   "refresh": false,
   "schemaVersion": 36,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "microbs",
+    "ecommerce"
+  ],
   "templating": {
     "list": [
       {
@@ -1138,6 +1551,6 @@
   "timezone": "",
   "title": "Services Overview",
   "uid": "services-overview",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }

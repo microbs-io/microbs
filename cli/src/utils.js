@@ -10,6 +10,10 @@ const fs = require('fs')
 
 // Third-party packages
 const _ = require('lodash')
+const axios = require('axios')
+
+// Main packages
+const logger = require('./logger')
 
 // Regular expressions
 RE_EXPAND_VARS = new RegExp(/\${([^}]*)}/g)
@@ -133,4 +137,22 @@ module.exports.configHas = (fields) => {
     if (!require('./config').get(fields[i]))
       return false
   return true
+}
+
+/**
+ * Submit an http request. Handle debug and error logging.
+ */
+module.exports.http = async (opts) => {
+  logger.debug(`${opts.method.toUpperCase()} ${opts.url}`)
+  const response = await axios.request({
+    method: opts.method,
+    url: opts.url,
+    data: opts.data || undefined,
+    headers: opts.headers || undefined,
+    timeout: opts.timeout || 60000,
+    validateStatus: () => true
+  })
+  logger.debug(response.status)
+  logger.debug(response.data)
+  return response
 }

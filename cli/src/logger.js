@@ -13,6 +13,7 @@ const context = require('./context')
 // Get the log level specified in the command-line context
 const logLevel = () => context.get('args')['log-level']
 const verbose = () => context.get('args')['verbose']
+const indented = () => context.get('args')['indented']
 
 const SHOW_DEBUG = [ 'debug' ]
 const SHOW_INFO = [ 'debug', 'info' ]
@@ -48,9 +49,16 @@ const verboseMessage = (message, level, lineNum) => {
  * Serializes messages as strings, or as formatted JSON objects or arrays.
  */
 const serialize = (message) => {
-  if (typeof message === 'object' || Array.isArray(message)) {
+  if (message instanceof Error) {
+    const err = []
+    if (message.message)
+      err.push(message.message)
+    if (message.stack)
+      err.push(message.stack)
+    return err.join('\n')
+  } else if (typeof message === 'object' || Array.isArray(message)) {
     try {
-      return JSON.stringify(message, null, 2)
+      return JSON.stringify(message, null, indented() ? 2 : null)
     } catch (e) {
       
       // Handle circular references by serializing only the first level of keys.
@@ -61,7 +69,7 @@ const serialize = (message) => {
         for (var key in message)
           obj[key] = stringify(message[key])
         try {
-          return JSON.stringify(obj, null, 2)
+          return JSON.stringify(obj, null, indented() ? 2 : null)
         } catch (e) {
           return stringify(message)
         }
@@ -79,7 +87,7 @@ const serialize = (message) => {
             arr.push(stringify(message[i]))
           }
           try {
-            return JSON.stringify(arr, null, 2)
+            return JSON.stringify(arr, null, indented() ? 2 : null)
           } catch (e) {
             return stringify(message)
           }

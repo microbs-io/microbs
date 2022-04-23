@@ -6,10 +6,8 @@
 
 // Third-party packages
 const _ = require('lodash')
-const axios = require('axios')
 
 // Main packages
-const config = require('../../../config')
 const logger = require('../../../logger')
 const state = require('../../../state')
 const utils = require('../../../utils')
@@ -19,14 +17,11 @@ const constants = require('./constants')
 
 module.exports.statusGrafanaCloud = async () => {
   try {
-    let response = await axios.request({
+    let response = await utils.http({
       method: 'get',
       url: `https://grafana.com/api/instances/${state.get('plugins.grafana_cloud.stack_slug')}`,
-      headers: constants.grafanaCloudApiHeaders(),
-      timeout: 60000,
-      validateStatus: () => true
+      headers: constants.grafanaCloudApiHeaders()
     })
-    logger.debug(response)
     if (_.range(200, 300).includes(response.status) && response.data.status == 'active')
       return true
     if (_.range(400, 600).includes(response.status) && !_.range(404, 411).includes(response.status))

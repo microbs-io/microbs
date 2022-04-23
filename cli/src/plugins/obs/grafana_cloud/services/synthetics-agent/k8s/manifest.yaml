@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sm-agent-1
+  namespace: default
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: sm-agent-1
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        name: sm-agent-1
+    spec:
+      containers:
+      - args:
+        - /usr/local/bin/synthetic-monitoring-agent --api-server-address=${API_SERVER} --api-token=${PLUGINS_GRAFANA_CLOUD_SYNTHETIC_MONITORING_PROBE_TOKEN} --verbose=true
+        command:
+        - sh
+        - -c
+        envFrom:
+        - secretRef:
+           name: microbs-secrets
+        env:
+        - name: API_SERVER
+          value: synthetic-monitoring-grpc.grafana.net:443
+        image: grafana/synthetic-monitoring-agent:latest
+        name: agent
+        ports:
+        - containerPort: 4050
+          name: http-metrics
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 4050
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 4050
