@@ -47,7 +47,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": 17,
-  "iteration": 1650743774298,
+  "iteration": 1650749503935,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -801,11 +801,11 @@
             "type": "loki",
             "uid": "grafanacloud-logs"
           },
-          "expr": "{cluster=\"microbs\",k8s_container_name=~\"$services\",k8s_app!=\"grafana-agent\"} | logfmt != \"healthz\" |~ \"critical|Critical|CRITICAL|error|Error|ERROR|exception|Exception|EXCEPTION|fail|Fail|FAIL|fatal|Fatal|FATAL\"",
+          "expr": "{cluster=\"microbs\",k8s_container_name=~\"$services\"} |~ \"critical|Critical|CRITICAL|error|Error|ERROR|exception|Exception|EXCEPTION|fail|Fail|FAIL|fatal|Fatal|FATAL\"",
           "refId": "A"
         }
       ],
-      "title": "Logs - Errors",
+      "title": "Service Errors",
       "type": "logs"
     },
     {
@@ -836,11 +836,11 @@
             "type": "loki",
             "uid": "grafanacloud-logs"
           },
-          "expr": "{cluster=\"microbs\",k8s_container_name=~\"$services\",k8s_app!=\"grafana-agent\"} | logfmt != \"healthz\"",
+          "expr": "{cluster=\"microbs\",k8s_container_name=~\"$services\"} | logfmt != \"healthz\"",
           "refId": "A"
         }
       ],
-      "title": "Logs - All",
+      "title": "Service Logs",
       "type": "logs"
     },
     {
@@ -1443,7 +1443,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": ".95",
           "value": ".95"
         },
@@ -1522,7 +1522,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],
@@ -1561,6 +1561,6 @@
   "timezone": "",
   "title": "Services Overview",
   "uid": "services-overview",
-  "version": 2,
+  "version": 5,
   "weekStart": ""
 }
