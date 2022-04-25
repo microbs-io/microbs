@@ -7,7 +7,6 @@ import os
 import psycopg2
 import psycopg2.extras
 from flask import jsonify, request
-from flask_cors import cross_origin
 from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
 
 # Service packages
@@ -57,7 +56,6 @@ def basic_bug():
 ####  HTTP Handlers  ###########################################################
 
 @app.route('/documents', methods=['POST','GET',])
-@cross_origin()
 def get_products():
     """
     Get products.
@@ -78,7 +76,6 @@ def get_products():
     return jsonify(parse_result(rows))
 
 @app.route('/search', methods=['POST','GET',])
-@cross_origin()
 def search_products():
     """
     Search products.
@@ -99,7 +96,6 @@ def search_products():
     return jsonify(parse_results(rows))
 
 @app.route('/suggestions', methods=['POST','GET',])
-@cross_origin()
 def get_suggestions():
     """
     Get product suggestions.
@@ -119,16 +115,7 @@ def get_suggestions():
         rows = cursor.fetchall()
     return jsonify(parse_results(rows))
 
-@app.route('/healthz')
-@cross_origin()
-def healthz():
-    """
-    Handle liveness and readiness probes.
-    """
-    return jsonify({ 'healthy': True })
-
 @app.route('/')
-@cross_origin()
 def home():
     """
     Handle base path.

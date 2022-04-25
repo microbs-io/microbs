@@ -4,16 +4,14 @@ import json
 # Third-party packages
 import requests
 from flask import jsonify, make_response, request
-from flask_cors import cross_origin
 
 # Service packages
-from common import app, cors, config, logger
+from common import app, config, logger
 
 
 ####  HTTP Handlers  ###########################################################
 
 @app.route('/api/v1/<service>/<path:path>', methods=['GET','POST','PUT','DELETE',])
-@cross_origin()
 def proxy(service, path):
     """
     Forward API requests to services.
@@ -35,7 +33,6 @@ def proxy(service, path):
     return response
     
 @app.route('/api/v1/<service>', methods=['GET','POST','PUT','DELETE',])
-@cross_origin()
 def proxy_base(service):
     """
     Forward API requests to services.
@@ -56,16 +53,7 @@ def proxy_base(service):
     response = make_response(r.content), r.status_code
     return response
 
-@app.route('/healthz')
-@cross_origin()
-def healthz():
-    """
-    Handle liveness and readiness probes.
-    """
-    return jsonify({ 'healthy': True })
-
 @app.route('/')
-@cross_origin()
 def home():
     """
     Handle base path.

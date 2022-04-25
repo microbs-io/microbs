@@ -6,12 +6,11 @@ import time
 
 # Third-party packages
 from flask import jsonify, request
-from flask_cors import cross_origin
 from opentelemetry import trace
 from opentelemetry.trace.status import Status, StatusCode
 
 # Service packages
-from common import app, cors, config, logger
+from common import app, config, logger
 
 RE_NON_DIGITS = re.compile(r'[^0-9]')
 
@@ -40,7 +39,6 @@ def validate_card_number(card_number):
 ####  HTTP Handlers  ###########################################################
 
 @app.route('/process', methods=['POST',])
-@cross_origin()
 def post_payment():
     """
     Process a payment.
@@ -54,16 +52,7 @@ def post_payment():
     process_payment(data.get('card', {}).get('number'), data.get('amount'))
     return jsonify({ 'message': 'success' })
 
-@app.route('/healthz')
-@cross_origin()
-def healthz():
-    """
-    Handle liveness and readiness probes.
-    """
-    return jsonify({ 'healthy': True })
-
 @app.route('/')
-@cross_origin()
 def home():
     """
     Handle base path.

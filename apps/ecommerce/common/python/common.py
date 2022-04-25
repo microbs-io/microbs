@@ -122,7 +122,7 @@ loggerWerkzeug.setLevel(logging.ERROR)
 ####  App  #####################################################################
 
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from werkzeug.exceptions import HTTPException
 
@@ -140,6 +140,18 @@ def response_hook(span, status, response_headers):
 # Instantiate application
 app = Flask(config.get('SERVICE_NAME'))
 FlaskInstrumentor().instrument_app(app, response_hook=response_hook)
+
+# Enable CORS
+cors = CORS(app, resources={r'*': {'origins': '*'}})
+
+# Common routes
+@app.route('/healthz')
+@cross_origin()
+def healthz():
+    """
+    Handle liveness and readiness probes.
+    """
+    return jsonify({ 'healthy': True })
 
 # Unhandled exceptions
 @app.errorhandler(Exception)
@@ -161,6 +173,3 @@ def handle_exception(e):
         'message': getattr(e, 'message', repr(e)),
         'stacktrace': traceback.format_exc()
     })
-
-# Enable CORS
-cors = CORS(app, resources={r'*': {'origins': '*'}})

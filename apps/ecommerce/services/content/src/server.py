@@ -5,10 +5,9 @@ import os
 # Third-party packages
 import requests
 from flask import jsonify, request, Response
-from flask_cors import cross_origin
 
 # Service packages
-from common import app, cors, config, logger
+from common import app, config, logger
 
 # Configure content source
 CONTENT_BASE_PATH = "https://storage.googleapis.com/cdn.microbs.io/apps/ecommerce/main/content/images"
@@ -17,7 +16,6 @@ CONTENT_BASE_PATH = "https://storage.googleapis.com/cdn.microbs.io/apps/ecommerc
 ####  HTTP Handlers  ###########################################################
 
 @app.route('/<path:filename>', methods=['GET',])
-@cross_origin()
 def get_content(filename):
     """
     Get content.
@@ -34,16 +32,7 @@ def get_content(filename):
     headers = [ (name, value) for (name, value) in response.raw.headers.items() if name.lower() not in excl ]
     return Response(response.content, response.status_code, headers)
 
-@app.route('/healthz')
-@cross_origin()
-def healthz():
-    """
-    Handle liveness and readiness probes.
-    """
-    return jsonify({ 'healthy': True })
-
 @app.route('/')
-@cross_origin()
 def home():
     """
     Handle base path.

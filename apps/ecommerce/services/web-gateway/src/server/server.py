@@ -6,12 +6,11 @@ import os
 import redis
 import requests
 from flask import jsonify, make_response, request, send_from_directory
-from flask_cors import cross_origin
 from flask_session import Session
 from opentelemetry.instrumentation.redis import RedisInstrumentor
 
 # Service packages
-from common import app, cors, config, logger
+from common import app, config, logger
 
 # Configure Redis client
 RedisInstrumentor().instrument()
@@ -38,7 +37,6 @@ Session(app)
 ####  HTTP Handlers  ###########################################################
 
 @app.route('/<path:path>.<extension>')
-@cross_origin()
 def send_static(path, extension):
     """
     Serve static assets.
@@ -46,7 +44,6 @@ def send_static(path, extension):
     return send_from_directory(app.static_folder, request.path.lstrip('/'))
 
 @app.route('/api/v1/<path:path>', methods=['GET','POST','PUT','DELETE',])
-@cross_origin()
 def proxy(path):
     """
     Forward API requests to api-gateway.
@@ -71,17 +68,8 @@ def proxy(path):
     response = make_response(r.content), r.status_code
     return response
 
-@app.route('/healthz')
-@cross_origin()
-def healthz():
-    """
-    Handle liveness and readiness probes.
-    """
-    return jsonify({ 'healthy': True })
-
 @app.route('/<path:path>')
 @app.route('/')
-@cross_origin()
 def home(path=None):
     """
     Serve index.html for all other requests.

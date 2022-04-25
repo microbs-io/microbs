@@ -6,11 +6,10 @@ import re
 # Third-party packages
 import redis
 from flask import jsonify, request
-from flask_cors import cross_origin
 from opentelemetry.instrumentation.redis import RedisInstrumentor
 
 # Service packages
-from common import app, cors, config, logger
+from common import app, config, logger
 
 # Configure Redis client
 RedisInstrumentor().instrument()
@@ -52,7 +51,6 @@ def remove_cart_item(cart_id, product_id):
 ####  HTTP Handlers  ###########################################################
 
 @app.route('/', methods=['POST',])
-@cross_origin()
 def get_cart_products():
     """
     Get products from a cart.
@@ -63,7 +61,6 @@ def get_cart_products():
     return jsonify({ 'message': 'success', 'data': reply })
 
 @app.route('/', methods=['DELETE',])
-@cross_origin()
 def delete_cart():
     """
     Delete a cart.
@@ -75,7 +72,6 @@ def delete_cart():
 
 
 @app.route('/<product_id>/<quantity>', methods=['PUT',])
-@cross_origin()
 def put_cart_product(product_id, quantity):
     """
     Add a product to a cart.
@@ -86,7 +82,6 @@ def put_cart_product(product_id, quantity):
     return jsonify({ 'message': 'success', 'data': reply })
 
 @app.route('/<product_id>', methods=['DELETE',])
-@cross_origin()
 def delete_cart_product(product_id):
     """
     Remove a product from a cart.
@@ -96,16 +91,7 @@ def delete_cart_product(product_id):
     reply = remove_cart_item(cart_id, product_id)
     return jsonify({ 'message': 'success', 'data': reply })
 
-@app.route('/healthz')
-@cross_origin()
-def healthz():
-    """
-    Handle liveness and readiness probes.
-    """
-    return jsonify({ 'healthy': True })
-
 @app.route('/')
-@cross_origin()
 def home():
     """
     Handle base path.

@@ -4,7 +4,6 @@ import os
 
 # Third-party packages
 from flask import jsonify, request
-from flask_cors import cross_origin
 
 # Service packages
 from common import app, cors, config, logger, tracer
@@ -67,7 +66,6 @@ def redis_client():
 ####  HTTP Handlers  ###########################################################
 
 @app.route('/test/elasticsearch/<id>')
-@cross_origin()
 def test_elasticsearch(id):
     """
     Test communication with elasticsearch.
@@ -81,7 +79,6 @@ def test_elasticsearch(id):
         return jsonify({ 'message': 'failure' }), 500
 
 @app.route('/test/mongodb/<id>')
-@cross_origin()
 def test_mongodb(id):
     """
     Test communication with mongodb.
@@ -95,7 +92,6 @@ def test_mongodb(id):
         return jsonify({ 'message': 'failure' }), 500
 
 @app.route('/test/postgres/<id>')
-@cross_origin()
 def test_postgres(id):
     """
     Test communication with postgres.
@@ -113,7 +109,6 @@ def test_postgres(id):
         return jsonify({ 'message': 'failure' }), 500
 
 @app.route('/test/redis/<id>')
-@cross_origin()
 def test_redis(id):
     """
     Test communication with redis.
@@ -127,7 +122,6 @@ def test_redis(id):
         return jsonify({ 'message': 'failure' }), 500
 
 @app.route('/test/failure')
-@cross_origin()
 def test_failure():
     """
     Test a failure response.
@@ -141,7 +135,6 @@ def test_failure():
         return jsonify({ 'message': 'failure' }), 500
 
 @app.route('/test/success')
-@cross_origin()
 def test_success():
     """
     Test a successful response.
@@ -153,17 +146,7 @@ def test_success():
         logger.exception(e)
         return jsonify({ 'message': 'failure' }), 500
 
-@app.route('/healthz')
-@cross_origin()
-def healthz():
-    """
-    Handle liveness and readiness probes.
-    """
-    logger.debug('GET /healthz')
-    return jsonify({ 'healthy': True })
-
 @app.route('/')
-@cross_origin()
 def home():
     """
     Handle base path.

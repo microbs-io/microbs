@@ -5,12 +5,11 @@ import uuid
 # Third-party packages
 import requests
 from flask import jsonify, request
-from flask_cors import cross_origin
 from opentelemetry import trace
 from opentelemetry.trace.status import Status, StatusCode
 
 # Service packages
-from common import app, cors, config, logger
+from common import app, config, logger
 
 def generate_transaction_id():
     return str(uuid.uuid4())
@@ -24,7 +23,6 @@ BASE_URL_API_GATEWAY = "http://{}:{}/api/v1".format(
 )
 
 @app.route('/process', methods=['POST',])
-@cross_origin()
 def post_checkout():
     """
     Process an order submission.
@@ -58,16 +56,7 @@ def post_checkout():
         return jsonify({ 'message': 'failure' }), response.status_code
     return jsonify({ 'message': 'success' })
 
-@app.route('/healthz')
-@cross_origin()
-def healthz():
-    """
-    Handle liveness and readiness probes.
-    """
-    return jsonify({ 'healthy': True })
-
 @app.route('/')
-@cross_origin()
 def home():
     """
     Handle base path.
