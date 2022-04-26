@@ -47,7 +47,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": 17,
-  "iteration": 1650989748589,
+  "iteration": 1650998392975,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -205,7 +205,7 @@
         "y": 1
       },
       "id": 7,
-      "interval": "1s",
+      "interval": "$granularity",
       "options": {
         "legend": {
           "calcs": [],
@@ -341,7 +341,7 @@
         "y": 1
       },
       "id": 2,
-      "interval": "1s",
+      "interval": "$granularity",
       "options": {
         "legend": {
           "calcs": [],
@@ -360,7 +360,7 @@
             "uid": "grafanacloud-prom"
           },
           "exemplar": true,
-          "expr": "sum(rate(traces_spanmetrics_calls_total{service_name=~\"$services\",operation=~\"$operations\"}[10s])) by (service_name)",
+          "expr": "sum(rate(traces_spanmetrics_calls_total{service_name=~\"$services\",operation=~\"$operations\"}[1m])) by (service_name)",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{ service_name }}",
@@ -372,7 +372,7 @@
             "uid": "grafanacloud-prom"
           },
           "exemplar": true,
-          "expr": "sum(sum(rate(traces_spanmetrics_calls_total{service_name=~\"$services\",operation=~\"$operations\"}[10s])) by (service_name))",
+          "expr": "sum(sum(rate(traces_spanmetrics_calls_total{service_name=~\"$services\",operation=~\"$operations\"}[1m])) by (service_name))",
           "hide": false,
           "interval": "",
           "legendFormat": "(total)",
@@ -432,6 +432,7 @@
         "y": 3
       },
       "id": 34,
+      "interval": "$granularity",
       "links": [
         {
           "title": "Show details",
@@ -527,6 +528,7 @@
         "y": 3
       },
       "id": 35,
+      "interval": "$granularity",
       "links": [
         {
           "title": "Show details",
@@ -622,6 +624,7 @@
         "y": 6
       },
       "id": 37,
+      "interval": "$granularity",
       "links": [
         {
           "title": "Show details",
@@ -717,6 +720,7 @@
         "y": 6
       },
       "id": 38,
+      "interval": "$granularity",
       "links": [
         {
           "title": "Show details",
@@ -787,7 +791,6 @@
           },
           "mappings": [],
           "min": 0,
-          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -816,7 +819,7 @@
         "y": 10
       },
       "id": 42,
-      "interval": "1s",
+      "interval": "$granularity",
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -838,7 +841,7 @@
             "type": "prometheus",
             "uid": "grafanacloud-prom"
           },
-          "expr": "sum(rate(traces_spanmetrics_calls_total{cluster=\"microbs\",service_name=~\"$services\",event_outcome=\"failure\"}[1m]))\n/\nsum(rate(traces_spanmetrics_calls_total{cluster=\"microbs\",service_name=~\"$services\"}[1m]))",
+          "expr": "sum(rate(traces_spanmetrics_calls_total{cluster=\"microbs\",service_name=~\"$services\",operation=~\"$operations\",event_outcome=\"failure\"}[1m]))\n/\nsum(rate(traces_spanmetrics_calls_total{cluster=\"microbs\",service_name=~\"$services\",operation=~\"$operations\"}[1m]))",
           "range": true,
           "refId": "A"
         }
@@ -993,6 +996,7 @@
         "y": 21
       },
       "id": 21,
+      "interval": "$granularity",
       "links": [],
       "options": {
         "colorMode": "value",
@@ -1046,6 +1050,7 @@
         "y": 21
       },
       "id": 27,
+      "interval": "$granularity",
       "links": [],
       "options": {
         "colorMode": "value",
@@ -1139,7 +1144,7 @@
         "y": 21
       },
       "id": 24,
-      "interval": "1s",
+      "interval": "$granularity",
       "links": [],
       "options": {
         "legend": {
@@ -1237,7 +1242,7 @@
         "y": 21
       },
       "id": 25,
-      "interval": "1s",
+      "interval": "$granularity",
       "links": [],
       "options": {
         "legend": {
@@ -1291,6 +1296,7 @@
         "y": 28
       },
       "id": 26,
+      "interval": "$granularity",
       "links": [],
       "options": {
         "colorMode": "value",
@@ -1384,7 +1390,7 @@
         "y": 28
       },
       "id": 16,
-      "interval": "1s",
+      "interval": "$granularity",
       "links": [],
       "options": {
         "legend": {
@@ -1478,7 +1484,7 @@
         "y": 28
       },
       "id": 19,
-      "interval": "1s",
+      "interval": "$granularity",
       "links": [],
       "options": {
         "legend": {
@@ -1581,8 +1587,53 @@
         "type": "query"
       },
       {
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
         "current": {
-          "selected": true,
+          "selected": false,
+          "text": "5s",
+          "value": "5s"
+        },
+        "hide": 0,
+        "label": "Granularity",
+        "name": "granularity",
+        "options": [
+          {
+            "selected": false,
+            "text": "1s",
+            "value": "1s"
+          },
+          {
+            "selected": true,
+            "text": "5s",
+            "value": "5s"
+          },
+          {
+            "selected": false,
+            "text": "10s",
+            "value": "10s"
+          },
+          {
+            "selected": false,
+            "text": "15s",
+            "value": "15s"
+          },
+          {
+            "selected": false,
+            "text": "1m",
+            "value": "1m"
+          }
+        ],
+        "query": "1s,5s,10s,15s,1m",
+        "queryValue": "",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "type": "interval"
+      },
+      {
+        "current": {
+          "selected": false,
           "text": ".95",
           "value": ".95"
         },
@@ -1638,6 +1689,6 @@
   "timezone": "",
   "title": "Services Overview",
   "uid": "services-overview",
-  "version": 10,
+  "version": 16,
   "weekStart": ""
 }
