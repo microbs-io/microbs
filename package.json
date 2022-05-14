@@ -1,6 +1,6 @@
 {
   "name": "microbs",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "microservices observability",
   "license": "Apache-2.0",
   "url": "https://microbs.io",
@@ -25,7 +25,7 @@
   ],
   "scripts": {
     "preinstall": "npm install -g @microbs.io/cli",
-    "postinstall": "microbs init 2>&1 && microbs plugins install --all 2>&1 && microbs apps install --all 2>&1 && microbs validate 2>&1",
+    "postinstall": "microbs init -vL debug && microbs plugins install --all -vL debug && microbs apps install --all -vL debug",
     "update": "npm update -g @microbs.io/cli",
     "test": "echo 'Tests not implemented'"
   },
