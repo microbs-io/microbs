@@ -1,0 +1,100 @@
+# config.reference.yaml
+#
+# Copy this file and name it config.yaml.
+# Don't use config.reference.yaml directly. It's tracked in version control.
+#
+# All values in your copy of this file become available as environment variables
+# to all services deployed on Kubernetes. The values are stored in a Kubernetes
+# Secret object named "microbs-secrets". The fields are transformed into
+# environment variable syntax: field names are flattened and uppercased, and
+# dots are replaced with underscores.
+#
+#   Example before...
+#     foo:
+#       bar_baz.abc: xyz
+#
+#   Example after...
+#     FOO_BAR_BAZ_XYZ=xyz
+
+
+####  Deployment config  #######################################################
+#
+# deployment.name                   A name for the deployment. Automatically prefixed with "microbs-".
+# deployment.app                    The name of a directory under ./apps to deploy.
+# deployment.plugins.kubernetes     The name of a kubernetes plugin to use.
+# deployment.plugins.observability  The name of an observability plugin to use.
+# deployment.plugins.alerts         The name of an alerts plugin to use.
+# deployment.environment            A description of the environment (e.g. dev, test, prod).
+
+deployment:
+  name: changeme
+  app: ecommerce
+  plugins:
+    kubernetes: minikube
+    observability: 
+    alerts: 
+  environment: development
+
+
+####  Docker config  ###########################################################
+#
+# Optionally specify a container image registry for the application services.
+# This is used by the setup and rollout commands, which passes the value to
+# `skaffold run --default-repo=${docker.registry}`
+
+docker:
+  registry: 
+
+
+####  OpenTelemetry config  ####################################################
+#
+# The OTLP gRPC destination for the deployed application services.
+
+otlp:
+  receiver:
+    host: otel-collector
+    port: 4317
+
+
+####  Plugin configs  ##########################################################
+#
+# A plugin's config only takes effect when the plugin is named in the
+# deployment.plugins.* fields.
+
+####  slack plugin config
+
+plugins.slack:
+  bot_user_oauth_access_token: 
+  channel: 
+
+####  gke plugin config
+
+plugins.gke:
+  project_name: 
+  region_name: us-central1
+  network_name: 
+  subnetwork_name: 
+  service_account_name: 
+  service_account_key_path: 
+
+####  kind plugin config
+
+plugins.kind:
+
+####  minikube plugin config
+
+plugins.minikube:
+
+####  elastic_cloud plugin config
+
+plugins.elastic-cloud:
+  api_key: 
+  region: gcp-us-central1
+  version: 8.2.0
+
+####  grafana-cloud plugin config
+
+plugins.grafana-cloud:
+  api_key: 
+  org_slug: 
+  region: us
