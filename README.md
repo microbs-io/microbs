@@ -34,7 +34,7 @@ work for them may contribute to the project.
 Read the [**getting started guide**](https://microbs.io/docs/overview/getting-started/) for more details.
 
 1. Install dependencies: [node](https://nodejs.org/en/download/), [docker](https://docs.docker.com/engine/install/), [kubectl](https://kubernetes.io/docs/tasks/tools/), [skaffold](https://skaffold.dev/docs/install/)
-2. Install microbs: `npm install -g @microbs.io/cli`
+2. Install microbs: `curl https://microbs.io/install.js | node`
 3. Modify [`$HOME/.microbs/config.yaml`](https://microbs.io/docs/usage/configuration) (Note: [Plugins](https://microbs.io/docs/plugins/) may have additional dependencies and configuration)
 4. Validate installation: `microbs validate`
 
