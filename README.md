@@ -53,5 +53,5 @@ Read the [**getting started guide**](https://microbs.io/docs/overview/getting-st
 |@microbs.io/plugin-minikube|[Github](https://github.com/microbs-io/microbs-plugin-minikube)|[![npm](https://img.shields.io/npm/v/@microbs.io/plugin-minikube?color=%2300B5AD&label=Latest)](https://www.npmjs.com/package/@microbs.io/plugin-minikube)|
 |@microbs.io/plugin-slack|[Github](https://github.com/microbs-io/microbs-plugin-slack)|[![npm](https://img.shields.io/npm/v/@microbs.io/plugin-slack?color=%2300B5AD&label=Latest)](https://www.npmjs.com/package/@microbs.io/plugin-slack)|
 |**Libraries**|||
-|@microbs.io/cli|[Github](https://github.com/microbs-io/microbs-cli)|[![npm](https://img.shields.io/npm/v/@microbs.io/cli?color=%2300B5AD&label=Latest)](https://www.npmjs.com/package/@microbs.io/cli)|
+|@microbs.io/cli|[Github](https://github.com/microbs-io/microbs)|[![npm](https://img.shields.io/npm/v/@microbs.io/cli?color=%2300B5AD&label=Latest)](https://www.npmjs.com/package/@microbs.io/cli)|
 |@microbs.io/core|[Github](https://github.com/microbs-io/microbs-core)|[![npm](https://img.shields.io/npm/v/@microbs.io/core?color=%2300B5AD&label=Latest)](https://www.npmjs.com/package/@microbs.io/core)|
