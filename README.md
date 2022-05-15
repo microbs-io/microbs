@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/microbs-io/microbs-cli/workflows/Commit/badge.svg?branch=main)](https://github.com/microbs-io/microbs-cli/actions)
+[![Build Status](https://github.com/microbs-io/microbs/workflows/Commit/badge.svg?branch=main)](https://github.com/microbs-io/microbs/actions)
 [![npm](https://img.shields.io/npm/v/@microbs.io/cli?color=%2300B5AD&label=Latest)](https://www.npmjs.com/package/@microbs.io/cli)
 ![Apache 2.0](https://img.shields.io/npm/l/@microbs.io/cli?color=%23f6f8fa)
 
