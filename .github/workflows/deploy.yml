@@ -22,6 +22,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           registry-url: 'https://registry.npmjs.org'
+          scope: '@microbs.io'
 
       # Checkout the repository
       # Uses: https://github.com/actions/checkout
@@ -88,6 +89,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           registry-url: 'https://registry.npmjs.org'
+          scope: '@microbs.io'
           
       # Install
       - name: Install dependencies

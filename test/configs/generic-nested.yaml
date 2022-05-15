@@ -1,0 +1,14 @@
+deployment:
+  name: test-nested
+  app: templates
+  plugins:
+    alerts: template
+    k8s: template
+    obs: template
+  environment: test
+docker:
+  registry:
+otlp:
+  receiver:
+    host: otel-collector
+    port: 4317

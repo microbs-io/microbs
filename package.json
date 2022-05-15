@@ -1,9 +1,13 @@
 {
-  "name": "microbs",
-  "version": "0.2.3",
+  "name": "@microbs.io/cli",
+  "version": "0.2.6",
   "description": "microservices observability",
   "license": "Apache-2.0",
   "url": "https://microbs.io",
+  "main": "./src/index.js",
+  "bin": {
+    "microbs": "./microbs"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/microbs-io/microbs.git"
@@ -24,12 +28,25 @@
     "testing"
   ],
   "scripts": {
-    "preinstall": "npm install -g @microbs.io/cli",
-    "postinstall": "microbs init -vL debug && microbs plugins install --all -vL debug && microbs apps install --all -vL debug",
-    "update": "npm update -g @microbs.io/cli",
-    "test": "echo 'Tests not implemented'"
+    "test": "jest"
+  },
+  "jest": {
+    "silent": false,
+    "verbose": true
   },
   "engines": {
     "node": ">=14.16.1"
+  },
+  "dependencies": {
+    "@microbs.io/core": "^0.2.1",
+    "chalk": "^4.1.1",
+    "command-exists": "^1.2.9",
+    "glob": "^7.2.0",
+    "is-installed-globally": "^0.4.0",
+    "minimist": "^1.2.6",
+    "semver": "^7.3.5"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
   }
 }

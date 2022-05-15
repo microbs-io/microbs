@@ -1,6 +1,6 @@
-[![Build Status](https://github.com/microbs-io/microbs/workflows/Commit/badge.svg?branch=main)](https://github.com/microbs-io/microbs/actions)
-[![npm](https://img.shields.io/npm/v/microbs?color=%2300B5AD&label=Latest)](https://www.npmjs.com/package/microbs)
-![Apache 2.0](https://img.shields.io/npm/l/microbs?color=%23f6f8fa)
+[![Build Status](https://github.com/microbs-io/microbs-cli/workflows/Commit/badge.svg?branch=main)](https://github.com/microbs-io/microbs-cli/actions)
+[![npm](https://img.shields.io/npm/v/@microbs.io/cli?color=%2300B5AD&label=Latest)](https://www.npmjs.com/package/@microbs.io/cli)
+![Apache 2.0](https://img.shields.io/npm/l/@microbs.io/cli?color=%23f6f8fa)
 
 # microbs - microservices observability
 
@@ -34,7 +34,7 @@ work for them may contribute to the project.
 Read the [**getting started guide**](https://microbs.io/docs/overview/getting-started/) for more details.
 
 1. Install dependencies: [node](https://nodejs.org/en/download/), [docker](https://docs.docker.com/engine/install/), [kubectl](https://kubernetes.io/docs/tasks/tools/), [skaffold](https://skaffold.dev/docs/install/)
-2. Install microbs: `npm install -g microbs`
+2. Install microbs: `npm install -g @microbs.io/cli`
 3. Modify [`$HOME/.microbs/config.yaml`](https://microbs.io/docs/usage/configuration) (Note: [Plugins](https://microbs.io/docs/plugins/) may have additional dependencies and configuration)
 4. Validate installation: `microbs validate`
 

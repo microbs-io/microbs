@@ -3,5 +3,5 @@
  * The --preserve-symlinks argument in the shebang command (above) is necessary
  * to use apps or plugins that have been installed from a directory.
  */
-const microbs = require('@microbs.io/cli')
+const microbs = require('./src/index')
 microbs.run()
