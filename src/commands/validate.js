@@ -84,7 +84,23 @@ const validateDockerVersion = () => {
   const result = utils.exec('docker version -f json', true)
   if (result.stdout) {
     try {
-      const json = JSON.parse(result.stdout.trim())
+      // The first line(s) may be a warning message. Find the line that is JSON.
+      const lines = result.stdout.split(/\r?\n/)
+      var line
+      for (var i in lines) {
+        if (lines[i].startsWith('{')) {
+          line = lines[i]
+          break
+        }
+      }
+      if (!line)
+        return logUnknown(`failed to detect docker version [required>=${versionRequired}]`)
+      var json
+      try {
+        json = JSON.parse(line.trim())
+      } catch (e) {
+        return logUnknown(`failed to detect docker version [required>=${versionRequired}]`)
+      }
       versionActual = semver.clean(json.Client.Version)
       versionRequired = semver.clean('20.10.12')
       if (semver.gte(versionActual, versionRequired))
@@ -97,6 +113,17 @@ const validateDockerVersion = () => {
   } else {
     logger.warn(result.stderr)
   }
+}
+
+/**
+ * Validate docker running
+ */
+const validateDockerRunning = () => {
+  const result = utils.exec('docker ps -q', true)
+  if(result.code === 0)
+    logSuccess('docker is running')
+  else
+    logFailure(`docker is not running: ${result.stdout || result.stderr}`)
 }
 
 /**
@@ -251,6 +278,7 @@ const validateDependencies = () => {
   validateNpmVersion()
   validateDockerInstallation()
   validateDockerVersion()
+  validateDockerRunning()
   validateKubectlInstallation()
   validateKubectlVersion()
   validateSkaffoldInstallation()
