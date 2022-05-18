@@ -304,7 +304,7 @@ const validateConfig = () => {
 const validateApps = async () => {
   logger.info('')
   logger.info('Validating apps...')
-  const appName = config.get(`deployment.plugins`)
+  const appName = config.get(`deployment.app`)
   if (!appName) {
     logUnknown(`'deployment.apps' does not name a plugin.`)
   } else {
