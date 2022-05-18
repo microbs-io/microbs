@@ -1,5 +1,7 @@
 /*
  * index.test.js
+ * 
+ * @group unit
  */
 
 // Standard packages

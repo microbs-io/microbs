@@ -4,7 +4,6 @@ const path = require('path')
 
 // Third-party packages
 const chalk = require('chalk')
-const commandExists = require('command-exists')
 const semver = require('semver')
 
 // Main packages
@@ -39,7 +38,8 @@ const validateNodeVersion = () => {
  * Validate npm installation
  */
 const validateNpmInstallation = () => {
-  if(commandExists.sync('npm'))
+  const result = utils.exec('npm help', true)
+  if(result.code === 0)
     logSuccess('npm is installed')
   else
     logFailure('npm is not installed')
@@ -71,7 +71,8 @@ const validateNpmVersion = () => {
  * Validate docker installation
  */
 const validateDockerInstallation = () => {
-  if(commandExists.sync('docker'))
+  const result = utils.exec('docker --help', true)
+  if(result.code === 0)
     logSuccess('docker is installed')
   else
     logFailure('docker is not installed')
@@ -81,7 +82,7 @@ const validateDockerInstallation = () => {
  * Validate docker version
  */
 const validateDockerVersion = () => {
-  const result = utils.exec('docker version -f json', true)
+  const result = utils.exec("docker version --format '{{json .}}'", true)
   if (result.stdout) {
     try {
       // The first line(s) may be a warning message. Find the line that is JSON.
@@ -130,7 +131,8 @@ const validateDockerRunning = () => {
  * Validate kubectl installation
  */
 const validateKubectlInstallation = () => {
-  if(commandExists.sync('kubectl'))
+  const result = utils.exec('kubectl --help', true)
+  if(result.code === 0)
     logSuccess('kubectl is installed')
   else
     logFailure('kubectl is not installed')
@@ -161,7 +163,8 @@ const validateKubectlVersion = () => {
  * Validate skaffold installation
  */
 const validateSkaffoldInstallation = () => {
-  if(commandExists.sync('skaffold'))
+  const result = utils.exec('skaffold --help', true)
+  if(result.code === 0)
     logSuccess('skaffold is installed')
   else
     logFailure('skaffold is not installed')
