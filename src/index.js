@@ -20,11 +20,8 @@ module.exports.run = async () => {
   // persist them in the global context object.
   args.parse()
   
-  // Run the command.
+  // Prepare the config, apps, and plugins for operational commands.
   switch (context.get('command')) {
-    
-    // Prepare the config, apps, and plugins for operational commands.
-    // Don't break the switch yet after completion.
     case 'setup':
     case 'rollout':
     case 'stabilize':
@@ -41,7 +38,11 @@ module.exports.run = async () => {
       config.init()
       apps.load()
       plugins.load()
-      
+      break
+  }
+  
+  // Run the command.
+  switch (context.get('command')) {
     case 'setup':
       return await commands.setup.run()
     case 'rollout':
