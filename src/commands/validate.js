@@ -53,8 +53,8 @@ const validateNpmVersion = () => {
   if (result.stdout) {
     try {
       const json = JSON.parse(result.stdout.trim())
-      versionActual = semver.clean(json.npm)
-      versionRequired = semver.clean('8.3.1')
+      const versionActual = semver.clean(json.npm)
+      const versionRequired = semver.clean('8.3.0')
       if (semver.gte(versionActual, versionRequired))
         logSuccess(`npm is correct version [using=${versionActual}, required>=${versionRequired}]`)
       else
@@ -94,6 +94,7 @@ const validateDockerVersion = () => {
           break
         }
       }
+      const versionRequired = semver.clean('20.10.0')
       if (!line)
         return logUnknown(`failed to detect docker version [required>=${versionRequired}]`)
       var json
@@ -102,8 +103,7 @@ const validateDockerVersion = () => {
       } catch (e) {
         return logUnknown(`failed to detect docker version [required>=${versionRequired}]`)
       }
-      versionActual = semver.clean(json.Client.Version)
-      versionRequired = semver.clean('20.10.12')
+      const versionActual = semver.clean(json.Client.Version)
       if (semver.gte(versionActual, versionRequired))
         logSuccess(`docker is correct version [using=${versionActual}, required>=${versionRequired}]`)
       else
@@ -145,8 +145,8 @@ const validateKubectlVersion = () => {
   const result = utils.exec('kubectl version --client', true)
   if (result.stdout) {
     try {
-      versionActual = semver.clean(result.stdout.match(/GitVersion:"v([^"]+)"/)[1])
-      versionRequired = semver.clean('1.23.4')
+      const versionActual = semver.clean(result.stdout.match(/GitVersion:"v([^"]+)"/)[1])
+      const versionRequired = semver.clean('1.23.0')
       if (semver.gte(versionActual, versionRequired))
         logSuccess(`kubectl is correct version [using=${versionActual}, required>=${versionRequired}]`)
       else
@@ -177,8 +177,8 @@ const validateSkaffoldVersion = () => {
   const result = utils.exec('skaffold version', true)
   if (result.stdout) {
     try {
-      versionActual = semver.clean(result.stdout)
-      versionRequired = semver.clean('1.36.0')
+      const versionActual = semver.clean(result.stdout)
+      const versionRequired = semver.clean('1.36.0')
       if (semver.gte(versionActual, versionRequired))
         logSuccess(`skaffold is correct version [using=${versionActual}, required>=${versionRequired}]`)
       else
