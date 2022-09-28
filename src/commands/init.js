@@ -49,6 +49,21 @@ const run = () => {
   } else {
     logger.info(`...config file exists: ${pathConfigFile}`)
   }
+  
+  // Create state.yaml in config directory
+  const pathStateFile = path.join(pathConfig, 'state.yaml')
+  if (!fs.existsSync(pathStateFile)) {
+    
+    // Create state.yaml
+    fs.writeFileSync(pathStateFile, '', 'utf8')
+    if (fs.existsSync(pathStateFile))
+      logger.info(`...created state file: ${pathStateFile}`)
+    else
+      logger.error(`...failed to create state file: ${pathStateFile}`)
+  } else {
+    logger.info(`...state file exists: ${pathStateFile}`)
+  }
+  
   logger.info('')
 }
 
