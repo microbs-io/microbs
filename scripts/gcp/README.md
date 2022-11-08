@@ -69,11 +69,9 @@ sudo apt-get update -y && sudo apt-get install -y curl
 curl -Ls https://raw.githubusercontent.com/microbs-io/microbs/main/scripts/gcp/setup-vm.sh | bash
 ```
 
-Make `install.sh` executable: `sudo chmod a+x /etc/profile.d/install.sh`
+Make `/etc/profile.d/install.sh` executable: `sudo chmod a+x /etc/profile.d/install.sh`
 
-Create the VM image called.
-
-Instances of this image will run `/etc/profile.d/install.sh` on boot.
+Create the VM image called `microbs-launcher`.
 
 # 4. Launch VM Image
 

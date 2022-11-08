@@ -1,5 +1,7 @@
 /*
- * List all available plugins.
+ * plugins.js
+ * 
+ * Manage microbs plugins.
  */
 
 // Standard packages
@@ -120,9 +122,14 @@ const getNamesInstalled = () => {
   const results = getPackagesInstalled()
   for (var i in results) {
     const result = results[i]
-    const name = result.name.replace(/^\@microbs\.io\/plugin\-/, '')
+    var name = results.name
+    if (name.startsWith('@'))
+      name = name.replace(/^\@microbs\.io\/plugin\-/, '')
+    else if (name.contains('/microbs-plugin-'))
+      name = name.split('/microbs-plugin-')[1]
     names.push(name)
   }
+  logInfo(names)
   return names
 }
 
@@ -224,8 +231,15 @@ const install = (names) => {
       package = `@microbs.io/plugin-${name}`
       command = 'install'
     }
+    // When linking a local package to a globally installed microbs,
+    // we need to ensure the /lib path exists for the microbs package.
+    if (isInstalledGlobally && command == 'link') {
+      const prefixLib = `${utils.sanitize(context.get('path.cli'))}/lib`
+      if (!fs.existsSync(prefixLib))
+        fs.mkdirSync(prefixLib)
+    }
     logger.info(`Installing plugin: ${name}`)
-    const result = utils.exec(`npm ${command}${g} ${utils.sanitize(package)} --legacy-peer-deps --preserve-symlinks`, true)
+    const result = utils.exec(`npm ${command}${g} ${utils.sanitize(package)} ${command == 'link' ? ' --save' : ''}`, true)
     if (result.stderr) {
       if (result.stderr.includes('E404'))
         logFailure(`...unknown plugin: ${name}`)
@@ -346,6 +360,8 @@ const search = () => {
  */
 const list = () => {
   const deps = getInstalledPlugins()
+  logger.debug('Found dependencies:')
+  logger.debug(deps)
   
   // Transform results into formatted rows
   const padding = 2
@@ -360,7 +376,9 @@ const list = () => {
     name = name.replace(/^\@microbs\.io\/plugin\-/, '')
     const type = inferPluginType(dep.keywords)
     const version = dep.version ? `v${dep.version}` : 'unknown'
-    const source = dep.resolved || dep.path || 'unknown'
+    var source = dep.resolved || dep.path || 'unknown'
+    if (source.startsWith('file:'))
+      source = path.resolve(context.get('path.cli'), dep.resolved)
     lengths.name = Math.max(lengths.name, name.length)
     lengths.type = Math.max(lengths.type, type.length)
     lengths.version = Math.max(lengths.version, version.length)

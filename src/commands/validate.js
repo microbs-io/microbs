@@ -8,6 +8,8 @@ const semver = require('semver')
 
 // Main packages
 const { config, context, logger, utils } = require('@microbs.io/core')
+const apps = require('./apps')
+const plugins = require('./plugins')
 
 const logSuccess = (msg) => logger.info(`${chalk.bold.greenBright('✓')} ${chalk.dim(msg)}`)
 const logInfo = (msg) => logger.warn(`${chalk.bold.cyanBright('i')} ${msg}`)
@@ -304,22 +306,30 @@ const validateConfig = () => {
 const validateApps = async () => {
   logger.info('')
   logger.info('Validating apps...')
+  var hasErrors = false
   const appName = config.get(`deployment.app`)
   if (!appName) {
     logUnknown(`'deployment.apps' does not name a plugin.`)
   } else {
     try {
-      const appInstalled = require(`@microbs.io/app-${appName}`)
+      const appsInstalled = apps.getInstalledApps()
+      if(!appsInstalled[`@microbs.io/app-${appName}`]) {
+        hasErrors = true
+        logFailure(`'deployment.apps' does not name an installed app: ${appName}`)
+      }
     } catch (e) {
       hasErrors = true
-      logFailure(`'deployment.apps' does not name an installed app: ${appName}`)
+      logFailure(e)
     }
   }
+  if (!hasErrors)
+    logSuccess('no problems detected in apps.')
 }
 
 const validatePlugins = async () => {
   logger.info('')
   logger.info('Validating plugins...')
+  var hasErrors = false
   const pluginTypes = [ 'kubernetes', 'observability', 'alerts' ]
   for (var i in pluginTypes) {
     const pluginName = config.get(`deployment.plugins.${pluginTypes[i]}`)

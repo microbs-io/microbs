@@ -1,5 +1,7 @@
 /*
- * List all available apps.
+ * apps.js
+ * 
+ * Manage microbs app.
  */
 
 // Standard packages
@@ -120,7 +122,11 @@ const getNamesInstalled = () => {
   const results = getPackagesInstalled()
   for (var i in results) {
     const result = results[i]
-    const name = result.name.replace(/^\@microbs\.io\/app\-/, '')
+    var name = results.name
+    if (name.startsWith('@'))
+      name = name.replace(/^\@microbs\.io\/app\-/, '')
+    else if (name.contains('/microbs-app-'))
+      name = name.split('/microbs-app-')[1]
     names.push(name)
   }
   return names
@@ -133,6 +139,23 @@ const isInstalled = (name) => {
   const deps = getInstalledApps()
   const package = `@microbs.io/app-${name}`
   return deps[package] ? true : false
+}
+
+/**
+ * Get information on all installed microbs apps.
+ */
+const getInstalledApps = () => {
+  const results = getPackagesInstalled()
+  const deps = {}
+  for (var name in results) {
+    const package = utils.loadJson(path.join(results[name].path, 'package.json'))
+    const keywords = package.keywords || []
+    if (!keywords.includes('microbs') || !keywords.includes('app'))
+      continue
+    deps[name] = results[name]
+    deps[name].keywords = package.keywords
+  }
+  return deps
 }
 
 /**
@@ -193,8 +216,15 @@ const install = (names) => {
       package = `@microbs.io/app-${name}`
       command = 'install'
     }
+    // When linking a local package to a globally installed microbs,
+    // we need to ensure the /lib path exists for the microbs package.
+    if (isInstalledGlobally && command == 'link') {
+      const prefixLib = `${utils.sanitize(context.get('path.cli'))}/lib`
+      if (!fs.existsSync(prefixLib))
+        fs.mkdirSync(prefixLib)
+    }
     logger.info(`Installing app: ${name}`)
-    const result = utils.exec(`npm ${command}${g} ${utils.sanitize(package)} --legacy-peer-deps --preserve-symlinks`, true)
+    const result = utils.exec(`npm ${command}${g} ${utils.sanitize(package)} ${command == 'link' ? ' --save' : ''}`, true)
     if (result.stderr) {
       if (result.stderr.includes('E404'))
         logFailure(`...unknown app: ${name}`)
@@ -235,23 +265,6 @@ const uninstall = (names) => {
     }
   }
   logger.info('')
-}
-
-/**
- * Get information on all installed microbs apps.
- */
-const getInstalledApps = () => {
-  const results = getPackagesInstalled()
-  const deps = {}
-  for (var name in results) {
-    const package = utils.loadJson(path.join(results[name].path, 'package.json'))
-    const keywords = package.keywords || []
-    if (!keywords.includes('microbs') || !keywords.includes('app'))
-      continue
-    deps[name] = results[name]
-    deps[name].keywords = package.keywords
-  }
-  return deps
 }
 
 /**
@@ -325,6 +338,8 @@ const search = () => {
  */
 const list = () => {
   const deps = getInstalledApps()
+  logger.debug('Found dependencies:')
+  logger.debug(deps)
   
   // Transform results into formatted rows
   const padding = 2
@@ -337,7 +352,9 @@ const list = () => {
     const dep = deps[name]
     name = name.replace(/^\@microbs\.io\/app\-/, '')
     const version = dep.version ? `v${dep.version}` : 'unknown'
-    const source = dep.resolved || dep.path || 'unknown'
+    var source = dep.resolved || dep.path || 'unknown'
+    if (source.startsWith('file:'))
+      source = path.resolve(context.get('path.cli'), dep.resolved)
     lengths.name = Math.max(lengths.name, name.length)
     lengths.version = Math.max(lengths.version, version.length)
     rows.push({
