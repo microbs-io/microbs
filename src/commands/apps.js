@@ -171,12 +171,10 @@ const update = (names) => {
     // If the app name contains a slash, assume it's a URL or file path.
     // Otherwise assume it's an official app and prefix it with @microbs.io/app-
     var package
-    var command = update
-    if (name.includes('/') && !name.startsWith('@')) {
+    if (name.includes('/') && !name.startsWith('@'))
       package = name
-    } else {
+    else
       package = `@microbs.io/app-${name}`
-    }
     logger.info(`Updating app: ${name}`)
     if (!isInstalled(name)) {
       logInfo(`...app not installed: ${name}`)
@@ -208,23 +206,12 @@ const install = (names) => {
     // If the app name contains a slash, assume it's a URL or file path.
     // Otherwise assume it's an official app and prefix it with @microbs.io/app-
     var package
-    var command
-    if (name.includes('/') && !name.startsWith('@')) {
+    if (name.includes('/') && !name.startsWith('@'))
       package = name
-      command = 'link'
-    } else {
+    else
       package = `@microbs.io/app-${name}`
-      command = 'install'
-    }
-    // When linking a local package to a globally installed microbs,
-    // we need to ensure the /lib path exists for the microbs package.
-    if (isInstalledGlobally && command == 'link') {
-      const prefixLib = `${utils.sanitize(context.get('path.cli'))}/lib`
-      if (!fs.existsSync(prefixLib))
-        fs.mkdirSync(prefixLib)
-    }
     logger.info(`Installing app: ${name}`)
-    const result = utils.exec(`npm ${command}${g} ${utils.sanitize(package)} ${command == 'link' ? ' --save' : ''}`, true)
+    const result = utils.exec(`npm install${g} ${utils.sanitize(package)}`, true)
     if (result.stderr) {
       if (result.stderr.includes('E404'))
         logFailure(`...unknown app: ${name}`)
@@ -354,7 +341,7 @@ const list = () => {
     const version = dep.version ? `v${dep.version}` : 'unknown'
     var source = dep.resolved || dep.path || 'unknown'
     if (source.startsWith('file:'))
-      source = path.resolve(context.get('path.cli'), dep.resolved)
+      source = path.resolve(context.get('path.cli'), dep.resolved.split('file:')[1])
     lengths.name = Math.max(lengths.name, name.length)
     lengths.version = Math.max(lengths.version, version.length)
     rows.push({

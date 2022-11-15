@@ -65,16 +65,5 @@ const load = () => {
 }
 
 module.exports = {
-  load: load,
-  get: (type) => {
-    switch (type) {
-      case 'kubernetes':
-        return kubernetes
-      case 'observability':
-        return observability
-      case 'alerts':
-        return alerts
-      throw new Error(`Unrecognized plugin type: ${type}`)
-    }
-  }
+  load: load
 }

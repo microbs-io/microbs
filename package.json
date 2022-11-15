@@ -40,7 +40,7 @@
     "node": ">=14.16.1"
   },
   "dependencies": {
-    "@microbs.io/core": "^0.2.7",
+    "@microbs.io/core": "^0.2.8",
     "chalk": "^4.1.1",
     "glob": "^7.2.0",
     "is-installed-globally": "^0.4.0",

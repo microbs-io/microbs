@@ -5,7 +5,7 @@
  */
 
 // Main packages
-const { config, context } = require('@microbs.io/core')
+const { config, context, logger } = require('@microbs.io/core')
 const apps = require('./apps')
 const args = require('./args')
 const commands = require('./commands')
