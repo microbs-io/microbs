@@ -211,7 +211,7 @@ const install = (names) => {
     else
       package = `@microbs.io/app-${name}`
     logger.info(`Installing app: ${name}`)
-    const result = utils.exec(`npm install${g} ${utils.sanitize(package)}`, true)
+    const result = utils.exec(`npm install${g} ${utils.sanitize(package)} --legacy-peer-deps --preserve-symlinks`, true)
     if (result.stderr) {
       if (result.stderr.includes('E404'))
         logFailure(`...unknown app: ${name}`)

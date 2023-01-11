@@ -30,12 +30,13 @@ sudo usermod -aG docker $USER
 sudo chmod 666 /var/run/docker.sock
 
 # Install kubectl (on GCP VMs)
-sudo snap install kubectl --classic
+sudo snap install kubectl --channel=1.25/stable --classic
 
 # Install skaffold (tested on: 1.36.0)
 # Source: https://skaffold.dev/docs/install/
 curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
   sudo install skaffold /usr/local/bin/
+
 
 ####  Configure gcloud  ########################################################
 
