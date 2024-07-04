@@ -147,7 +147,7 @@ const validateKubectlVersion = () => {
   const result = utils.exec('kubectl version --client', true)
   if (result.stdout) {
     try {
-      const versionActual = semver.clean(result.stdout.match(/GitVersion:"v([^"]+)"/)[1])
+      const versionActual = semver.clean(result.stdout.match(/Client Version: v(\d+\.\d+\.\d+)/)[1])
       const versionRequired = semver.clean('1.23.0')
       if (semver.gte(versionActual, versionRequired))
         logSuccess(`kubectl is correct version [using=${versionActual}, required>=${versionRequired}]`)
